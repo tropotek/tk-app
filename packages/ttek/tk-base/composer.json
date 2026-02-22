@@ -1,0 +1,23 @@
+{
+    "name": "ttek/tk-base",
+    "description": "Tropotek Project Base Libs",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "\\Tk\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "require": {
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Tk\\PackageServiceProvider"
+            ]
+        }
+    }
+}

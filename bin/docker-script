@@ -1,0 +1,11 @@
+#!/bin/bash
+#
+# Ref: https://github.com/veevidify/laravel-apache-docker/tree/master
+#
+
+args="$@"
+command="php artisan $args"
+echo "$command"
+docker exec -it laravel-app bash -c "sudo -u devuser /bin/bash -c \"$command\""
+# example of running a script
+#docker exec -it laravel-app bash -c "sudo -u devuser /bin/bash"

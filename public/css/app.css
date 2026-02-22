@@ -1,0 +1,57 @@
+html {
+    font-size: 0.9rem; /* Example: increases the default font size */
+}
+
+.container-fluid {
+    --bs-gutter-x: 3rem;
+    --bs-gutter-y: 0;
+}
+
+/* collapsable card example */
+.card-header .fa {
+    transition: .3s transform ease-in-out;
+}
+.card-header .collapsed .fa {
+    transform: rotate(90deg);
+}
+
+.breadcrumb-item {
+    font-size: 0.9rem;
+}
+
+
+/** Form Styles */
+.tk-form fieldset {
+    background-color: #f7f7f7;
+    border: 2px solid #4CAF50;
+    padding: 5px;
+    border-radius: 8px;
+}
+.tk-form legend {
+    background-color: #4CAF50;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+.tk-form .tk-field label {
+    margin-bottom: 0;
+}
+.tk-form.mode-view .tk-field .form-control-plaintext {
+    padding: 0;
+}
+
+/* fix switch padding issue in view mode */
+.tk-form.mode-view .form-switch,
+.tk-form.mode-view .form-check
+{
+  padding-left: 0;
+}
+
+
+
+
+
+
+
+
+
