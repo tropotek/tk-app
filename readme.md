@@ -46,3 +46,9 @@ $ cd tk-app
 $ sudo chown -R $USER:$USER .
 ```
 
+
+# Tk-Base Package
+
+This is where the Form, Table and menu libs will be located.
+
+View the [tk-base readme](./packages/ttek/tk-base/src/readme.md) here.
