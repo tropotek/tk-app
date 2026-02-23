@@ -33,6 +33,9 @@ html {
     padding: 5px 10px;
     border-radius: 4px;
 }
+.tk-form fieldset > div.row {
+    padding: 5px;
+}
 .tk-form .tk-field label {
     margin-bottom: 0;
 }
