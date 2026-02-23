@@ -23,3 +23,10 @@ $ ./bin/app-update
 
 Browse to http://localhost:8081
 
+## Issues
+
+If you experience permission issues, run the following in your PC terminal:
+```
+$ cd tk-app
+$ sudo chown -R $USER:$USER .
+```
