@@ -21,6 +21,8 @@ $ ./bin/app-update
 ```
 Once complete, then browse to http://localhost:8081
 
+You can login to the site using U: admin@example.com P: password
+
 Shutdown the container:
 ```
 $ docker compose down
