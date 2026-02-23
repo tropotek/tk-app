@@ -57,9 +57,9 @@ class OneController extends Controller
 //            'image' => 'image|max:2048',
         ]);
 
-        dump($request->all());
+        vd($request->all());
 
-        return 'Form Submitted';
+        return redirect('/formOne')->with('success', 'Form submitted successfully!');
     }
 
 }

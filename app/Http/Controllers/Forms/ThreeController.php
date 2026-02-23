@@ -57,9 +57,9 @@ class ThreeController extends Controller
 //            'image' => 'image|max:2048',
         ]);
 
-        dump($request->all());
+        vd($request->all());
 
-        return 'Form Submitted';
+        return redirect('/formThree')->with('success', 'Form submitted successfully!');
     }
 
 }

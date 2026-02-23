@@ -1,17 +1,26 @@
 # TK Base Package
 
+This package holds all useful objects and templates for Tropotek web applications.
+
 
 ## VarDump Debug logger
 Use this to send messages to the debug log file. Send strings, objects, and arrays.
-The output will show booleans and null values so you can identify them easily.
+The output will show booleans and null values, so you can identify them easily.
+
+The messages can be seen in the `storage/logs/laravel.log` file or when using the `debugBar` package.
+
 Usage:
 ```php
-// view a dump of the entire object in the debug bar messages:
+// view a dump of the entire object in messages:
 vd($object);
 // use this to see the output along with the trace of the execution:
 vdd($object);
 ```
 
+Tail the laravel log file with:
+```bash
+$ tail -f storage/logs/laravel.log
+```
 
 
 ## Form Builder
@@ -60,7 +69,6 @@ Here is one possible implementation using a menu builder class `App\Menus\NavBar
     </nav>
 </header>
 ```
-
 
 
 ## Util Classes
