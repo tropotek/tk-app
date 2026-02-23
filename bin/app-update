@@ -2,6 +2,7 @@
 
 # get latest code from repo
 git pull
+git config --global --add safe.directory /app
 
 # install composer dependencies
 composer install
