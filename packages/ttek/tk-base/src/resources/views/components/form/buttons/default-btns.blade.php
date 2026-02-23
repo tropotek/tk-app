@@ -1,5 +1,4 @@
-@aware(['mode', 'values'])
-
+@aware(['mode'])
 @props([
     'viewLabel'   => 'Make changes',
     'editRoute'   => '',
@@ -16,22 +15,43 @@
 @switch ($mode)
     @case ('view')
         @if($editRoute)
-            <x-tk-base::form.buttons.link :label="$viewLabel" :href="$editRoute" class="{{ $viewCss }}"/>
+            <x-tk-base::form.buttons.link
+                :label="$viewLabel"
+                :href="$editRoute"
+                class="{{ $viewCss }}"
+                {{ $attributes }}
+            />
         @endif
     @break;
 
     @case ('edit')
         @if($editRoute)
-            <x-tk-base::form.buttons.link :label="$cancelLabel" :href="$cancelRoute" class="{{ $cancelCss }}"/>
+            <x-tk-base::form.buttons.link
+                :label="$cancelLabel"
+                :href="$cancelRoute"
+                class="{{ $cancelCss }}"
+            />
         @endif
-        <x-tk-base::form.buttons.submit :label="$editLabel" class="{{ $editCss }}"/>
+        <x-tk-base::form.buttons.submit
+            :label="$editLabel"
+            class="{{ $editCss }}"
+            {{ $attributes }}
+        />
     @break;
 
     @case ('create')
         @if($editRoute)
-            <x-tk-base::form.buttons.link :label="$cancelLabel" :href="$cancelRoute" class="{{ $cancelCss }}"/>
+            <x-tk-base::form.buttons.link
+                :label="$cancelLabel"
+                :href="$cancelRoute"
+                class="{{ $cancelCss }}"
+            />
         @endif
-        <x-tk-base::form.buttons.submit :label="$createLabel" class="{{ $createCss }}"/>
+        <x-tk-base::form.buttons.submit
+            :label="$createLabel"
+            class="{{ $createCss }}"
+            {{ $attributes }}
+        />
     @break;
 @endswitch
 

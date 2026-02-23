@@ -2,7 +2,7 @@
 @props([
     // required
     'name'     => '',
-    'value'    => '',
+    'value',
     'options'  => [],
     // optional
     'label'    => '',
@@ -10,7 +10,7 @@
     'help'     => ''
 ])
 @php
-    if ($errors->any()) $value = old($name);
+    $value = old($name, $value ?? '');
 @endphp
 
 <x-tk-base::form.ui.field>
@@ -20,11 +20,16 @@
                 <i class="text-primary fa-lg {{ \Tk\Utils\Form::isSelected($optValue, $value) ? ' fa-regular fa-circle-dot' : 'fa-regular fa-circle' }}"></i>
                 <span class="fw-bold text-muted">{{ $text }}</span>
             @else
-                <input type="radio" class="form-check-input"
-                       name="{{ $name }}" id="fid_{{ $name }}_{{ $optValue }}" value="{{ $optValue }}"
-                    {{ $attributes->merge([ 'class' => 'form-control' . ( $errors->has($name) ? ' is-invalid' : '') ]) }}
-                    {{ \Tk\Utils\Form::isSelected($optValue, $value) ? 'checked' : '' }} />
-                <label class="form-check-label fw-bold" for="fid_{{ $name }}_{{ $optValue }}">{{ $text }}</label>
+                <input {{ $attributes->merge([
+                        'type'     => 'radio',
+                        'name'     => $name,
+                        'id'       => sprintf('fid-%s-%s', $name, $optValue),
+                        'value'    => $optValue,
+                        'checked'  => \Tk\Utils\Form::isSelected($optValue, $value) ? 'checked' : null,
+                        'class'    => 'form-check-input' . ( $errors->has($name) ? ' is-invalid' : ''),
+                    ]) }}
+                />
+                <label class="form-check-label fw-bold" for="fid-{{ $name }}-{{ $optValue }}">{{ $text }}</label>
             @endif
         </div>
     @endforeach

@@ -1,8 +1,9 @@
+@php use Tk\Utils\Form; @endphp
 @aware(['mode' => 'view'])
 @props([
     // required
     'name'     => '',
-    'value'    => '',
+    'value',
     'options'  => [],
     // optional
     'label'    => '',
@@ -11,25 +12,37 @@
 ])
 @php
     $cleanName = str_replace(['[', ']'], '', $name);
-    if ($errors->any()) $value = old($cleanName);
+    $value = old($cleanName, $value ?? '');
 @endphp
 
 <x-tk-base::form.ui.field>
     @if($mode == 'view')
-        <p {{ $attributes->merge([ 'class' => 'form-control-plaintext fw-bold' ]) }}>{{ is_array($value) ? implode(', ', $value) : $value }} </p>
+        <input {{ $attributes->merge([
+            'type'     => 'text',
+            'name'     => $name,
+            'id'       => 'fid-'.$name,
+            'value'    => is_array($value) ? implode(', ', $value) : $value,
+            'readonly' => 'readonly',
+            'class'    => 'form-control-plaintext fw-bold',
+        ]) }}
+        />
     @else
-        <select name="{{ $name }}" id="fid_{{ $cleanName }}"
-            {{ $attributes->merge([ 'class' => 'form-select' . ( $errors->has($name) ? ' is-invalid' : '') ]) }} >
+        <select {{ $attributes->merge([
+                'name'  => $name,
+                'id'    => 'fid-'.$cleanName,
+                'class' => 'form-select' . ( $errors->has($name) ? ' is-invalid' : '')
+            ]) }}
+        >
             @foreach ($options as $val => $text)
 
                 @if (is_array($text))
                     <optgroup label="{{ $val }}">
                         @foreach ($text as $v => $t)
-                            <option value="{{ $v }}" @selected(\Tk\Utils\Form::isSelected($val, $value))>{{ $t }}</option>
+                            <option value="{{ $v }}" @selected(Form::isSelected($val, $value))>{{ $t }}</option>
                         @endforeach
                     </optgroup>
                 @else
-                    <option value="{{ $val }}" @selected(\Tk\Utils\Form::isSelected($val, $value))>{{ $text }}</option>
+                    <option value="{{ $val }}" @selected(Form::isSelected($val, $value))>{{ $text }}</option>
                 @endif
 
             @endforeach

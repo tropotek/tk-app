@@ -2,7 +2,7 @@
 @props([
     // required
     'name'     => '',
-    'value'    => '',
+    'value',
     // optional
     'type'     => 'text',
     'label'    => '',
@@ -10,14 +10,19 @@
     'help'     => ''
 ])
 @php
-    if ($errors->any()) $value = old($name);
+    $value = old($name, $value ?? '');
 @endphp
 
 <x-tk-base::form.ui.field>
-    @if($mode == 'view')
-        <p {{ $attributes->merge([ 'class' => 'form-control-plaintext fw-bold' ]) }}>{{ $value }}</p>
-    @else
-        <input type="{{ $type }}" name="{{ $name }}" id="fid_{{ $name }}" value="{{ $value }}"
-            {{ $attributes->merge([ 'class' => 'form-control' . ( $errors->has($name) ? ' is-invalid' : '') ]) }} />
-    @endif
+    <input {{ $attributes->merge([
+            'type'     => $type,
+            'name'     => $name,
+            'id'       => 'fid-'.$name,
+            'value'    => $value,
+            'readonly' => ($mode == 'view') ? 'readonly' : null,
+            'class'    => ($mode == 'view') ?
+                'form-control-plaintext fw-bold' :
+                'form-control' . ( $errors->has($name) ? ' is-invalid' : ''),
+        ]) }}
+    />
 </x-tk-base::form.ui.field>

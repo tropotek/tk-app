@@ -22,7 +22,10 @@
         </x-slot:buttons>
 
         <x-slot:fields>
-            <x-tk-base::form.fields.hidden name="testId" />
+            <x-tk-base::form.fields.hidden
+                name="testId"
+                :value="$values['testId'] ?? ''"
+            />
 
 
             <x-tk-base::form.ui.fieldset legend="Fieldset One" class="col">

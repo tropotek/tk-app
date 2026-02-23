@@ -7,8 +7,13 @@ git config --global --add safe.directory /app
 # install composer dependencies
 composer install
 
-# initialize Laravel environment
-php artisan key:generate   # not sure this should be regenerated every time, only on initial install
+# generate APP_KEY if none exists
+if ! grep -q '^APP_KEY=base64:' .env; then
+  echo "Generating APP_KEY..."
+  (
+    php artisan key:generate --force
+  )
+fi
 
 # copy assets to public folder
 cp -f vendor/twbs/bootstrap/dist/css/bootstrap.min.css* public/css/

@@ -10,6 +10,7 @@
 ])
 @php
     $cleanName = str_replace(['[', ']'], '', $name);
+    $value = $value ?? '';
 
     // Help message
     $preText = '';
@@ -20,10 +21,14 @@
 @endphp
 <x-tk-base::form.ui.field :$preText>
     @if($mode == 'view')
-        {{-- TODO Attempt to show a link to the uploaded file if one exists --}}
         <p {{ $attributes->merge([ 'class' => 'form-control-plaintext fw-bold' ]) }}>{!! $value !!}</p>
     @else
-        <input type="file" name="{{ $name }}" id="fid_{{ $cleanName }}"
-            {{ $attributes->merge([ 'class' => 'form-control' . ( $errors->has($name) ? ' is-invalid' : '') ]) }} />
+        <input {{ $attributes->merge([
+                'type'     => 'file',
+                'name'     => $name,
+                'id'       => 'fid-'.$cleanName,
+                'class'    => 'form-control' . ( $errors->has($name) ? ' is-invalid' : ''),
+            ]) }}
+        />
     @endif
 </x-tk-base::form.ui.field>

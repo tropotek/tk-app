@@ -2,7 +2,7 @@
 @props([
     //required
     'name'     => '',
-    'value'    => '',
+    'value',
     'options'  => [],
     // optional
     'label'    => '',
@@ -12,7 +12,7 @@
 ])
 @php
     $cleanName = str_replace(['[', ']'], '', $name);
-    if ($errors->any()) $value = old($cleanName);
+    $value = old($cleanName, $value ?? '');
 @endphp
 
 <x-tk-base::form.ui.field>
@@ -28,11 +28,16 @@
                 <i class="fa-lg {{ $css }}"></i>
                 <span class="fw-bold text-muted">{{ $text }}</span>
             @else
-                <input type="checkbox" class="form-check-input"
-                       name="{{ $name }}" id="fid_{{ $cleanName }}_{{ $optValue }}" value="{{ $optValue }}"
-                    {{ $attributes->merge([ 'class' => 'form-control' . ($errors->has($name) ? ' is-invalid' : '') ]) }}
-                    {{ \Tk\Utils\Form::isSelected($optValue, $value) ? 'checked' : '' }} />
-                <label class="form-check-label fw-bold" for="fid_{{ $cleanName }}_{{ $optValue }}">{{ $text }}</label>
+                <input {{ $attributes->merge([
+                        'type'     => 'checkbox',
+                        'name'     => $name,
+                        'id'       => sprintf('fid-%s-%s', $name, $optValue),
+                        'value'    => $optValue,
+                        'checked'  => \Tk\Utils\Form::isSelected($optValue, $value) ? 'checked' : null,
+                        'class'    => 'form-check-input' . ( $errors->has($name) ? ' is-invalid' : ''),
+                    ]) }}
+                />
+                <label class="form-check-label fw-bold" for="fid-{{ $cleanName }}-{{ $optValue }}">{{ $text }}</label>
             @endif
         </div>
     @endforeach

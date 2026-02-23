@@ -2,24 +2,27 @@
 @props([
     // required
     'name'     => '',
-    'value'    => '',
+    'value',
     // optional
     'label'    => '',
     'fieldCss' => '',
     'help'     => ''
 ])
 @php
-    if ($errors->any()) $value = old($name);
+    $value = old($name, $value ?? '');
 @endphp
 
 <x-tk-base::form.ui.field>
-    @if($mode == 'view')
-        {{-- TODO: Might need a flag to determin if the value is HTML or not. --}}
-        <p {{ $attributes->merge([ 'class' => 'form-control-plaintext fw-bold' ]) }}>{!! $value !!}</p>
-    @else
-        <textarea name="{{ $name }}" id="fid_{{ $name }}"
-            {{ $attributes->merge([ 'class' => 'form-control' . ( $errors->has($name) ? ' is-invalid' : ''), 'rows' => '5' ]) }}
-        >{{ $value }}</textarea>
-    @endif
+    <textarea {{ $attributes->merge([
+            'name'     => $name,
+            'id'       => 'fid-'.$name,
+            'value'    => $value,
+            'rows'     => 5,
+            'readonly' => ($mode == 'view') ? 'readonly' : null,
+            'class'    => ($mode == 'view') ?
+                'form-control-plaintext fw-bold' :
+                'form-control' . ( $errors->has($name) ? ' is-invalid' : ''),
+        ]) }}
+    >{{ $value }}</textarea>
 </x-tk-base::form.ui.field>
 

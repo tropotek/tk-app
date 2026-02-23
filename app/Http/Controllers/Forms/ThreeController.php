@@ -9,6 +9,7 @@ class ThreeController extends Controller
 {
 
     protected array $values = [
+        'testId' => 22,
         'title' => 'mrs',
         'firstName' => 'John',
         'lastName' => 'Doe',
@@ -22,10 +23,12 @@ class ThreeController extends Controller
         'description' => 'This is a test description'
     ];
 
+    //protected string $view = 'forms.three';
+    protected string $view = 'forms.threedetail';
 
     public function index(Request $request)
     {
-        return view('forms.three', [
+        return view($this->view, [
             'mode' => 'view',
             'values' => $this->values,
         ]);
@@ -33,7 +36,7 @@ class ThreeController extends Controller
 
     public function edit(Request $request)
     {
-        return view('forms.three', [
+        return view($this->view, [
             'mode' => 'edit',
             'values' => $this->values,
         ]);
@@ -41,7 +44,7 @@ class ThreeController extends Controller
 
     public function create(Request $request)
     {
-        return view('forms.three', [
+        return view($this->view, [
             'mode' => 'create'
         ]);
     }
@@ -51,8 +54,8 @@ class ThreeController extends Controller
         $request->validate([
             'firstName' => 'required|min:3|max:20',
             'lastName' => 'required|min:3|max:20',
-            'email' => 'required|email',
-            'gender' => 'required',
+//            'email' => 'required|email',
+//            'gender' => 'required',
 //            'address' => 'required',
 //            'image' => 'image|max:2048',
         ]);

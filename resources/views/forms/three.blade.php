@@ -22,7 +22,11 @@
         </x-slot:buttons>
 
         <x-slot:fields>
-            <x-tk-base::form.fields.hidden name="testId" />
+            <x-tk-base::form.fields.hidden
+                name="testId"
+                id="lettitgo"
+                :value="$values['testId'] ?? ''"
+            />
 
 
             <x-tk-base::form.ui.fieldgroup class="col">
@@ -34,7 +38,7 @@
 
                 <x-tk-base::form.fields.input
                     name="firstName"
-                    required=""
+                    required="required"
                     :value="$values['firstName'] ?? ''"
                 />
 
