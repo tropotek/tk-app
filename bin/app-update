@@ -17,4 +17,5 @@ cp -f vendor/jquery/jquery/jquery-3.7.1.min.js public/js/jquery.min.js
 
 # database migrations
 touch database/database.sqlite
-php artisan migrate
+php artisan migrate:fresh --seed
+#php artisan migrate    # may cause errors if the key has been re-generated
