@@ -9,6 +9,8 @@
 
 ## About 
 
+First copy the `.env.example` file to `.env` and update as required.
+
 ```
 # Start docker container 
 
@@ -19,5 +21,5 @@ $ ./bin/app-update
 
 ```
 
-Now you should be able to browse http://localhost:8081
+Browse to http://localhost:8081
 
