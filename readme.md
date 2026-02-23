@@ -1,7 +1,7 @@
 # Tk App - Laravel Examples 
 
 
-## Insstallation With Docker
+## Installation With Docker
 
 First copy the `.env.example` file to `.env` and update as required.
 
@@ -17,7 +17,7 @@ $ docker exec -it tk-app /bin/bash
 $ cd /app
 $ ./bin/app-update
 ```
-Once complete then browse to http://localhost:8081
+Once complete, then browse to http://localhost:8081
 
 Shutdown the container:
 ```
