@@ -70,7 +70,7 @@
             </x-tk-base::form.ui.fieldgroup>
 
 
-            <x-tk-base::form.ui.fieldgroup class="col">
+            <x-tk-base::form.ui.fieldset legend="Ha hahaha" class="col">
                 <x-tk-base::form.fields.file
                     label="Upload Logo"
                     name="image"
@@ -90,7 +90,7 @@
                     help="Who are you..."
                     fieldCss="col-sm-6"
                 />
-            </x-tk-base::form.ui.fieldgroup>
+            </x-tk-base::form.ui.fieldset>
 
 
             {{-- Render this field outside a field group --}}

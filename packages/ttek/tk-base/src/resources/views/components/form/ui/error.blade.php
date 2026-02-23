@@ -1,3 +1,4 @@
+{{-- Show a field error message --}}
 @props([
     // required
     'message'

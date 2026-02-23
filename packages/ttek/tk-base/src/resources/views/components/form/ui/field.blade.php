@@ -1,10 +1,10 @@
+{{-- Renders all comment field markup --}}
 @aware([
     'name',
     'label',
     'fieldCss',
     'help',
 ])
-
 @props([
     // optional
     'preText' => '',

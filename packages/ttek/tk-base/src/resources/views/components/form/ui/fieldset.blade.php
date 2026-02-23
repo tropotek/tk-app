@@ -1,3 +1,4 @@
+{{-- Field Grouper: Group fields within a fieldset --}}
 @props([
     // required
     'legend' => ''

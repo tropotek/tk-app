@@ -1,3 +1,4 @@
+{{-- Show custom help text for a field --}}
 @aware([ 'preText' => '', 'postText' => ''])
 @props([
     // required

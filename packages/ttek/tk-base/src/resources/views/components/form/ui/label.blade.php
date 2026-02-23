@@ -1,3 +1,4 @@
+{{-- Show a label for a field --}}
 @props([
     // required
     'label' => ''
