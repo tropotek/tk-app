@@ -1,19 +1,19 @@
 @props([
-	'title' => '',
-	'buttons',
-	'col1' => '',
-	'col2' => '',
-	'col3' => '',
+	'title'  => '',
+	'btnrow' => '',
+	'col1'   => '',
+	'col2'   => '',
+	'col3'   => '',
 ])
 
 @if (!empty($title) && $title->hasActualContent())
     <h3 class="mb-4">{{ $title }}</h3>
 @endif
 
-@if(!empty($buttons) && $buttons->hasActualContent())
+@if(!empty($btnrow) && $btnrow->hasActualContent())
     <div class="row">
         <div class="col-md-12">
-            {{ $buttons }}
+            {{ $btnrow }}
         </div>
     </div>
 @endif

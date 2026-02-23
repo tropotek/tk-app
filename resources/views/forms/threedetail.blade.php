@@ -13,13 +13,13 @@
         <x-slot:title>Side Cols Template Example</x-slot:title>
 
         {{-- Buttons outside the form require the `form=""` attribute to submit the correct form --}}
-        <x-slot:buttons>
+        <x-slot:btnrow>
             <x-tk-base::form.buttons.default-btns
                 editRoute="/formThree/edit"
                 cancelRoute="/formThree"
                 form="theform"
             />
-        </x-slot:buttons>
+        </x-slot:btnrow>
 
 
         <x-slot:col1>
