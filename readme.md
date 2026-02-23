@@ -21,6 +21,8 @@ $ ./bin/app-update
 ```
 Once complete, then browse to http://localhost:8081
 
+You can login to the site using U: admin@example.com P: password
+
 Shutdown the container:
 ```
 $ docker compose down
@@ -46,3 +48,9 @@ $ cd tk-app
 $ sudo chown -R $USER:$USER .
 ```
 
+
+# Tk-Base Package
+
+This is where the Form, Table and menu libs will be located.
+
+View the [tk-base readme](./packages/ttek/tk-base/src/readme.md) here.
