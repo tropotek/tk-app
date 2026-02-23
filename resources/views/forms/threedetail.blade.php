@@ -19,8 +19,31 @@
                 cancelRoute="/formThree"
                 form="theform"
             />
-        </x-slot:btnrow>
 
+            @if ($mode == 'view')
+                <x-tk-base::form.buttons.link
+                    label="Do Something"
+                    class="btn btn-info"
+                    href="/"
+                />
+                <x-tk-base::form.buttons.link
+                    label="Do Something Else"
+                    class="btn btn-warning"
+                    href="/"
+                />
+                <x-tk-base::form.buttons.link
+                    label="Delete Something"
+                    class="btn btn-danger"
+                    href="/"
+                />
+            @elseif ($mode == 'edit')
+                <x-tk-base::form.buttons.link
+                    label="Do Something In Edit Mode"
+                    class="btn btn-info"
+                    href="/"
+                />
+            @endif
+        </x-slot:btnrow>
 
         <x-slot:col1>
 

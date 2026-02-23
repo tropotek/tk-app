@@ -1,4 +1,3 @@
-@php use Tk\Utils\Form; @endphp
 @aware(['mode' => 'view'])
 @props([
     // required
@@ -38,11 +37,11 @@
                 @if (is_array($text))
                     <optgroup label="{{ $val }}">
                         @foreach ($text as $v => $t)
-                            <option value="{{ $v }}" @selected(Form::isSelected($val, $value))>{{ $t }}</option>
+                            <option value="{{ $v }}" @selected(\Tk\Utils\Form::isSelected($val, $value))>{{ $t }}</option>
                         @endforeach
                     </optgroup>
                 @else
-                    <option value="{{ $val }}" @selected(Form::isSelected($val, $value))>{{ $text }}</option>
+                    <option value="{{ $val }}" @selected(\Tk\Utils\Form::isSelected($val, $value))>{{ $text }}</option>
                 @endif
 
             @endforeach
