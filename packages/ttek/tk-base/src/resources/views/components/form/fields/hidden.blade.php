@@ -1,16 +1,14 @@
-@aware(['mode' => 'view', 'values' => []])
+@aware(['mode' => 'view'])
 @props([
     // required
-    'name' => '',
-    // optional
-    'default' => '',
+    'name'    => '',
+    'value'   => '',
 ])
 @php
-    $value = $values[$name] ?? $default;
     if ($errors->any()) $value = old($name);
 @endphp
 
-@if($mode == 'edit')
+@if($mode != 'view')
     <input type="hidden" name="{{ $name }}" id="fid_{{ $name }}" value="{{ $value }}"
            {{ $attributes->merge([ 'class' => 'form-control' . ( $errors->has($name) ? ' is-invalid' : '') ]) }}/>
 @endif

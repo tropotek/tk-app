@@ -28,7 +28,8 @@ class IdeaController extends Controller
     {
         //Gate::authorize('update', $idea);
 
-        return view('ideas.show',[
+        return view('ideas.edit',[
+            'mode' => 'view',
             'idea' => $idea,
         ]);
     }
@@ -38,6 +39,7 @@ class IdeaController extends Controller
         Gate::authorize('update', $idea);
 
         return view('ideas.edit',[
+            'mode' => 'edit',
             'idea' => $idea,
         ]);
     }
@@ -47,10 +49,14 @@ class IdeaController extends Controller
         Gate::authorize('update', $idea);
 
         $request->validate([
+            'title' => ['required', 'min:3'],
+            'status' => 'required',
             'description' => ['required', 'min:3'],
         ]);
 
         $idea->update([
+            'title' => request('title'),
+            'status' => request('status'),
             'description' => request('description'),
         ]);
 
@@ -60,12 +66,15 @@ class IdeaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'title' => ['required', 'min:3'],
+            'status' => 'required',
             'description' => ['required', 'min:3'],
         ]);
 
         $idea = Auth::user()->ideas()->create([
+            'title' => request('title'),
+            'status' => request('status'),
             'description' => request('description'),
-            'status' => 'pending',
         ]);
 
         Auth::user()->notify(new \App\Notifications\IdeaPublished($idea->first()));

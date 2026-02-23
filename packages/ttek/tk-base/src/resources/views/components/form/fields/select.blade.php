@@ -1,22 +1,23 @@
-@aware(['mode' => 'view', 'values' => []])
+@aware(['mode' => 'view'])
 @props([
     // required
-    'name' => '',
-    'options' => [],
+    'name'     => '',
+    'value'    => '',
+    'options'  => [],
     // optional
-    'label' => '',
-    'default' => '',
+    'label'    => '',
     'fieldCss' => '',
-    'help' => ''
+    'help'     => ''
 ])
 @php
     $cleanName = str_replace(['[', ']'], '', $name);
-    $value = $values[$cleanName] ?? $default;
     if ($errors->any()) $value = old($cleanName);
 @endphp
 
 <x-tk-base::form.ui.field>
-    @if($mode == 'edit')
+    @if($mode == 'view')
+        <p {{ $attributes->merge([ 'class' => 'form-control-plaintext fw-bold' ]) }}>{{ is_array($value) ? implode(', ', $value) : $value }} </p>
+    @else
         <select name="{{ $name }}" id="fid_{{ $cleanName }}"
             {{ $attributes->merge([ 'class' => 'form-select' . ( $errors->has($name) ? ' is-invalid' : '') ]) }} >
             @foreach ($options as $val => $text)
@@ -33,7 +34,5 @@
 
             @endforeach
         </select>
-    @else
-        <p {{ $attributes->merge([ 'class' => 'form-control-plaintext fw-bold' ]) }}>{{ is_array($value) ? implode(', ', $value) : $value }} </p>
     @endif
 </x-tk-base::form.ui.field>

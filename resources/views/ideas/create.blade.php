@@ -1,21 +1,37 @@
+@props([
+    'mode'   => 'create',       // ['view', 'edit', 'create']
+    'action' => '/ideas',
+    'method' => 'post',
+])
 <x-layout.main>
+    <h3>Create Idea</h3>
 
-    <form method="POST" action="/ideas" class="">
-        @csrf
+    <x-tk-base::form :$method :$action :$mode>
 
-        <div class="mb-3">
-            <label for="description" class="form-label">Idea</label>
-            <textarea class="form-control @error('description') is-invalid @enderror" name="description" id="description" rows="5" placeholder="Add your ideas"></textarea>
-            @error('description')
-                <div class="invalid-feedback">
-                    {{ $message }}
-                </div>
-            @enderror
-        </div>
-        <div class="form-text" id="description-help">Have an idea to save for later.</div>
+        <x-slot:buttons>
+            <x-tk-base::form.buttons.default-btns
+                editRoute="/ideas/edit"
+                cancelRoute="/ideas" />
+        </x-slot:buttons>
 
-        <button type="submit" class="btn btn-sm btn-outline-primary mt-3">Save</button>
-        <a href="/ideas" class="btn btn-sm btn-outline-secondary mt-3">Cancel</a>
-    </form>
+
+        <x-slot:fields>
+            <x-tk-base::form.fields.input
+                name="title"
+                required=""
+            />
+
+            <x-tk-base::form.fields.select
+                name="status"
+                :options="['' => '-- Select --']+\App\Enum\IdeaStatus::getLabels()"
+                :value="\App\Enum\IdeaStatus::PENDING->value"
+            />
+
+            <x-tk-base::form.fields.textarea
+                name="description"
+            />
+        </x-slot:fields>
+
+    </x-tk-base::form>
 
 </x-layout.main>

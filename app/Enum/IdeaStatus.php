@@ -16,4 +16,13 @@ enum IdeaStatus: string
             self::COMPLETED => 'Completed',
         };
     }
+
+    public static function getLabels(): array
+    {
+        return [
+            self::PENDING->value => self::PENDING->label(),
+            self::IN_PROGRESS->value => self::IN_PROGRESS->label(),
+            self::COMPLETED->value => self::COMPLETED->label(),
+        ];
+    }
 }

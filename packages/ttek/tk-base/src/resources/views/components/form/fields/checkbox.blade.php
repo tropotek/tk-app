@@ -1,31 +1,24 @@
-@aware(['mode' => 'view', 'values' => []])
+@aware(['mode' => 'view'])
 @props([
     //required
-    'name' => '',
-    'options' => [],
+    'name'     => '',
+    'value'    => '',
+    'options'  => [],
     // optional
-    'label' => '',
-    'default' => [],
+    'label'    => '',
     'fieldCss' => '',
-    'help' => '',
+    'help'     => '',
     'isSwitch' => false,
 ])
 @php
     $cleanName = str_replace(['[', ']'], '', $name);
-    $value = $values[$name] ?? $default;
     if ($errors->any()) $value = old($cleanName);
 @endphp
 
 <x-tk-base::form.ui.field>
     @foreach ($options as $optValue => $text)
         <div class="{{$isSwitch ? 'form-switch' : 'form-check'}} {{$errors->has($name) ? ' is-invalid' : ''}}">
-            @if($mode == 'edit')
-                <input type="checkbox" class="form-check-input"
-                        name="{{ $name }}" id="fid_{{ $cleanName }}_{{ $optValue }}" value="{{ $optValue }}"
-                        {{ $attributes->merge([ 'class' => 'form-control' . ($errors->has($name) ? ' is-invalid' : '') ]) }}
-                        {{ \Tk\Utils\Form::isSelected($optValue, $value) ? 'checked' : '' }} />
-                <label class="form-check-label fw-bold" for="fid_{{ $cleanName }}_{{ $optValue }}">{{ $text }}</label>
-            @else
+            @if($mode == 'view')
                 @php
                     $css = 'text-primary ' . (\Tk\Utils\Form::isSelected($optValue, $value) ? ' fa-regular fa-square-check' : 'fa-regular fa-square');
                     if ($isSwitch) {
@@ -34,6 +27,12 @@
                 @endphp
                 <i class="fa-lg {{ $css }}"></i>
                 <span class="fw-bold text-muted">{{ $text }}</span>
+            @else
+                <input type="checkbox" class="form-check-input"
+                       name="{{ $name }}" id="fid_{{ $cleanName }}_{{ $optValue }}" value="{{ $optValue }}"
+                    {{ $attributes->merge([ 'class' => 'form-control' . ($errors->has($name) ? ' is-invalid' : '') ]) }}
+                    {{ \Tk\Utils\Form::isSelected($optValue, $value) ? 'checked' : '' }} />
+                <label class="form-check-label fw-bold" for="fid_{{ $cleanName }}_{{ $optValue }}">{{ $text }}</label>
             @endif
         </div>
     @endforeach

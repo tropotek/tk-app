@@ -1,16 +1,15 @@
-@aware(['mode' => 'view', 'values' => []])
+@aware(['mode' => 'view'])
 @props([
     // required
-    'name' => '',
+    'name'     => '',
     // optional
-    'label' => '',
-    'default' => '',
+    'value'    => '',   // markup to display in view mode
+    'label'    => '',
     'fieldCss' => '',
-    'help' => ''
+    'help'     => ''
 ])
 @php
     $cleanName = str_replace(['[', ']'], '', $name);
-    $value = $values[$name] ?? $default;
 
     // Help message
     $preText = '';
@@ -20,11 +19,11 @@
     }
 @endphp
 <x-tk-base::form.ui.field :$preText>
-    @if($mode == 'edit')
-        <input type="file" name="{{ $name }}" id="fid_{{ $cleanName }}" value="{{ $value }}"
-            {{ $attributes->merge([ 'class' => 'form-control' . ( $errors->has($name) ? ' is-invalid' : '') ]) }} />
-    @else
+    @if($mode == 'view')
         {{-- TODO Attempt to show a link to the uploaded file if one exists --}}
-        <p {{ $attributes->merge([ 'class' => 'form-control-plaintext fw-bold' ]) }}>{{ $value }}</p>
+        <p {{ $attributes->merge([ 'class' => 'form-control-plaintext fw-bold' ]) }}>{!! $value !!}</p>
+    @else
+        <input type="file" name="{{ $name }}" id="fid_{{ $cleanName }}"
+            {{ $attributes->merge([ 'class' => 'form-control' . ( $errors->has($name) ? ' is-invalid' : '') ]) }} />
     @endif
 </x-tk-base::form.ui.field>

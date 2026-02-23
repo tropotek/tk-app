@@ -39,7 +39,7 @@
                     <div class="dropdown text-end d-none d-sm-block">
                         <a href="#" class="link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
                            aria-expanded="false">
-                            <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle" />
+                            <img src="{{asset('/img/mdo.jpeg') }}" alt="mdo" width="32" height="32" class="rounded-circle" />
                             <span>{{ Auth::user()->name }}</span>
                         </a>
                         <x-usernav class="dropdown-menu-end" />
