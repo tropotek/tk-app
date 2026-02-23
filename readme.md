@@ -3,12 +3,14 @@
 
 ## Installation With Docker
 
-First copy the `.env.example` file to `.env` and update as required.
-
 ```
-# Start docker container 
-$cd tk-app
-$ docker-compose up --build -d
+$ cd tk-app
+
+copy the .env example file and update as required
+$ cp .env.example .env
+
+# Start docker container
+$ docker compose up --build -d
 
 # Open docker terminal in the tk-app container
 $ docker exec -it tk-app /bin/bash
