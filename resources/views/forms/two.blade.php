@@ -48,7 +48,7 @@
                     help="Who are you..."
                     fieldCss="col-sm-6"
                 />
-
+{{$test}}
                 <x-tk-base::form.fields.input
                     name="dob"
                     label="Date of Birth"
