@@ -9,7 +9,15 @@
 
 ## About 
 
+```
+# Start docker container 
 
+# Open docker terminal in the tk-app container
 
+# run the ap-update command in the terminal
+$ ./bin/app-update
 
+```
+
+Now you should be able to browse http://localhost:8081
 

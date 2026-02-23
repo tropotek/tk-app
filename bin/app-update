@@ -1,35 +1,20 @@
 #!/bin/bash
 
-CWD=$(pwd)
-
-# stop web server container
-cd "${CWD}"
-docker-compose down
-
 # get latest code from repo
-#cd "${CWD}"
-#git pull
+git pull
 
 # install composer dependencies
-# cd "${CWD}/app"
 composer install
 
 # initialize Laravel environment
-#cd "${CWD}/app"
-#php artisan key:generate   # not sure this should be regenerated every time, only on initial install
+php artisan key:generate   # not sure this should be regenerated every time, only on initial install
 
 # copy assets to public folder
-#cd "${CWD}/app"
 cp -f vendor/twbs/bootstrap/dist/css/bootstrap.min.css* public/css/
 cp -f vendor/twbs/bootstrap/dist/js/bootstrap.bundle.min.js* public/js/
 cp -f vendor/htmx/htmx/htmx.min.js public/js/
 cp -f vendor/jquery/jquery/jquery-3.7.1.min.js public/js/jquery.min.js
 
 # database migrations
-#cd "${CWD}/app"
-#touch database/database.sqlite
-#php artisan migrate
-
-# build and start container
-#cd "${CWD}"
-#docker-compose up --build
+touch database/database.sqlite
+php artisan migrate
