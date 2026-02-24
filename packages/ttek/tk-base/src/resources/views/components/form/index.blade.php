@@ -12,7 +12,10 @@
 ])
 @php
     // set enctype for file uploads if not already set, and a file field exists
-    if(!empty($fields) && $fields->hasActualContent() && str_contains($fields->toHtml(), '<input type="file"') && empty($enctype)) {
+    if(
+        !empty($fields) && $fields->hasActualContent() &&
+        empty($enctype) && str_contains($fields->toHtml(), '<input type="file"')
+    ) {
         $attributes = $attributes->merge(['enctype' => 'multipart/form-data']);
     }
 @endphp
@@ -23,20 +26,25 @@
         'class'     => 'tk-form needs-validation g-3 mode-' . $mode,
         'method'    => (in_array(strtolower($method), ['get', 'post'])) ? $method : 'post',
         'id'        => 'theform',
-        'novalidate' => '',
+        //'novalidate' => '',
     ]) }}
 >
 
     @csrf
+
     {{-- Enable non standard requst methods --}}
     @if(!empty($method) && !in_array(strtolower($method), ['get', 'post'])) @method($method) @endif
 
-    <div class="tk-actions d-grid gap-2 d-md-flex mb-3">
-        @if(!empty($buttons) && $buttons->hasActualContent()){{ $buttons }}@endif
-    </div>
+    @if(!empty($buttons) && $buttons->hasActualContent())
+        <div class="tk-actions d-grid gap-2 d-md-flex mb-3">
+            {{ $buttons }}
+        </div>
+    @endif
 
-    <div class="tk-form-fields row g-3">
-        @if(!empty($fields) && $fields->hasActualContent()){{ $fields }}@endif
-    </div>
+    @if(!empty($fields) && $fields->hasActualContent())
+        <div class="tk-form-fields row g-3">
+            {{ $fields }}
+        </div>
+    @endif
 
 </form>

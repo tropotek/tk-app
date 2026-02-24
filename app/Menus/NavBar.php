@@ -10,7 +10,7 @@ final class NavBar extends MenuInterface
 
     public function build(): static
     {
-        $this->menus = collect([
+        $this->menu = collect([
             MenuItem::make('Dashboard', '/'),
             MenuItem::make('Form Examples')->addChildren([
                 MenuItem::make('One Column', '/formOne'),
@@ -50,7 +50,7 @@ final class NavBar extends MenuInterface
         ]);
 
         // remove non visible items
-        $this->menus = $this->menus->reject(fn(MenuItem $menu) => !$menu->isVisible());
+        $this->menu = $this->menu->reject(fn(MenuItem $menu) => !$menu->isVisible());
 
         return $this;
     }

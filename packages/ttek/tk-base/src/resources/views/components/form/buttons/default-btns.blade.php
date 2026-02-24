@@ -19,7 +19,6 @@
                 :label="$viewLabel"
                 :href="$editRoute"
                 class="{{ $viewCss }}"
-                {{ $attributes }}
             />
         @endif
     @break;

@@ -26,12 +26,16 @@ class MenuBuilder
         return new self;
     }
 
+
+    /**
+     * Search the menus directory for available menu builder objects
+     * The $builder name should match the base class name of the menu builder object.
+     * E.G: 'StaffNav' will resolve to `App\Menus\StaffNav`
+     */
     public function build(string $builder =  ''): MenuInterface
     {
         $builders = collect();
 
-        // generate a map of all available menus.
-        // TODO: Cache the $builders list, (find out how to do the with Laravel)
         foreach (config('tk-base.menu_builders') as $namespace => $path) {
             foreach (File::files($path) as $file) {
                 $class = $namespace . $file->getFilenameWithoutExtension();
@@ -46,6 +50,7 @@ class MenuBuilder
             throw new \Exception("Menu builder $builder not found.");
         }
 
-        return (new $menuBuilder)->build();
+        $menu = (new $menuBuilder)->build();
+        return $menu->removeHiddenItems();
     }
 }

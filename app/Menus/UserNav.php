@@ -10,7 +10,7 @@ final class UserNav extends MenuInterface
 
     public function build(): static
     {
-        $this->menus = collect([
+        $this->menu = collect([
             MenuItem::make('Dashboard', '/')->setIcon('fa-solid fa-gauge'),
             MenuItem::make('My Profile', '/')->setIcon('fa-solid fa-user'),
             MenuItem::makeSeparator(),
@@ -19,7 +19,7 @@ final class UserNav extends MenuInterface
         ]);
 
         // remove non visible items
-        $this->menus = $this->menus->reject(fn(MenuItem $menu) => !$menu->isVisible());
+        $this->menu = $this->menu->reject(fn(MenuItem $menu) => !$menu->isVisible());
 
         return $this;
     }

@@ -20,6 +20,8 @@ use InvalidArgumentException;
  */
 final class MenuItem
 {
+    const string SEPARATOR = '---';
+
     private string  $label;
     private string  $url          = '/';
     private string  $icon         = '';
@@ -45,9 +47,8 @@ final class MenuItem
     public static function makeSeparator(): self
     {
         static $id = 0;
-        return self::make('---' . $id++);
+        return self::make(self::SEPARATOR . $id++);
     }
-
 
     public function setLabel(string $label): self
     {
@@ -139,12 +140,8 @@ final class MenuItem
         return $this->titleVisible;
     }
 
-    public function setDisabled($disabled, bool $includeChildren = true): self
+    public function setDisabled(bool|callable $disabled, bool $includeChildren = true): self
     {
-        if (!is_bool($disabled) && !is_callable($disabled)) {
-            throw new InvalidArgumentException('The property must be a boolean or a callable.');
-        }
-
         $this->disabled = $disabled;
 
         if ($includeChildren) {
@@ -158,16 +155,11 @@ final class MenuItem
 
     public function isDisabled(): bool
     {
-
         return is_callable($this->disabled) ? call_user_func($this->disabled) : $this->disabled;
     }
 
-    public function setVisible($visible): self
+    public function setVisible(bool|callable $visible): self
     {
-        if (!is_bool($visible) && !is_callable($visible)) {
-            throw new InvalidArgumentException('The property must be a boolean or a callable.');
-        }
-
         $this->visible = $visible;
 
         return $this;
@@ -175,12 +167,24 @@ final class MenuItem
 
     public function isVisible(): bool
     {
-        return is_callable($this->visible) ? call_user_func($this->visible) : $this->visible;
+        $visible = is_callable($this->visible) ? call_user_func($this->visible) : $this->visible;
+
+        // return false if all children are hidden
+        if ($visible && $this->hasChildren()) {
+            $cnt = 0;
+            foreach ($this->children as $child) {
+                if ($child->isSeparator()) continue;
+                $cnt += $child->isVisible() ? 1 : 0;
+            }
+            return $cnt > 0;
+        }
+
+        return $visible;
     }
 
     public function isSeparator(): bool
     {
-        return str_starts_with($this->label, '---');
+        return str_starts_with($this->label, self::SEPARATOR);
     }
 
     public function showUrl(): bool

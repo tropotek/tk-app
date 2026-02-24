@@ -3,7 +3,7 @@
 if (!function_exists('menu')) {
     function menu(string $builder = '')
     {
-        return \Tk\Menu\MenuBuilder::make()->build($builder)->menus();
+        return \Tk\Menu\MenuBuilder::make()->build($builder)->getItems();
     }
 }
 

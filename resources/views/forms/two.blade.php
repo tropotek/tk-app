@@ -27,7 +27,6 @@
                 :value="$values['testId'] ?? ''"
             />
 
-
             <x-tk-base::form.ui.fieldgroup class="col">
                 <x-tk-base::form.fields.select
                     name="title"
@@ -80,8 +79,7 @@
                 />
             </x-tk-base::form.ui.fieldgroup>
 
-
-            <x-tk-base::form.ui.fieldset legend="Ha hahaha" class="col">
+            <x-tk-base::form.ui.fieldgroup class="col">
                 <x-tk-base::form.fields.file
                     label="Upload Logo"
                     name="image"
@@ -104,15 +102,14 @@
                     fieldCss="col-sm-6"
                     :value="$values['options2'] ?? ''"
                 />
-            </x-tk-base::form.ui.fieldset>
 
+                <x-tk-base::form.fields.textarea
+                    name="description"
+                    help="Hello whats up"
+                    :value="$values['description'] ?? ''"
+                />
+            </x-tk-base::form.ui.fieldgroup>
 
-            {{-- Render this field outside a field group --}}
-            <x-tk-base::form.fields.textarea
-                name="description"
-                help="Hello whats up"
-                :value="$values['description'] ?? ''"
-            />
         </x-slot>
 
     </x-tk-base::form>
