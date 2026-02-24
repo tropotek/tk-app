@@ -21,7 +21,7 @@
                 'id'       => 'fid-'.$name,
                 'value'    => $value,
                 'rows'     => 5,
-                'class'    => 'form-control' . ( $errors->has($name) ? ' is-invalid' : ''),
+                'class'    => 'form-control fw-bold' . ( $errors->has($name) ? ' is-invalid' : ''),
             ]) }}
         >{{ $value }}</textarea>
     @endif

@@ -29,7 +29,7 @@
         <select {{ $attributes->merge([
                 'name'  => $name,
                 'id'    => 'fid-'.$cleanName,
-                'class' => 'form-select' . ( $errors->has($name) ? ' is-invalid' : '')
+                'class' => 'form-select fw-bold' . ( $errors->has($name) ? ' is-invalid' : '')
             ]) }}
         >
             @foreach ($options as $val => $text)

@@ -27,7 +27,7 @@
                 'type'     => 'file',
                 'name'     => $name,
                 'id'       => 'fid-'.$cleanName,
-                'class'    => 'form-control' . ( $errors->has($name) ? ' is-invalid' : ''),
+                'class'    => 'form-control fw-bold' . ( $errors->has($name) ? ' is-invalid' : ''),
             ]) }}
         />
     @endif

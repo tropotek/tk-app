@@ -22,7 +22,7 @@
             'readonly' => ($mode == 'view') ? 'readonly' : null,
             'class'    => ($mode == 'view') ?
                 'form-control-plaintext fw-bold' :
-                'form-control' . ( $errors->has($name) ? ' is-invalid' : ''),
+                'form-control fw-bold' . ( $errors->has($name) ? ' is-invalid' : ''),
         ]) }}
     />
 </x-tk-base::form.ui.field>
