@@ -1,14 +1,16 @@
 @aware(['mode'])
 @props([
-    'viewLabel'   => 'Make changes',
+    // required
     'editRoute'   => '',
+    'cancelRoute' => '',
+    // optional
+    'viewLabel'   => 'Make changes',
     'viewCss'     => 'btn-outline-primary',
     'editLabel'   => 'Save Changes',
     'editCss'     => 'btn-outline-primary',
     'createLabel' => 'Create',
     'createCss'   => 'btn-outline-primary',
     'cancelLabel' => 'Cancel',
-    'cancelRoute' => '',
     'cancelCss'   => 'btn-outline-dark',
 ])
 
