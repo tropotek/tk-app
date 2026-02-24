@@ -26,7 +26,7 @@
         'class'     => 'tk-form needs-validation g-3 mode-' . $mode,
         'method'    => (in_array(strtolower($method), ['get', 'post'])) ? $method : 'post',
         'id'        => 'theform',
-        //'novalidate' => '',
+        'novalidate' => '',     // disabled for error testing
     ]) }}
 >
 
