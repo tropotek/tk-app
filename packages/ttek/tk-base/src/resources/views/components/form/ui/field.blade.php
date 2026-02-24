@@ -1,4 +1,4 @@
-{{-- Renders all comment field markup --}}
+{{-- Render common field markup --}}
 @aware([
     'name',
     'label',
