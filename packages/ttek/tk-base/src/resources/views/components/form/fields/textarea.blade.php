@@ -13,16 +13,17 @@
 @endphp
 
 <x-tk-base::form.ui.field>
-    <textarea {{ $attributes->merge([
-            'name'     => $name,
-            'id'       => 'fid-'.$name,
-            'value'    => $value,
-            'rows'     => 5,
-            'readonly' => ($mode == 'view') ? 'readonly' : null,
-            'class'    => ($mode == 'view') ?
-                'form-control-plaintext fw-bold' :
-                'form-control' . ( $errors->has($name) ? ' is-invalid' : ''),
-        ]) }}
-    >{{ $value }}</textarea>
+    @if ($mode == 'view')
+        <div class="form-control-plaintext fw-bold">{{ $value }}</div>
+    @else
+        <textarea {{ $attributes->merge([
+                'name'     => $name,
+                'id'       => 'fid-'.$name,
+                'value'    => $value,
+                'rows'     => 5,
+                'class'    => 'form-control' . ( $errors->has($name) ? ' is-invalid' : ''),
+            ]) }}
+        >{{ $value }}</textarea>
+    @endif
 </x-tk-base::form.ui.field>
 
