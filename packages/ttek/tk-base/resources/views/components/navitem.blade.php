@@ -7,8 +7,11 @@
     'maxLevel' => 2,
     'level' => 0,
 ])
-
-<li class="level-{{ $level }}
+@php
+vd($item->getAttributes()->__toString());
+  $linkAttrs = $item->getAttributes()->merge(['class' => $attributes->get('link-class') ])
+@endphp
+<li class="
     {{ $attributes->get('class') }}
     {{ $item->hasChildren() ? 'dropdown' : '' }}
     {{ $item->isDisabled() ? 'disabled' : '' }}"
@@ -17,9 +20,10 @@
         <hr class="dropdown-divider">
     @else
 
-        <a href="{{ $item->getUrl() }}" class="{{ $attributes->get('link-class') }}
+        <a {{ $item->getAttributes()->merge(['class' => $attributes->get('link-class') ]) }}
+            href="{{ $item->getUrl() }}"
             {{ $item->isDisabled() ? 'disabled' : ''}}
-            {{ $item->hasChildren() ? 'dropdown-toggle' : '' }}"
+            {{ $item->hasChildren() ? 'dropdown-toggle' : '' }}
             {!! $item->hasChildren() ? 'role="button" data-bs-toggle="dropdown" aria-expanded="false"' : '' !!}
         >
             @if (empty($item->getIcon()))
@@ -30,7 +34,7 @@
             @endif
         </a>
         @if($item->hasChildren())
-            <ul class="dropdown-menu level-{{ $level + 1 }} {{ $attributes->get('submenu-class') }}">
+            <ul class="dropdown-menu {{ $attributes->get('submenu-class') }}">
                 @foreach ($item->getChildren() as $i => $child)
                     {{-- Prevent more than 1 level of dropdown iteration --}}
                     @if(($child->hasChildren() && ($level == $maxLevel-1)) || !$child->isVisible())

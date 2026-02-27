@@ -33,7 +33,7 @@ class MenuBuilder
      */
     public function build(string $name =  ''): MenuInterface
     {
-        $sid = 'menu_'.$name;
+//        $sid = 'menu_'.$name;
 
         // get cached menu
 //        $menu = Session::cache()->get($sid);
@@ -56,7 +56,7 @@ class MenuBuilder
         }
 
         /** @var MenuInterface $menu */
-        $menu = (new $menuClass)->build();
+        $menu = (new $menuClass('_top'))->build();
         $menu->removeHidden();
 
         // cache menu

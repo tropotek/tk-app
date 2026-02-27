@@ -3,6 +3,7 @@ namespace Tk\Menu;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
+use Illuminate\View\ComponentAttributeBag;
 use InvalidArgumentException;
 
 /**
@@ -31,17 +32,21 @@ class MenuItem
     private bool    $visible      = true;
     private bool    $disabled     = false;
     private bool    $titleVisible = true;
+    private ComponentAttributeBag $attributes;
     private array   $children     = [];
 
+    public function __construct(string $label, string $url = '')
+    {
+        $this->attributes = new ComponentAttributeBag();
+        $this->setLabel($label);
+        if ($url) {
+            $this->setUrl($url);
+        }
+    }
 
     public static function make(string $label, string $url = ''): self
     {
-        $item = new self();
-        $item->setLabel($label);
-        if ($url) {
-            $item->setUrl($url);
-        }
-        return $item;
+        return new self($label, $url);
     }
 
     public static function makeSeparator(): self
@@ -72,6 +77,17 @@ class MenuItem
     {
         if (!$this->showUrl()) return '';
         return $this->url;
+    }
+
+    public function getAttributes(): ComponentAttributeBag
+    {
+        return $this->attributes;
+    }
+
+    public function addAttribute(array $attrs): self
+    {
+        $this->attributes = $this->attributes->merge($attrs);
+        return $this;
     }
 
     public function getRoute(): ?Route

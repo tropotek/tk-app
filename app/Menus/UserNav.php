@@ -15,7 +15,9 @@ final class UserNav extends MenuInterface
             MenuItem::make('Dashboard', '/')->setIcon('fa-solid fa-gauge'),
             MenuItem::make('My Profile', '/')->setIcon('fa-solid fa-user'),
             MenuItem::makeSeparator(),
-            MenuItem::make('About')->setIcon('fa-solid fa-circle-info'),
+            MenuItem::make('About')
+                ->addAttribute(['data-bs-toggle' => 'modal', 'data-bs-target' => '#aboutModal'])
+                ->setIcon('fa-solid fa-circle-info'),
             MenuItem::make('Logout', '/logout')->setIcon('fa-solid fa-right-from-bracket'),
         ]);
 

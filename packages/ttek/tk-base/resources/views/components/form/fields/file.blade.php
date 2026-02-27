@@ -25,7 +25,7 @@
     @else
         <input {{ $attributes->merge([
                 'type'     => 'file',
-                'name'     => $name,
+                'name'     => $cleanName,
                 'id'       => 'fid-'.$cleanName,
                 'class'    => 'form-control fw-bold' . ( $errors->has($name) ? ' is-invalid' : ''),
             ]) }}

@@ -19,7 +19,7 @@
         <input {{ $attributes->merge([
             'type'     => 'text',
             'name'     => $name,
-            'id'       => 'fid-'.$name,
+            'id'       => 'fid-'.$cleanName,
             'value'    => is_array($value) ? implode(', ', $value) : $value,
             'readonly' => 'readonly',
             'class'    => 'form-control-plaintext fw-bold',

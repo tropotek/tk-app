@@ -31,7 +31,7 @@
                 <input {{ $attributes->merge([
                         'type'     => 'checkbox',
                         'name'     => $name,
-                        'id'       => sprintf('fid-%s-%s', $name, $optValue),
+                        'id'       => sprintf('fid-%s-%s', $cleanName, $optValue),
                         'value'    => $optValue,
                         'checked'  => \Tk\Utils\Form::isSelected($optValue, $value) ? 'checked' : null,
                         'class'    => 'form-check-input' . ( $errors->has($name) ? ' is-invalid' : ''),
