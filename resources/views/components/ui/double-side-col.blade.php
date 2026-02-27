@@ -30,7 +30,7 @@
         {{ $col2 }}
     </div>
 
-    {{-- scond side column --}}
+    {{-- second side column --}}
     <div class="col-md-3">
         {{ $col3 }}
     </div>

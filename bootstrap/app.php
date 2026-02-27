@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Tk\Middleware\Breadcrumbs;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,6 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->redirectGuestsTo('/login');
+        // resets breadcrumb stack and redirects
+        $middleware->appendToGroup('web', [Breadcrumbs::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

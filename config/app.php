@@ -137,8 +137,8 @@ return [
     |--------------------------------------------------------------------------
     |
     */
-    'aliases' => \Illuminate\Support\Facades\Facade::defaultAliases()->merge([
-
-    ])->toArray(),
+//    'aliases' => \Illuminate\Support\Facades\Facade::defaultAliases()->merge([
+//
+//    ])->toArray(),
 
 ];

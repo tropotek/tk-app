@@ -3,6 +3,7 @@
     // required
     'name'     => '',
     'value',
+    'viewValue' => '',
     // optional
     'type'     => 'text',
     'label'    => '',

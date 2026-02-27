@@ -2,6 +2,7 @@
 
 namespace App\Menus;
 
+use Tk\Breadcrumbs\Breadcrumbs;
 use Tk\Menu\MenuInterface;
 use Tk\Menu\MenuItem;
 
@@ -10,7 +11,7 @@ final class NavBar extends MenuInterface
 
     public function build(): static
     {
-        $this->menu = collect([
+        $this->addChildren([
             MenuItem::make('Dashboard', '/'),
             MenuItem::make('Form Examples')->addChildren([
                 MenuItem::make('One Column', '/formOne'),
@@ -31,7 +32,7 @@ final class NavBar extends MenuInterface
                 MenuItem::make('Registrar Dashboard', '/')->setDisabled(true),
                 MenuItem::make('Manage Open Grades', '/')->setDisabled(true)
                     ->setDisabled(true)
-                    ->setVisible(fn() => auth()->hasUser()),    // eg: set a required permission
+                    ->setVisible(auth()->hasUser()),    // eg: set a required permission
             ]),
 
             MenuItem::make('Admin')->addChildren([
@@ -49,8 +50,8 @@ final class NavBar extends MenuInterface
 
         ]);
 
-        // remove non visible items
-        $this->menu = $this->menu->reject(fn(MenuItem $menu) => !$menu->isVisible());
+        // Reset breadcrumbs if menu item selected
+        //$this->appendQuery([Breadcrumbs::CRUMB_RESET => '1']);
 
         return $this;
     }

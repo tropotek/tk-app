@@ -2,28 +2,28 @@
 
 namespace Tk\Menu;
 
-use Illuminate\Support\Collection;
-
-abstract class MenuInterface
+abstract class MenuInterface extends MenuItem
 {
-    protected Collection $menu;
-
-    /**
-     * @return array<int,MenuItem>
-     */
-    public function getItems(): array
-    {
-        return $this->menu->all();
-    }
-
-    /**
-     * Iterate items and remove any that are hidden
-     */
-    public function removeHiddenItems(): static
-    {
-        $this->menu = $this->menu->reject(fn(MenuItem $itm) => !$itm->isVisible());
-        return $this;
-    }
-
     abstract public function build(): static;
+
+
+    public function getUrl(): string
+    {
+        return '';
+    }
+
+    public function isTitleVisible(): bool
+    {
+        return false;
+    }
+
+    public function isVisible(): bool
+    {
+        return false;
+    }
+
+    public function showUrl(): bool
+    {
+        return false;
+    }
 }

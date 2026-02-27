@@ -16,7 +16,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Tk\\PackageServiceProvider"
+                "TkBaseServiceProvider"
             ]
         }
     }

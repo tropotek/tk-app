@@ -1,3 +1,4 @@
+{{-- @see \Tk\Menu\MenuBuilder --}}
 <?php
 /** @var \Tk\Menu\MenuItem $item */
 ?>
@@ -8,36 +9,39 @@
 ])
 
 <li class="level-{{ $level }}
-        {{ $attributes->get('class') }}
-        {{ $item->hasChildren() ? 'dropdown' : '' }}
-        {{ $item->isDisabled() ? 'disabled' : '' }}">
+    {{ $attributes->get('class') }}
+    {{ $item->hasChildren() ? 'dropdown' : '' }}
+    {{ $item->isDisabled() ? 'disabled' : '' }}"
+>
     @if($item->isSeparator())
         <hr class="dropdown-divider">
     @else
 
         <a href="{{ $item->getUrl() }}" class="{{ $attributes->get('link-class') }}
-                {{ $item->isDisabled() ? 'disabled' : ''}}
-                {{ $item->hasChildren() ? 'dropdown-toggle' : '' }}"
-            {!! $item->hasChildren() ? 'role="button" data-bs-toggle="dropdown" aria-expanded="false"' : '' !!}>
+            {{ $item->isDisabled() ? 'disabled' : ''}}
+            {{ $item->hasChildren() ? 'dropdown-toggle' : '' }}"
+            {!! $item->hasChildren() ? 'role="button" data-bs-toggle="dropdown" aria-expanded="false"' : '' !!}
+        >
             @if (empty($item->getIcon()))
                 {{ $item->getLabel() }}
             @else
                 <i class="{{ $item->getIcon() }}"></i>
-                @if($item->isTitleVisible())
-                    {{ $item->getLabel() }}
-                @endif
+                @if($item->isTitleVisible()){{ $item->getLabel() }}@endif
             @endif
         </a>
         @if($item->hasChildren())
             <ul class="dropdown-menu level-{{ $level + 1 }} {{ $attributes->get('submenu-class') }}">
-                @foreach ($item->getChildren() as $child)
+                @foreach ($item->getChildren() as $i => $child)
                     {{-- Prevent more than 1 level of dropdown iteration --}}
                     @if(($child->hasChildren() && ($level == $maxLevel-1)) || !$child->isVisible())
                         @continue
                     @endif
+                    {{-- hide a seperator if it is the first or last item, or prev item was a seperator --}}
+                    @if($child->isSeparator() && ($i == (count($item->getChildren())-1) || $i == 0 || $item->getChildren()[$i-1]->isSeparator()))
+                        @continue
+                    @endif
                     {{-- Pass classes down, adding a specific class for the next level --}}
-                    <x-tk-base::menu.bootstrap5-navitem :item="$child" level="{{ $level + 1 }}" class="" link-class="dropdown-item"
-                                 submenu-class="dropdown-menu"/>
+                    <x-tk-base::navitem :item="$child" level="{{ $level + 1 }}" class="" link-class="dropdown-item" submenu-class="dropdown-menu"/>
                 @endforeach
             </ul>
         @endif

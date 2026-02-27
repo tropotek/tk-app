@@ -1,11 +1,27 @@
 <?php
 
+use Tk\Breadcrumbs\Breadcrumbs;
+use Tk\Menu\MenuInterface;
+use Tk\Support\Facades\Menu;
+
 if (!function_exists('menu')) {
-    function menu(string $builder = '')
+    function menu(string $builder = ''): MenuInterface
     {
-        return \Tk\Menu\MenuBuilder::make()->build($builder)->getItems();
+        return Menu::build($builder);
     }
 }
+
+if (!function_exists('breadcrumbs')) {
+    function breadcrumbs(): Breadcrumbs
+    {
+        return app(Breadcrumbs::class);
+    }
+}
+
+
+
+
+//  ---------    Debug functions -------------
 
 if (!function_exists('vd')) {
     function vd(): string

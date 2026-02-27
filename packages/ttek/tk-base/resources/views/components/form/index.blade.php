@@ -23,7 +23,7 @@
 <form
     {{ $attributes->merge([
         // Added the class `mode-{$mode}` to enable mode-based styling
-        'class'     => 'tk-form needs-validation g-3 mode-' . $mode,
+        'class'     => 'tk-form form needs-validation g-3 mode-' . $mode,
         'method'    => (in_array(strtolower($method), ['get', 'post'])) ? $method : 'post',
         'id'        => 'theform',
         'novalidate' => '',     // disabled for error testing

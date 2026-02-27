@@ -1,10 +1,12 @@
 <?php
 namespace Tk\Menu;
 
+use Illuminate\Http\Request;
+use Illuminate\Routing\Route;
 use InvalidArgumentException;
 
 /**
- * Use the MenuItem class to build a menu/nav structure.
+ * Stores required attributes and logic for a navigation menu item.
  *
  * Example:
  * ```
@@ -18,18 +20,16 @@ use InvalidArgumentException;
  *
  * @source https://dev.to/nasrulhazim/building-dynamic-and-maintainable-menus-in-laravel-ba0
  */
-final class MenuItem
+class MenuItem
 {
     const string SEPARATOR = '---';
 
     private string  $label;
-    private string  $url          = '/';
+    private string  $url          = '';
     private string  $icon         = '';
     private string  $target       = '_self';
-    /** @var bool | callable */
-    private         $visible      = true;
-    /** @var bool | callable */
-    private         $disabled     = false;
+    private bool    $visible      = true;
+    private bool    $disabled     = false;
     private bool    $titleVisible = true;
     private array   $children     = [];
 
@@ -73,6 +73,16 @@ final class MenuItem
         if (!$this->showUrl()) return '';
         return $this->url;
     }
+
+    public function getRoute(): ?Route
+    {
+        $url = $this->getUrl();
+        if (empty($url)) return null;
+
+        $request = Request::create($url);
+        return app('router')->getRoutes()->match($request);
+    }
+
 
     public function setTarget(string $target): self
     {
@@ -140,37 +150,27 @@ final class MenuItem
         return $this->titleVisible;
     }
 
-    public function setDisabled(bool|callable $disabled, bool $includeChildren = true): self
+    public function setDisabled(bool $disabled, bool $includeChildren = true): self
     {
         $this->disabled = $disabled;
-
-        if ($includeChildren) {
-            foreach ($this->children as $child) {
-                $child->setDisabled($disabled);
-            }
-        }
-
         return $this;
     }
 
     public function isDisabled(): bool
     {
-        return is_callable($this->disabled) ? call_user_func($this->disabled) : $this->disabled;
+        return $this->disabled;
     }
 
-    public function setVisible(bool|callable $visible): self
+    public function setVisible(bool $visible): self
     {
         $this->visible = $visible;
-
         return $this;
     }
 
     public function isVisible(): bool
     {
-        $visible = is_callable($this->visible) ? call_user_func($this->visible) : $this->visible;
-
         // return false if all children are hidden
-        if ($visible && $this->hasChildren()) {
+        if ($this->visible && $this->hasChildren()) {
             $cnt = 0;
             foreach ($this->children as $child) {
                 if ($child->isSeparator()) continue;
@@ -179,7 +179,38 @@ final class MenuItem
             return $cnt > 0;
         }
 
-        return $visible;
+        return $this->visible;
+    }
+
+    /**
+     * Iterate items and remove any that are hidden
+     * To be called within the menu build stage
+     */
+    public function removeHidden(): static
+    {
+        foreach ($this->children as $child) {
+            $child->removeHidden();
+            if ($child->hasChildren()) {
+                $child->children = array_filter($child->children, fn(self $itm) => $itm->isVisible());
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * Append query params to all item URL's
+     * To be called within the menu build stage
+     * @param array<string,string> $query
+     */
+    public function appendQuery(array $query): static
+    {
+        foreach ($this->children as $child) {
+            $child->appendQuery($query);
+        }
+        if ($this->showUrl()) { // TODO: need to check if it is a real http url not `mailto:, #, Javascript, ...`
+            $this->setUrl(url()->query($this->getUrl(), $query));
+        }
+        return $this;
     }
 
     public function isSeparator(): bool
@@ -189,7 +220,7 @@ final class MenuItem
 
     public function showUrl(): bool
     {
-        return !($this->isDisabled() || $this->isSeparator() || $this->hasChildren());
+        return !(empty($this->url) || $this->isDisabled() || $this->isSeparator() || $this->hasChildren());
     }
 
 }

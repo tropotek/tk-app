@@ -14,7 +14,7 @@ return [
     */
 
     'menu_builders' => [
-        'App\\Menus\\' => base_path('app/Menus'),
+        'App\\Menus\\',
     ],
 
 ];
