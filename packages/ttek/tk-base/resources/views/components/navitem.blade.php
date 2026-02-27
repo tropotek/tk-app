@@ -16,7 +16,6 @@
     @if($item->isSeparator())
         <hr class="dropdown-divider">
     @else
-
         <a {{ $item->getAttributes()->merge(['class' => $attributes->get('link-class') ]) }}
             href="{{ $item->getUrl() }}"
             {{ $item->isDisabled() ? 'disabled' : ''}}

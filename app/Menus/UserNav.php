@@ -8,7 +8,6 @@ use Tk\Menu\MenuItem;
 
 final class UserNav extends MenuInterface
 {
-
     public function build(): static
     {
         $this->addChildren([
