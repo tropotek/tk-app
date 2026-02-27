@@ -2,20 +2,21 @@
 @props([
     //required
     'name'     => '',
-    'value',
     'options'  => [],
+    'value',
     // optional
     'label'    => '',
     'fieldCss' => '',
     'help'     => '',
     'isSwitch' => false,
+    'errorText' => '',
 ])
 @php
     $cleanName = str_replace(['[', ']'], '', $name);
     $value = old($cleanName, $value ?? '');
 @endphp
 
-<x-tk-base::form.ui.field>
+<x-tk-base::form.ui.field :$errorText>
     @foreach ($options as $optValue => $text)
         <div class="{{$isSwitch ? 'form-switch' : 'form-check'}} {{$errors->has($name) ? ' is-invalid' : ''}}">
             @if($mode == 'view')

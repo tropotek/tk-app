@@ -1,20 +1,21 @@
 @aware(['mode' => 'view'])
 @props([
     // required
-    'name'     => '',
-    'value',
+    'name'      => '',
     'viewValue' => '',
+    'value',
     // optional
-    'type'     => 'text',
-    'label'    => '',
-    'fieldCss' => '',
-    'help'     => ''
+    'type'      => 'text',
+    'label'     => '',
+    'fieldCss'  => '',
+    'help'      => '',
+    'errorText' => '',
 ])
 @php
     $value = old($name, $value ?? '');
 @endphp
 
-<x-tk-base::form.ui.field>
+<x-tk-base::form.ui.field :$errorText>
     <input {{ $attributes->merge([
             'type'     => $type,
             'name'     => $name,

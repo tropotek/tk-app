@@ -31,13 +31,16 @@
                 name="title"
                 :options="['' => '-- Select --', 'mr' => 'Mr', 'mrs' => 'Mrs', 'miss' => 'Miss']"
                 fieldCss="col-sm-2"
+                required
+                errorText="Please enter a valid title value"
                 :value="$values['title'] ?? ''"
             />
 
             <x-tk-base::form.fields.input
                 name="firstName"
                 fieldCss="col-sm-5"
-                required=""
+                required
+                errorText="Please enter a valid First Name"
                 :value="$values['firstName'] ?? ''"
             />
 
@@ -52,6 +55,7 @@
                 :options="['' => '-- Select --', 'male' => 'Male', 'female' => 'Female']"
                 help="Who are you..."
                 fieldCss="col-sm-6"
+                required
                 :value="$values['gender'] ?? ''"
             />
 

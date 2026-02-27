@@ -8,7 +8,8 @@
 @props([
     // optional
     'preText' => '',
-    'postText' => ''
+    'postText' => '',
+    'errorText' => '',
 ])
 
 @php
@@ -24,6 +25,6 @@
 
     {{ $slot }}
 
-    @if($errors->has($name)) <x-tk-base::form.ui.error :message="$errors->first($name)" /> @endif
+    <x-tk-base::form.ui.error :message="$errors->first($name) ?: ($errorText ?: 'Please enter a valid value')" />
     @if($help) <x-tk-base::form.ui.help :$help /> @endif
 </div>

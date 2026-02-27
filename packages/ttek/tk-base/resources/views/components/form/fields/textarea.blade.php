@@ -1,18 +1,19 @@
 @aware(['mode' => 'view'])
 @props([
     // required
-    'name'     => '',
+    'name'      => '',
     'value',
     // optional
-    'label'    => '',
-    'fieldCss' => '',
-    'help'     => ''
+    'label'     => '',
+    'fieldCss'  => '',
+    'help'      => '',
+    'errorText' => '',
 ])
 @php
     $value = old($name, $value ?? '');
 @endphp
 
-<x-tk-base::form.ui.field>
+<x-tk-base::form.ui.field :$errorText>
     @if ($mode == 'view')
         <div class="form-control-plaintext fw-bold">{{ $value }}</div>
     @else

@@ -6,7 +6,8 @@
     'value'    => '',   // markup to display in view mode
     'label'    => '',
     'fieldCss' => '',
-    'help'     => ''
+    'help'     => '',
+    'errorText' => '',
 ])
 @php
     $cleanName = str_replace(['[', ']'], '', $name);
@@ -19,7 +20,7 @@
         $preText = sprintf('<small>Max File Size: <b>%s</b></small><br/>', \Tk\Utils\File::bytes2String($maxBytes));
     }
 @endphp
-<x-tk-base::form.ui.field :$preText>
+<x-tk-base::form.ui.field :$preText :$errorText>
     @if($mode == 'view')
         <p {{ $attributes->merge([ 'class' => 'form-control-plaintext fw-bold' ]) }}>{!! $value !!}</p>
     @else

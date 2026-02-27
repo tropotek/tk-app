@@ -1,19 +1,20 @@
 @aware(['mode' => 'view'])
 @props([
     // required
-    'name'     => '',
+    'name'      => '',
+    'options'   => [],
     'value',
-    'options'  => [],
     // optional
-    'label'    => '',
-    'fieldCss' => '',
-    'help'     => ''
+    'label'     => '',
+    'fieldCss'  => '',
+    'help'      => '',
+    'errorText' => '',
 ])
 @php
     $value = old($name, $value ?? '');
 @endphp
 
-<x-tk-base::form.ui.field>
+<x-tk-base::form.ui.field :$errorText>
     @foreach ($options as $optValue => $text)
         <div class="form-check {{$errors->has($name) ? ' is-invalid' : ''}}">
             @if($mode == 'view')
