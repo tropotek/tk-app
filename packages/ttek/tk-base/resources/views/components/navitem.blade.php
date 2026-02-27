@@ -7,10 +7,7 @@
     'maxLevel' => 2,
     'level' => 0,
 ])
-@php
-vd($item->getAttributes()->__toString());
-  $linkAttrs = $item->getAttributes()->merge(['class' => $attributes->get('link-class') ])
-@endphp
+
 <li class="
     {{ $attributes->get('class') }}
     {{ $item->hasChildren() ? 'dropdown' : '' }}
