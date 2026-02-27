@@ -51,7 +51,7 @@ final class NavBar extends MenuInterface
         ]);
 
         // Reset breadcrumbs if menu item selected
-        //$this->appendQuery([Breadcrumbs::CRUMB_RESET => '1']);
+        $this->appendQuery([Breadcrumbs::CRUMB_RESET => '1']);
 
         return $this;
     }

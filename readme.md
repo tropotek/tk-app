@@ -18,6 +18,7 @@ $ docker exec -it tk-app /bin/bash
 # from within the container terminal
 $ cd /app
 $ ./bin/app-update
+$ chown -R 1000:1000 .
 ```
 Once complete, then browse to http://localhost:8081
 
