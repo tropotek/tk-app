@@ -6,8 +6,11 @@
     'cell',
     // optional
 ])
+@php
+    $attributes->merge($cell->getHeaderAttrs()->toArray());
+@endphp
 
-<th {{ $attributes->merge($cell->getHeaderAttrs()->toArray()) }}>
+<th {{ $attributes->merge(['class' => $cell->getOrderByDir()]) }}>
     @if ($cell->isSortable())
         <a class="noblock" href="{{ $cell->getOrderByUrl() }}">{!! $cell->getHeader() !!}</a>
     @else

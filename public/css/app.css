@@ -78,8 +78,8 @@ html {
     content: '\f0dd';                   /* Font Awesome's down arrow */
     bottom: calc(50% - 0.75em);
 }
-.tk-table thead th a.asc::after,
-.tk-table thead th a.desc::before {
+.tk-table thead th.asc a::after,
+.tk-table thead th.desc a::before {
     opacity: 1;                         /* When sorting, set full opacity on the direction */
 }
 

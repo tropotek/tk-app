@@ -197,9 +197,11 @@ class Cell
     }
 
     /**
-     * Get the order by url for this cell.
-     * This will create an orderBy URL, when clicked it will
-     * redirect the page and update the table order to the opposite order
+     * Get the next order by url for this cell.
+     * Create an orderBy url for the next order
+     *  - asc
+     *  - desc
+     *  - {remove}
      */
     public function getOrderByUrl(): string
     {
@@ -212,13 +214,9 @@ class Cell
 
         $orderBy = $this->getOrderBy();
         $tableOrderBy = $this->getTable()->getOrderBy();
-        $dir = '-';
-        if (str_starts_with($tableOrderBy, '-')) {
-            $tableOrderBy = substr($tableOrderBy, 1);
-            $dir = '';
-        }
+        $dir = str_starts_with($tableOrderBy, '-') ? '' : '-';
 
-        if ($tableOrderBy == $orderBy) {    // if ordered by currrent cell
+        if (str_replace('-', '', $tableOrderBy) == $orderBy) {     // if ordered by current cell
             // set to DESC
             if ($dir == '-') {
                 $url = url()->query($url, [$key => $dir.$orderBy]);
@@ -232,6 +230,21 @@ class Cell
         }
 
         return $url;
+    }
+
+    public function getOrderByDir():string
+    {
+        $orderBy = $this->getOrderBy();
+        $tableOrderBy = $this->getTable()->getOrderBy();
+
+        if (str_replace('-', '', $tableOrderBy) == $orderBy) {    // if ordered by current cell
+            if (str_starts_with($tableOrderBy, '-')) {
+                return 'desc';
+            } elseif (!empty($this->getTable()->getOrderBy())) {
+                return 'asc';
+            }
+        }
+        return '';
     }
 
 }
