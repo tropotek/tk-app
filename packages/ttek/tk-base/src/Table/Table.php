@@ -37,6 +37,12 @@ class Table
         // TODO: how do we handle the defaults?
         // TODO: Should this me moved to a parent class?
         // TODO: what if we want session params?
+        /*
+         * TODO Add a configurable enabled middleware object to to hide table params
+         *      Then we can check for session vars if exists, use them or query string
+         *      Might be a good place to start thinking about the table sessions, user
+         *      table state saving and such...
+         */
         $this->setPage((int)request()->input($this->makeIdKey(self::PARAM_PAGE), $this->page));
         $this->setLimit((int)request()->input($this->makeIdKey(self::PARAM_LIMIT), $this->limit));
         $this->setOrderBy(request()->input($this->makeIdKey(self::PARAM_ORDERBY), $this->orderBy));
