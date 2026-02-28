@@ -2,7 +2,7 @@
 
     <div class="row">
         <div class="col-lg-9 col-md-8 col-sm-6 col-xs-12">
-            @if(count($table->getRows()))
+            @if($table->count())
                 <div class="mt-2">
                     <h2>My Ideas</h2>
 
@@ -12,9 +12,7 @@
 
             <div class="mt-3">
                 <a href="/ideas/create" class="btn btn-sm btn-outline-primary">Create New Idea</a>
-                @if(count($table->getRows()))
-                    <a href="/delete-all" class="btn btn-sm btn-outline-danger">Clear All</a>
-                @endif
+                <a href="/delete-all" class="btn btn-sm btn-outline-danger">Clear All</a>
             </div>
 
         </div>
@@ -24,7 +22,7 @@
                 <p class="text-muted"><strong>My Ideas</strong></p>
 
                 <ul class="list-group mt-3">
-                    @foreach ($table->getRows() as $idea)
+                    @foreach ($ideas as $idea)
                         <li class="list-group-item">
                             <a href="/ideas/{{ $idea->id }}">
                                 {{ $idea->description }} <em class="d-inline-block float-end">[{{ $idea->status->label() }}]</em>

@@ -25,7 +25,7 @@ class Cell
     public function __construct(string $name)
     {
         $this->name = $name;
-        $this->orderBy = Str::toSnake($name);
+        $this->orderBy = $name;
         $this->attributes = new ComponentAttributeBag();
         $this->headerAttrs = new ComponentAttributeBag();
 
@@ -37,6 +37,23 @@ class Cell
         $header = str_replace(['_', '-'], ' ', $header);
         $header = ucwords(strval(preg_replace('/[A-Z]/', ' $0', $header)));
         $this->setHeader($header);
+    }
+
+    /**
+     * reset the cell, called by the `Table::getCells()` method
+     */
+    public function reset(): static
+    {
+        // reset the row records
+        $this->row = null;
+
+        // todo reset the cell CSS classes
+
+
+        // todo reset the row CSS classes
+
+
+        return $this;
     }
 
     /**
@@ -55,8 +72,6 @@ class Cell
      */
     public function getValue(object|array $row): mixed
     {
-        // todo do we need access to the row for the object?
-        //      handy for other functions wanting access to the row???
         if (is_null($this->row)) $this->row = $row;
 
         $value = $this->value;
@@ -176,9 +191,12 @@ class Cell
         return $this->orderBy;
     }
 
+    /**
+     * Set the orderBy column
+     */
     public function setOrderBy(string $orderBy): static
     {
-        $this->orderBy = $orderBy;
+        $this->orderBy = str_starts_with($orderBy, '-') ? substr($orderBy, 1) : $orderBy;
         return $this;
     }
 
@@ -216,6 +234,7 @@ class Cell
 
         $orderBy = $this->getOrderBy();
         $tableOrderBy = $this->getTable()->getOrderBy();
+
         $dir = str_starts_with($tableOrderBy, '-') ? '' : '-';
 
         if (str_replace('-', '', $tableOrderBy) == $orderBy) {     // if ordered by current cell
@@ -224,7 +243,11 @@ class Cell
                 $url = url()->query($url, [$key => $dir.$orderBy]);
             } else {
                 // remove cell order
-                $url = url()->query($url, [$key => null]);
+                // TODO: When default desc order by set to this col we cannot
+                //       toggle the order by when setting it to null, as the default then becomes set.
+                //       Using an empty string may be fine, just means we have an empty query param in the url?
+                //$url = url()->query($url, [$key => null]);
+                $url = url()->query($url, [$key => '']);
             }
         } else {
             // set to ASC

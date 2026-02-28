@@ -14,12 +14,6 @@ class HomeController extends Controller
     {
         $this->setPageTitle('Dashboard');
 
-        $url = $request->url();
-        $url = url()->query($url, ['test' => 'A Test String']);
-        vd($url);
-        $url = url()->query($url, ['test' => null]);
-        vd($url);
-
 
         if ($request->has('alert')) {
             $type = $request->input('alert');

@@ -6,6 +6,8 @@
     'item',
     'maxLevel' => 2,
     'level' => 0,
+    'linkClass' => '',
+    'submenuClass' => '',
 ])
 
 <li class="
@@ -16,11 +18,15 @@
     @if($item->isSeparator())
         <hr class="dropdown-divider">
     @else
-        <a {{ $item->getAttributes()->merge(['class' => $attributes->get('link-class') ]) }}
-            href="{{ $item->getUrl() }}"
-            {{ $item->isDisabled() ? 'disabled' : ''}}
-            {{ $item->hasChildren() ? 'dropdown-toggle' : '' }}
-            {!! $item->hasChildren() ? 'role="button" data-bs-toggle="dropdown" aria-expanded="false"' : '' !!}
+        <a {{ $item->getAttributes()->merge([
+                'class'    => $linkClass . ($item->hasChildren() ? ' dropdown-toggle' : ''),
+                'href'     => $item->getUrl() ?: null,
+                'disabled' => $item->isDisabled() ? 'disabled' : null,
+                'role'     => $item->hasChildren() ? 'button' : null,
+                'target'    => $item->getTarget() ?: null,
+                'data-bs-button' => $item->hasChildren() ? 'button' : null,
+                'data-bs-toggle' => $item->hasChildren() ? 'dropdown' : null,
+            ]) }}
         >
             @if (empty($item->getIcon()))
                 {{ $item->getLabel() }}
@@ -30,7 +36,7 @@
             @endif
         </a>
         @if($item->hasChildren())
-            <ul class="dropdown-menu {{ $attributes->get('submenu-class') }}">
+            <ul class="dropdown-menu {{ $submenuClass }}">
                 @foreach ($item->getChildren() as $i => $child)
                     {{-- Prevent more than 1 level of dropdown iteration --}}
                     @if(($child->hasChildren() && ($level == $maxLevel-1)) || !$child->isVisible())
@@ -41,7 +47,7 @@
                         @continue
                     @endif
                     {{-- Pass classes down, adding a specific class for the next level --}}
-                    <x-tk-base::navitem :item="$child" level="{{ $level + 1 }}" class="" link-class="dropdown-item" submenu-class="dropdown-menu"/>
+                    <x-tk-base::navitem :item="$child" level="{{ $level + 1 }}" linkClass="dropdown-item" submenuClass="dropdown-menu"/>
                 @endforeach
             </ul>
         @endif

@@ -8,8 +8,7 @@
 
 ])
 @php
-
-        @endphp
+@endphp
 
 <div class="tk-table-wrapper table-responsive">
     <table
@@ -28,17 +27,19 @@
 
         <tbody>
 
-        @foreach ($table->getRows() as $i => $row)
-            <tr class="todo-">
-                @foreach ($table->getCells() as $cell)
-                    <x-tk-base::table.cell :$row :$cell/>
-                @endforeach
-            </tr>
-        @endforeach
+        @if($table->hasRecords())
+            @foreach ($table->getRecords()->toArray() as $i => $row)
+                <tr class="todo-">
+                    @foreach ($table->getCells() as $cell)
+                        <x-tk-base::table.cell :$row :$cell/>
+                    @endforeach
+                </tr>
+            @endforeach
+        @endif
         </tbody>
     </table>
 
     <div class="mt-2">
-        {{ \App\Models\Idea::paginate($table->getLimit(), '[*]', $table->makeIdKey(\Tk\Table\Table::QUERY_PAGE)) }}
+        {{ $table->getPaginator() }}
     </div>
 </div>

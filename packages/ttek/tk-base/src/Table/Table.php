@@ -4,6 +4,7 @@ namespace Tk\Table;
 
 use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
 use Illuminate\Notifications\Action;
+use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Tk\Table\Records\RecordsInterface;
@@ -22,6 +23,7 @@ class Table
     protected Collection $cells;
     protected Collection $actions;
     protected RecordsInterface $records;
+
     private ?BuilderContract $queryBuilder = null;
     private ?array $rows = null;        // cached rows
 
@@ -32,6 +34,15 @@ class Table
         $this->actions = new Collection();
         $this->setId($id);
 
+        $this->build();
+    }
+
+    /**
+     * The pace to update the table from the request or session.
+     * Called after the RecordsInterface is set.
+     */
+    protected function refreshState(): void
+    {
         // TODO: how do we handle the defaults?
         // TODO: Should this me moved to a parent class?
         // TODO: what if we want session params?
@@ -43,88 +54,57 @@ class Table
          */
         $this->setPage((int)request()->input($this->makeIdKey(self::QUERY_PAGE), $this->page));
         $this->setLimit((int)request()->input($this->makeIdKey(self::QUERY_LIMIT), $this->limit));
-        $this->setOrderBy(request()->input($this->makeIdKey(self::QUERY_ORDER), $this->orderBy));
+        $this->setOrderBy((string)request()->input($this->makeIdKey(self::QUERY_ORDER), $this->orderBy));
 
-        $this->build();
     }
 
 
     /**
-     * Override this method in your tables to build a query
-     * This is where you add the table columns and actions
+     * Override this method in your parent table objects to build the columns
      */
     protected function build(): void { }
 
-    /**
-     * Override this method in your table to build an SQL query
-     */
-    protected function query(array $filters = []): ?BuilderContract { return null; }
-
-    /**
-     * Override this method if you want to create the rows array manually
-     * @return array
-     */
-    public function getRows(array $filters = []): array
-    {
-        // if no rows attempt to build an SQL query
-        if (is_null($this->rows)) {
-            if (is_null($this->queryBuilder)) {
-                $this->queryBuilder = $this->query($filters);
-                $this->fillQuery();
-            }
-            $this->rows = $this->queryBuilder?->get()->all() ?? [];
-        }
-        return $this->rows;
-    }
-
-    /**
-     * Manually set the table rows to display
-     */
-    public function setRows(?array $rows): static
-    {
-        $this->rows = $rows;
-        return $this;
-    }
-
     public function getRecords(): RecordsInterface
     {
+        if (!isset($this->records)) {
+            throw new \Exception("Cannot access records before they are set.");
+        }
         return $this->records;
     }
 
     public function setRecords(RecordsInterface $records): static
     {
         $this->records = $records;
+        $records->setTable($this);
+        $this->refreshState();
         return $this;
     }
 
     /**
-     * fill a query builder object with the table
-     * orderBy, limit and page values
+     * return the number of records on the page
      */
-    protected function fillQuery(): ?BuilderContract
+    public function count(): int
     {
-        if (is_null($this->getQuery())) return null;
-        $this->getQuery()->forPage($this->getPage(), $this->getLimit());
-
-        // Add orderBy
-        $orders = explode(',', $this->getOrderBy());
-        $orders = array_filter(array_map('trim', $orders));
-
-        foreach ($orders as $order) {
-            $dir = 'asc';
-            if ($order[0] == '-') {     // descending
-                $order = substr($order, 1);
-                $dir = 'desc';
-            }
-            $this->getQuery()->orderBy($order, $dir);
-        }
-
-        return $this->getQuery();
+        return $this->getRecords()->count();
     }
 
-    public function getQuery(): ?BuilderContract
+    /**
+     * return the total number of records available
+     */
+    public function countAll(): int
     {
-        return $this->queryBuilder;
+        return $this->getRecords()->countAll();
+    }
+
+    public function hasRecords(): bool
+    {
+        return isset($this->records) && $this->count() > 0;
+    }
+
+    public function getPaginator(): ?AbstractPaginator
+    {
+        if (!$this->hasRecords()) return null;
+        return $this->getRecords()->getPaginator();
     }
 
     /**
@@ -184,7 +164,9 @@ class Table
 
     public function getCell(string $name): ?Cell
     {
-        return $this->cells->get($name);
+        /** @var Cell $cell */
+        $cell = $this->cells->get($name);
+        return $cell->reset();
     }
 
     public function removeCell(string $name): static
@@ -198,6 +180,9 @@ class Table
      */
     public function getCells(): Collection
     {
+        foreach ($this->cells as $cell) {
+            $cell->reset();
+        }
         return $this->cells;
     }
 

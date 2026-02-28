@@ -4,7 +4,9 @@ namespace App\Tables;
 
 use App\Models\Idea;
 use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
+use Illuminate\Support\Facades\Request;
 use Tk\Table\Cell;
+use Tk\Table\Records\QueryRecords;
 use Tk\Table\Table;
 
 class IdeaTable extends Table
@@ -12,6 +14,7 @@ class IdeaTable extends Table
 
     protected function build(): void
     {
+
         $this->appendCell('title')
             ->setSortable()
             //->addClass('max-width')  // TODO might stop using this method, let the table resize organically
@@ -44,27 +47,14 @@ class IdeaTable extends Table
                 return $row->updated_at->format('Y-m-d h:i');
             });
 
-        // get the filtered rows using the request
-        //$this->getRows(request()->all());
+        $filters = Request::validate([
+            'search' => 'string',
+        ]);
 
-        // $recs = new QueryRecords($this->buildQuery($filters));
-        // $this->setRecords($recs);
-
-        // $recs = new ArrayRecords($this->getRows($filters));
-        // $this->setRecords($recs);
+        $this->setRecords(new QueryRecords($this->buildQuery($filters)));
     }
 
-//    public function getRows(array $filters): array
-//    {
-//        // get the records from a source
-//
-//        // filter the records
-//
-//        // return the filtered records
-//        return [];
-//    }
-
-    public function query(array $filters = []): ?BuilderContract
+    public function buildQuery(array $filters = []): ?BuilderContract
     {
         $query = Idea::query();
 

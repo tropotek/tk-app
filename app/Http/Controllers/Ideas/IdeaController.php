@@ -22,6 +22,7 @@ class IdeaController extends Controller
 
         //$ideas = Auth::user()->ideas()->orderBy('created_at', 'desc')->get();
         return view('ideas.index', [
+            'ideas' => auth()->user()->ideas,
             'table' => $table,
         ]);
     }

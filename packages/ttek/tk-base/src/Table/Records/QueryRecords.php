@@ -2,21 +2,30 @@
 
 namespace Tk\Table\Records;
 
+
+use Illuminate\Pagination\AbstractPaginator;
 use Tk\Table\Table;
 use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
 
+/**
+ * A records class to be used with a query builder.
+ */
 class QueryRecords extends RecordsInterface
 {
     protected BuilderContract $query;
 
-    public function __construct(Table $table, BuilderContract $query)
+    public function __construct(BuilderContract $query)
     {
-        parent::__construct($table);
         $this->query = $query;
     }
 
-    public function getRecords(): array
+    protected function initQuery(): void
     {
+        // filter results using callable
+        if ($this->getFilter()) {
+            $this->query = call_user_func($this->getFilter(), $this->getQuery());
+        }
+
         // sort results
         $orders = explode(',', $this->getTable()->getOrderBy());
         $orders = array_filter(array_map('trim', $orders));
@@ -26,17 +35,23 @@ class QueryRecords extends RecordsInterface
                 $order = substr($order, 1);
                 $dir = 'desc';
             }
-            $this->getTable()->getQuery()->orderBy($order, $dir);
+            $this->getQuery()->orderBy($order, $dir);
         }
 
-        // pagenate results
-        $this->getTable()->getQuery()->forPage(
+        $this->total = $this->getQuery()->count();
+
+        // paginate results
+        $this->getQuery()->forPage(
             $this->getTable()->getPage(),
             $this->getTable()->getLimit()
         );
+    }
 
-        // return rows as an array
-        return $this->query->get()->all();
+    public function setTable(Table $table): static
+    {
+        parent::setTable($table);
+        $this->initQuery();
+        return $this;
     }
 
     public function getQuery(): BuilderContract
@@ -44,4 +59,24 @@ class QueryRecords extends RecordsInterface
         return $this->query;
     }
 
+    public function toArray(): array
+    {
+        if (!isset($this->records)) {
+            $this->records = $this->getQuery()->get()->all();
+        }
+        return $this->records;
+    }
+
+    public function countAll(): int
+    {
+        return $this->total;
+    }
+
+    public function getPaginator(): ?AbstractPaginator
+    {
+        return \App\Models\Idea::paginate(
+            $this->getTable()->getLimit(),
+            '[*]',
+            $this->getTable()->makeIdKey(\Tk\Table\Table::QUERY_PAGE));
+    }
 }

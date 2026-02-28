@@ -13,13 +13,21 @@ final class NavBar extends MenuInterface
     {
         $this->addChildren([
             MenuItem::make('Dashboard', '/'),
-            MenuItem::make('Form Examples')->addChildren([
+
+            MenuItem::make('Forms')->addChildren([
                 MenuItem::make('One Column', '/formOne'),
                 MenuItem::make('Two Columns', '/formTwo'),
                 MenuItem::make('Three Columns', '/formThree'),
                 MenuItem::make('Fieldsets', '/formFieldset'),
             ]),
-            MenuItem::make('Examples', '/examples'),
+
+            MenuItem::make('Tables')->addChildren([
+                MenuItem::make('Sql Query', '/tableQuery'),
+                MenuItem::make('Array Rows', '/tableArray'),
+                MenuItem::make('Csv File', '/tableCsv'),
+            ]),
+
+            MenuItem::make('Layout', '/examples'),
 
             MenuItem::make('Ideas', '/ideas')
                 ->setVisible(auth()->check()

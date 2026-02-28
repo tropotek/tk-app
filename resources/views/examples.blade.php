@@ -20,7 +20,8 @@
                         <div class="card-body">
                             <p>&nbsp;</p>
                             <p>&nbsp;</p>
-                            <p>&nbsp;</p>
+                                <h4>My Ideas</h4>
+                                <x-tk-base::table :$table />
                             <p>&nbsp;</p>
                             <p>&nbsp;</p>
                         </div>

@@ -58,5 +58,8 @@ Route::get('/formFieldset/edit', [FieldsetController::class, 'edit']);
 Route::get('/formFieldset/create', [FieldsetController::class, 'create']);
 Route::post('/formFieldset/submit', [FieldsetController::class, 'submit']);
 
-
+// Table Test Examples
+Route::get('/tableQuery', [\App\Http\Controllers\Tables\QueryTable::class, 'index']);
+Route::get('/tableArray', [\App\Http\Controllers\Tables\ArrayTable::class, 'index']);
+Route::get('/tableCsv', [\App\Http\Controllers\Tables\CsvTable::class, 'index']);
 

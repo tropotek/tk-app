@@ -2,6 +2,7 @@
 
 namespace Tk\Table\Records;
 
+use Illuminate\Pagination\AbstractPaginator;
 use Tk\Table\Table;
 
 /**
@@ -13,22 +14,52 @@ abstract class RecordsInterface
 {
 
     protected Table $table;
+    protected array $records;
+    protected mixed $filter = null;
+    protected int $total = 0;
 
-    public function __construct(Table $table)
+    /**
+     * This method should write the filtered, sorted, and pagenated rows to the
+     * $this->records array when not set, then return the records array
+     *
+     */
+    abstract public function toArray(): array;
+
+    public function count(): int
     {
-        $this->table = $table;
+        return count($this->toArray());
     }
 
-    abstract public function getRecords(): array;
-
+    public function countAll(): int
+    {
+        return $this->total;
+    }
 
     public function getTable(): Table
     {
         return $this->table;
     }
 
-    public function setTable(Table $table): void
+    public function setTable(Table $table): static
     {
         $this->table = $table;
+        return $this;
     }
+
+    public function getFilter(): ?callable
+    {
+        return $this->filter;
+    }
+
+    public function setFilter(callable $filter): static
+    {
+        $this->filter = $filter;
+        return $this;
+    }
+
+    public function getPaginator(): ?AbstractPaginator
+    {
+        return null;
+    }
+
 }
