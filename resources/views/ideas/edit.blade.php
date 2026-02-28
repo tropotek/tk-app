@@ -16,7 +16,7 @@
         <x-slot:buttons>
             <x-tk-base::form.buttons.default-btns
                 editRoute="/ideas/{{ $idea->id }}/edit"
-                cancelRoute="/ideas/{{ $idea->id }}" />
+                cancelRoute="/ideas" />
             <x-tk-base::form.buttons.submit label="Delete" form="btn-delete-idea" class="btn btn-danger" />
         </x-slot:buttons>
 

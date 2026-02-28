@@ -36,11 +36,18 @@ class IdeaTable extends Table
                 return $row->created_at->format('Y-m-d h:i');
             });
 
+        $this->appendCell('updated_at')
+            ->setHeader('Modified')
+            ->addClass('text-nowrap')
+            ->setSortable()
+            ->setValue(function ($row, Cell $cell) {
+                return $row->updated_at->format('Y-m-d h:i');
+            });
+
         // get the filtered rows using the request
         //$this->getRows(request()->all());
 
     }
-
 
     public function query(array $filters = []): ?BuilderContract
     {
@@ -51,11 +58,10 @@ class IdeaTable extends Table
             $w  = "user_id = :search ";
             $w .= "OR LOWER(CONCAT_WS(' ', title, description)) LIKE :lSearch ";
             $query->whereRaw($w, $filter);
-            //$filter->appendWhere('AND (%s)', $w);
         }
 
-        if (!empty($filters['status'])) {
-            $query->where('status', '=', $filters['status']);
+        if (!empty($filters['title'])) {
+            $query->where('title', '=', $filters['title']);
         }
 
         if (!empty($filters['status'])) {

@@ -8,13 +8,13 @@ use Tk\Utils\Str;
 class Cell
 {
 
-    protected string     $name        = '';
-    protected string     $header      = '';
-    protected string     $orderBy     = '';
-    protected bool       $sortable    = false;
-    protected mixed      $value       = null;  // null|string|callable
-    protected mixed      $html        = null;  // null|string|callable
-    protected ?Table     $table       = null;
+    protected string     $name     = '';
+    protected string     $header   = '';
+    protected string     $orderBy  = '';
+    protected bool       $sortable = false;
+    protected mixed      $value    = null;  // null|string|callable
+    protected mixed      $html     = null;  // null|string|callable
+    protected ?Table     $table    = null;
     protected ComponentAttributeBag $attributes;
     protected ComponentAttributeBag $headerAttrs;
 
@@ -58,7 +58,6 @@ class Cell
         // todo do we need access to the row for the object?
         //      handy for other functions wanting access to the row???
         if (is_null($this->row)) $this->row = $row;
-        if (is_array($row)) $row = (object)$row;
 
         $value = $this->value;
         if (is_callable($value)) {

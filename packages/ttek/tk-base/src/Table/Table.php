@@ -50,7 +50,7 @@ class Table
     protected function build(): void { }
 
     /**
-     * Override this method in your tables to build an SQL query
+     * Override this method in your table to build an SQL query
      */
     protected function query(array $filters = []): ?BuilderContract { return null; }
 

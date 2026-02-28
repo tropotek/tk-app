@@ -28,8 +28,8 @@
 
         <tbody>
 
-            @foreach ($table->getRows() as $i =>$row)
-                <tr class="">
+            @foreach ($table->getRows() as $i => $row)
+                <tr class="todo-">
                     @foreach ($table->getCells() as $cell)
                         <x-tk-base::table.cell :$row :$cell />
                     @endforeach
