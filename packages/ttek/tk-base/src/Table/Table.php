@@ -2,7 +2,6 @@
 
 namespace Tk\Table;
 
-use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
 use Illuminate\Notifications\Action;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Collection;
@@ -53,9 +52,7 @@ class Table
         $this->setPage((int)request()->input($this->makeIdKey(self::QUERY_PAGE), $this->page));
         $this->setLimit((int)request()->input($this->makeIdKey(self::QUERY_LIMIT), $this->limit));
         $this->setOrderBy((string)request()->input($this->makeIdKey(self::QUERY_ORDER), $this->orderBy));
-
     }
-
 
     /**
      * Override this method in your parent table objects to build the columns
