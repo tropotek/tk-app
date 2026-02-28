@@ -12,7 +12,6 @@ class IdeaTable extends Table
 
     protected function build(): void
     {
-
         $this->appendCell('title')
             ->setSortable()
             //->addClass('max-width')  // TODO might stop using this method, let the table resize organically
@@ -47,9 +46,6 @@ class IdeaTable extends Table
     {
         $query = Idea::query();
 
-        // set query orderBy, page and limit from table values
-        $this->fillQuery($query);
-
         if (!empty($filter['search'])) {
             $filter['lSearch'] = '%' . strtolower($filter['search']) . '%';
             $w  = "user_id = :search ";
@@ -65,7 +61,7 @@ class IdeaTable extends Table
         if (!empty($filters['status'])) {
             $query->where('status', '=', $filters['status']);
         }
-vd($query->toSql());
+        //vd($query->toSql());
         return $query;
     }
 

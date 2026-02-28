@@ -22,9 +22,8 @@ class Table
     protected string     $orderBy   = '';
     protected Collection $cells;
     protected Collection $actions;
-
-    // cached rows
-    private ?array $rows = null;
+    private ?BuilderContract $queryBuilder = null;
+    private ?array $rows = null;        // cached rows
 
 
     public function __construct(string $id = 'thetable', $defaultOrderBy = '', $defaultLimit = 50)
@@ -46,6 +45,7 @@ class Table
 
     /**
      * Override this method in your tables to build a query
+     * This is where you add the table columns and actions
      */
     protected function build(): void { }
 
@@ -55,18 +55,21 @@ class Table
     protected function query(array $filters = []): ?BuilderContract { return null; }
 
     /**
-     * Override this method if you want to create the rows array yourself
+     * Override this method if you want to create the rows array manually
      * @return array
      */
     public function getRows(array $filters = []): array
     {
         // if no rows attempt to build an SQL query
         if (is_null($this->rows)) {
-            $this->rows = $this->query($filters)?->get()->all() ?? [];
+            if (is_null($this->queryBuilder)) {
+                $this->queryBuilder = $this->query($filters);
+                $this->fillQuery();
+            }
+            $this->rows = $this->queryBuilder?->get()->all() ?? [];
         }
         return $this->rows;
     }
-
 
     /**
      * Manually set the table rows to display
@@ -75,6 +78,36 @@ class Table
     {
         $this->rows = $rows;
         return $this;
+    }
+
+    /**
+     * fill a query builder object with the table
+     * orderBy, limit and page values
+     */
+    protected function fillQuery(): ?BuilderContract
+    {
+        if (is_null($this->getQuery())) return null;
+        $this->getQuery()->forPage($this->getPage(), $this->getLimit());
+
+        // Add orderBy
+        $orders = explode(',', $this->getOrderBy());
+        $orders = array_filter(array_map('trim', $orders));
+
+        foreach ($orders as $order) {
+            $dir = 'asc';
+            if ($order[0] == '-') {     // descending
+                $order = substr($order, 1);
+                $dir = 'desc';
+            }
+            $this->getQuery()->orderBy($order, $dir);
+        }
+
+        return $this->getQuery();
+    }
+
+    public function getQuery(): ?BuilderContract
+    {
+        return $this->queryBuilder;
     }
 
     /**
@@ -137,29 +170,6 @@ class Table
         return $this;
     }
 
-    /**
-     * fill a query builder object with the table
-     * orderBy, limit and page values
-     */
-    public function fillQuery(BuilderContract $query): BuilderContract {
-        $query->forPage($this->getPage(), $this->getLimit());
-
-        // Add orderBy
-        $orders = explode(',', $this->getOrderBy());
-        $orders = array_filter(array_map('trim', $orders));   // todo filter empty??
-
-        foreach ($orders as $order) {
-            $dir = 'asc';
-            if ($order[0] == '-') {     // descending
-                $order = substr($order, 1);
-                $dir = 'desc';
-            }
-            $query->orderBy($order, $dir);
-        }
-
-        return $query;
-    }
-
     public function getCell(string $name): ?Cell
     {
         return $this->cells->get($name);
@@ -167,7 +177,7 @@ class Table
 
     public function removeCell(string $name): static
     {
-        $this->cells->forget($name);
+        $this->cells->forget([$name]);
         return $this;
     }
 
@@ -233,88 +243,6 @@ class Table
         }
 
         return $cell;
-    }
-
-
-
-
-
-
-
-
-
-    /**
-     * sort array of objects by primary and optional second and third columns
-     * $col1, $col2, and $col3 contain column names (properties) in the rows
-     * prefix column names with '-' for descending sort
-     * returns sorted array
-     *
-     * @template K of string|int
-     * @template T of mixed
-     * @param array<K, T> $rows
-     * @return array<K, T>
-     * @todo Sorts current rows array, may not need that, should be a helper function somewhere???
-     */
-    public static function sortRows(array $rows, string ...$columns): array
-    {
-        if (count($rows) < 2) return $rows;
-
-        // generalized comparison function for sorting two values
-        $compare = fn(mixed $a, mixed $b): int => match(true) {
-            is_null($a) && is_null($b) => 0,
-            // nulls always sort after non-nulls
-            is_null($a) => -1,
-            is_null($b) => 1,
-            is_numeric($a) && is_numeric($b) => $a <=> $b,
-            ($a instanceof \BackedEnum) && ($b instanceof \BackedEnum) => $a->value <=> $b->value,
-            // DateTime and DateTimeImmutable objects support comparison operators
-            // ($a instanceof \DateTimeInterface) && ($b instanceof \DateTimeInterface) => $a <=> $b,
-            // sortable objects must support string conversion (Stringable interface and __toString method)
-            // string sort case-insensitive
-            default => strcasecmp(strval($a), strval($b)),
-        };
-
-        // determine ascending/descending and eliminate redundant sorts
-        $cols = [];
-        foreach (array_reverse($columns) as $col) {
-            $desc = false;
-            if (empty($col)) continue;
-            if ($col[0] == '-') {
-                $desc = true;
-                $col = substr($col, 1);
-            } elseif ($col[0] == '+') {
-                $col = substr($col, 1);
-            }
-
-            $cols[$col] = $desc;
-        }
-
-        // sort rows from last-level sort to top-level sort
-        // relies on PHP 8 stable sorting
-        foreach ($cols as $col => $desc) {
-            if ($desc) {
-                usort($rows, fn($l, $r) => $compare(self::getOrderVal($r, $col) ?? null, self::getOrderVal($l, $col) ?? null));
-            } else {
-                usort($rows, fn($l, $r) => $compare(self::getOrderVal($l, $col) ?? null, self::getOrderVal($r, $col) ?? null));
-            }
-        }
-
-        return $rows;
-    }
-
-    /**
-     * @param array<string,mixed>|object $row
-     */
-    private static function getOrderVal(array|object $row, string $col): mixed
-    {
-        if (is_array($row)) {
-            return $row[$col] ?? null;
-        } elseif (isset($row->{$col})) {
-            return $row->{$col} ?? null;
-        } elseif (method_exists($row, $col)) {
-            return $row->$col() ?? null;
-        }
-        return null;
     }
 
     /**
