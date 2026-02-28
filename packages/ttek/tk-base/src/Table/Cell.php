@@ -210,7 +210,7 @@ class Cell
         if (!$this->getTable()) return '';
         if (!$this->isSortable()) return '';
 
-        $key = $this->getTable()->makeIdKey(Table::PARAM_ORDERBY);
+        $key = $this->getTable()->makeIdKey(Table::QUERY_ORDER);
         $url = request()->url();
         $url = url()->query($url, [$key => null]);
 

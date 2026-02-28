@@ -11,11 +11,9 @@ use Tk\Table\Records\RecordsInterface;
 class Table
 {
 
-    const string PARAM_LIMIT    = 'l';
-    const string PARAM_OFFSET   = 'o';
-    const string PARAM_PAGE     = 'p';
-    const string PARAM_TOTAL    = 't';
-    const string PARAM_ORDERBY  = 'ob';
+    const string QUERY_LIMIT    = 'tl';
+    const string QUERY_PAGE     = 'tp';
+    const string QUERY_ORDER    = 'to';
 
     protected string     $id        = '';
     protected int        $limit     = 50;
@@ -43,9 +41,9 @@ class Table
          *      Might be a good place to start thinking about the table sessions, user
          *      table state saving and such...
          */
-        $this->setPage((int)request()->input($this->makeIdKey(self::PARAM_PAGE), $this->page));
-        $this->setLimit((int)request()->input($this->makeIdKey(self::PARAM_LIMIT), $this->limit));
-        $this->setOrderBy(request()->input($this->makeIdKey(self::PARAM_ORDERBY), $this->orderBy));
+        $this->setPage((int)request()->input($this->makeIdKey(self::QUERY_PAGE), $this->page));
+        $this->setLimit((int)request()->input($this->makeIdKey(self::QUERY_LIMIT), $this->limit));
+        $this->setOrderBy(request()->input($this->makeIdKey(self::QUERY_ORDER), $this->orderBy));
 
         $this->build();
     }
