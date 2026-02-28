@@ -5,6 +5,7 @@ namespace Tk\Table;
 use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
 use Illuminate\Notifications\Action;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 class Table
 {
@@ -26,15 +27,18 @@ class Table
     private ?array $rows = null;
 
 
-    public function __construct(string $id = 'thetable')
+    public function __construct(string $id = 'thetable', $defaultOrderBy = '', $defaultLimit = 50)
     {
-        $this->setId($id);
-        $this->page = (int)request()->input($this->makeIdKey(self::PARAM_PAGE), $this->page);
-        $this->limit = (int)request()->input($this->makeIdKey(self::PARAM_LIMIT), $this->limit);
-        $this->orderBy = (int)request()->input($this->makeIdKey(self::PARAM_ORDERBY), $this->orderBy);
-
         $this->cells = new Collection();
         $this->actions = new Collection();
+        $this->setId($id);
+
+        // TODO: how do we handle the defaults?
+        // TODO: Should this me moved to a parent class?
+        // TODO: what if we want session params?
+        $this->setPage((int)request()->input($this->makeIdKey(self::PARAM_PAGE), $this->page));
+        $this->setLimit((int)request()->input($this->makeIdKey(self::PARAM_LIMIT), $this->limit));
+        $this->setOrderBy(request()->input($this->makeIdKey(self::PARAM_ORDERBY), $this->orderBy));
 
         $this->build();
     }
@@ -102,25 +106,13 @@ class Table
 
     public function setOrderBy(string $orderBy): static
     {
-        $this->orderBy = strval(preg_replace("/(\r|\n)/", '', trim($orderBy)));
-        return $this;
-    }
-
-    public function getOrderBySql(): string
-    {
-        $orders = explode(',', $this->getOrderBy());
-        $orders = array_map('trim', $orders);
-
-        $sql = [];
-        foreach ($orders as $order) {
-            $order = trim($order);
-            if ($order[0] == '-') {     // descending
-                $col = substr($order, 1);
-                $order = "$col DESC";
-            }
-            $sql[] = trim($order);
+        $this->orderBy = trim($orderBy);
+        // validate orderBy string
+        if (!empty($this->orderBy) && !preg_match('/^[a-z0-9_-]+$/i', $this->orderBy)) {
+            Log::warning("Invalid orderBy value: " . trim($this->orderBy));
+            $this->orderBy = '';
         }
-        return implode(', ', $sql);
+        return $this;
     }
 
     public function getLimit(): int
@@ -143,6 +135,29 @@ class Table
     {
         $this->page = $page;
         return $this;
+    }
+
+    /**
+     * fill a query builder object with the table
+     * orderBy, limit and page values
+     */
+    public function fillQuery(BuilderContract $query): BuilderContract {
+        $query->forPage($this->getPage(), $this->getLimit());
+
+        // Add orderBy
+        $orders = explode(',', $this->getOrderBy());
+        $orders = array_filter(array_map('trim', $orders));   // todo filter empty??
+
+        foreach ($orders as $order) {
+            $dir = 'asc';
+            if ($order[0] == '-') {     // descending
+                $order = substr($order, 1);
+                $dir = 'desc';
+            }
+            $query->orderBy($order, $dir);
+        }
+
+        return $query;
     }
 
     public function getCell(string $name): ?Cell

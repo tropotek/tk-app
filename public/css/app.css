@@ -50,7 +50,10 @@ html {
   padding-left: 0;
 }
 
-
+/** Table Styles */
+.tk-table .max-width {
+    width: 100%;
+}
 
 
 

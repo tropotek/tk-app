@@ -3,10 +3,7 @@
 namespace App\Tables;
 
 use App\Models\Idea;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Tk\Table\Cell;
 use Tk\Table\Table;
 
@@ -17,19 +14,27 @@ class IdeaTable extends Table
     {
 
         $this->appendCell('title')
+            ->setSortable()
+            //->addClass('max-width')  // TODO might stop using this method, let the table resize organically
             ->setHtml(function ($row , Cell $cell) {
                 return "<a href='/ideas/{$row->id}/edit'>{$cell->getValue($row)}</a>";
             });
 
         $this->appendCell('status')
+            ->addClass('text-nowrap')
+            ->setSortable()
             ->setValue(function ($row, Cell $cell) {
                 return $row->status->label();
             });
 
         $this->appendCell('created_at')
             ->setHeader('Created')
+            ->addClass('text-nowrap')
+            ->setSortable()
+            ->addAttr(['data-test-string' => 'someId'])
             ->setValue(function ($row, Cell $cell) {
-                return $row->created_at->format('d-m-Y');
+                $cell->addAttr(['data-test-id' => $row->id]);
+                return $row->created_at->format('Y-m-d h:i');
             });
 
         // get the filtered rows using the request
@@ -42,9 +47,8 @@ class IdeaTable extends Table
     {
         $query = Idea::query();
 
-        // pagination and sorting
-        if (!empty($orderby)) $query->orderBy($this->getOrderBySql());
-        $query->forPage($this->getPage(), $this->getLimit());
+        // set query orderBy, page and limit from table values
+        $this->fillQuery($query);
 
         if (!empty($filter['search'])) {
             $filter['lSearch'] = '%' . strtolower($filter['search']) . '%';

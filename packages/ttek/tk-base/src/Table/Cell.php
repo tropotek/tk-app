@@ -166,7 +166,7 @@ class Cell
         return $this->sortable;
     }
 
-    public function setSortable(bool $sortable): static
+    public function setSortable(bool $sortable = true): static
     {
         $this->sortable = $sortable;
         return $this;
@@ -208,24 +208,30 @@ class Cell
         if (!$this->isSortable()) return '';
 
         $key = $this->getTable()->makeIdKey(Table::PARAM_ORDERBY);
-        $url = Uri::create()->remove($key);
+        $url = request()->url();
+        $url = url()->query($url, [$key => null]);
+
         $orderBy = $this->getOrderBy();
 
-        $col = $this->getTable()->getOrderBy();
+        $tableOrderBy = $this->getTable()->getOrderBy();
+
         $dir = '-';
-        if ($col && $col[0] == '-') {
-            $col = substr($col, 1);
+        if ($tableOrderBy && $tableOrderBy[0] == '-') {
+            $tableOrderBy = substr($tableOrderBy, 1);
             $dir = '';
         }
 
-        if ($col == $orderBy) {
+        if ($tableOrderBy == $orderBy) {
+            // set to DESC
             if ($dir == '-') {
-                $url->set($key, $dir.$col);
+                $url = url()->query($url, [$key => $dir.$orderBy]);
             } else {
-                $url->set($key, '');
+                // set to table default order
+                $url = url()->query($url, [$key => null]);
             }
         } else {
-            $url->set($key, $orderBy);
+            // set to ASC
+            $url = url()->query($url, [$key => $orderBy]);
         }
 
         return $url;
