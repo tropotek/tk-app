@@ -202,6 +202,8 @@ class Cell
      *  - asc
      *  - desc
      *  - {remove}
+     *
+     * @todo think about how to manage multiple orderBy values
      */
     public function getOrderByUrl(): string
     {
