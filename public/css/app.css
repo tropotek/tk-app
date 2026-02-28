@@ -42,6 +42,22 @@ html {
 .tk-form.mode-view .tk-field .form-control-plaintext {
     padding: 0;
 }
+/* Disable valid field styles (look into using boostrap vars here) */
+.tk-form .form-check-input.is-valid ~ .form-check-label,
+.tk-form.was-validated .form-check-input:valid ~ .form-check-label,
+.tk-form .form-control.is-valid,
+.tk-form.was-validated .form-control:valid {
+    border-color: #dee2e6; /* Default border color */
+    background-image: none; /* Remove the checkmark icon */
+}
+.tk-form .form-select.is-valid:not([multiple]):not([size]),
+.tk-form .form-select.is-valid:not([multiple])[size="1"],
+.tk-form.was-validated .form-select:valid:not([multiple]):not([size]),
+.tk-form.was-validated .form-select:valid:not([multiple])[size="1"] {
+    border-color: #dee2e6; /* Default border color */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e"), none;
+}
+
 
 /* fix switch padding issue in view mode */
 .tk-form.mode-view .form-switch,
