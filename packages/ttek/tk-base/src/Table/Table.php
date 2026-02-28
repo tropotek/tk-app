@@ -10,7 +10,6 @@ use Tk\Table\Records\RecordsInterface;
 
 class Table
 {
-
     const string QUERY_LIMIT    = 'tl';
     const string QUERY_PAGE     = 'tp';
     const string QUERY_ORDER    = 'to';
@@ -109,8 +108,8 @@ class Table
     {
         static $instances = [];
         if ($this->getId()) return $this;
-        $instances[$id] = isset($instances[$id]) ? $instances[$id]++ : 0;
-        $this->id = ($instances[$id] > 0) ? $instances[$id].$id : $id;
+        $instances[$id] = isset($instances[$id]) ? ($instances[$id]+1) : 0;
+        $this->id = ($instances[$id] > 0) ? $id.$instances[$id] : $id;
         return $this;
     }
 
@@ -162,7 +161,7 @@ class Table
      */
     public function getRowAttrs(object|array|null $row = null): array
     {
-        if (is_callable($this->rowAttrs)) {
+        if (is_callable($this->rowAttrs) && !is_null($row)) {
             return ($this->rowAttrs)($row, $this) ?? [];
         }
         return $this->rowAttrs ?? [];

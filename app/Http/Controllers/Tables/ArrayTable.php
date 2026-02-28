@@ -18,9 +18,10 @@ class ArrayTable extends Controller
         $this->setPageTitle('Array Table');
 
 
-        $table = $this->buildTable($request);
+        $table1 = $this->buildTable($request);
+        $table2 = $this->buildTable($request);
 
-        return view('tables.table-example', Compact('table'));
+        return view('tables.table-array', Compact('table1', 'table2'));
     }
 
     protected function buildTable(Request $request): Table
