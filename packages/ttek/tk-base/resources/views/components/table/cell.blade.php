@@ -5,7 +5,6 @@
     // required
     'cell',
     'row',
-    // optional
 ])
 
 <td {{ $attributes->merge($cell->getAttributes()->toArray()) }}>

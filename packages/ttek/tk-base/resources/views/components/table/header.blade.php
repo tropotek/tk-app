@@ -4,7 +4,6 @@
 @props([
     // required
     'cell',
-    // optional
 ])
 @php
     $attributes->merge($cell->getHeaderAttrs()->toArray());

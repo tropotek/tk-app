@@ -4,8 +4,6 @@
 @props([
     // required
     'table',
-    // optional
-
 ])
 @php
 @endphp
@@ -26,16 +24,11 @@
         </thead>
 
         <tbody>
-
-        @if($table->hasRecords())
-            @foreach ($table->getRecords()->toArray() as $i => $row)
-                <tr class="todo-">
-                    @foreach ($table->getCells() as $cell)
-                        <x-tk-base::table.cell :$row :$cell/>
-                    @endforeach
-                </tr>
-            @endforeach
-        @endif
+            @if($table->hasRecords())
+                @foreach ($table->getRecords()->toArray() as $i => $row)
+                    <x-tk-base::table.row :idx="$i" :$row />
+                @endforeach
+            @endif
         </tbody>
     </table>
 

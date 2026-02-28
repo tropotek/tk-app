@@ -23,12 +23,10 @@ class Table
     protected Collection $cells;
     protected Collection $actions;
     protected RecordsInterface $records;
-
-    private ?BuilderContract $queryBuilder = null;
-    private ?array $rows = null;        // cached rows
+    protected mixed      $rowAttrs = null;
 
 
-    public function __construct(string $id = 't', $defaultOrderBy = '', $defaultLimit = 50)
+    public function __construct(string $id = 't')
     {
         $this->cells = new Collection();
         $this->actions = new Collection();
@@ -162,11 +160,28 @@ class Table
         return $this;
     }
 
+    /**
+     * @callable function (mixed $row, Table $table):array { return ['class' => 'test']; }
+     */
+    public function getRowAttrs(object|array|null $row = null): array
+    {
+        if (is_callable($this->rowAttrs)) {
+            return ($this->rowAttrs)($row, $this) ?? [];
+        }
+        return $this->rowAttrs ?? [];
+    }
+
+    public function addRowAttrs(callable|array|null $rowAttrs): static
+    {
+        $this->rowAttrs = $rowAttrs;
+        return $this;
+    }
+
     public function getCell(string $name): ?Cell
     {
         /** @var Cell $cell */
         $cell = $this->cells->get($name);
-        return $cell->reset();
+        return $cell;
     }
 
     public function removeCell(string $name): static
@@ -178,20 +193,14 @@ class Table
     /**
      * @return Collection<int,Cell>
      */
-    public function getCells(): Collection
+    public function getCells(object|array|null $row = null): Collection
     {
-        foreach ($this->cells as $cell) {
-            $cell->reset();
+        if (!is_null($row)) {
+            foreach ($this->cells as $cell) {
+                $cell->setRow($row);
+            }
         }
         return $this->cells;
-    }
-
-    /**
-     * @return Collection<int,Action>
-     */
-    public function getActions(): Collection
-    {
-        return $this->actions;
     }
 
     public function appendCell(string|Cell $cell, ?string $after = null): Cell
@@ -241,6 +250,20 @@ class Table
 
         return $cell;
     }
+
+    /**
+     * @return Collection<int,Action>
+     */
+    public function getActions(): Collection
+    {
+        return $this->actions;
+    }
+
+
+
+
+
+
 
     /**
      * Create a table specific key using the table id

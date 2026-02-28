@@ -15,6 +15,10 @@ class IdeaTable extends Table
     protected function build(): void
     {
 
+        $this->addRowAttrs(function (Idea $row, Table $table) {
+            return ['data-test-id' => $row->id];
+        });
+
         $this->appendCell('title')
             ->setSortable()
             //->addClass('max-width')  // TODO might stop using this method, let the table resize organically

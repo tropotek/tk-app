@@ -40,29 +40,18 @@ class Cell
     }
 
     /**
-     * reset the cell, called by the `Table::getCells()` method
-     */
-    public function reset(): static
-    {
-        // reset the row records
-        $this->row = null;
-
-        // todo reset the cell CSS classes
-
-
-        // todo reset the row CSS classes
-
-
-        return $this;
-    }
-
-    /**
      * Return the currently rendered row,
      * getValue($row) must be called at least once to get access to the row
      */
     public function getRow(): object|array|null
     {
         return $this->row;
+    }
+
+    public function setRow(object|array|null $row): Cell
+    {
+        $this->row = $row;
+        return $this;
     }
 
     /**
