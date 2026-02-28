@@ -29,6 +29,7 @@
 
             <x-tk-base::form.fields.textarea
                 name="description"
+                required=""
             />
         </x-slot:fields>
 

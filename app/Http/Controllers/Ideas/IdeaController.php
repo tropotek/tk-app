@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Ideas;
 
 use App\Http\Controllers\Controller;
 use App\Models\Idea;
+use App\Models\User;
+use App\Tables\IdeaTable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Tk\Table\Cell;
 
 class IdeaController extends Controller
 {
@@ -15,9 +18,11 @@ class IdeaController extends Controller
         $this->setPageTitle('ideas|Idea Manager');
         //Gate::authorize('admin-view');
 
+        $table = new IdeaTable('myTable');
+
         //$ideas = Auth::user()->ideas()->orderBy('created_at', 'desc')->get();
         return view('ideas.index', [
-            'ideas' => Auth::user()->ideas,
+            'table' => $table,
         ]);
     }
     public function create()

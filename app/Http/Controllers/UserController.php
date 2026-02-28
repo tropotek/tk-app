@@ -21,7 +21,7 @@ class UserController extends Controller
                 'password' => 'required|min:8|max:255',
             ]);
 
-            if (auth()->attempt($fieldValues)) {
+            if (auth()->attempt($fieldValues, $request->has('remember'))) {
                 $request->session()->regenerate();
             }
 
