@@ -4,6 +4,11 @@ namespace Tk\Table\Records;
 
 use Tk\Table\Table;
 
+/**
+ *
+ * @todo make this iterable with paging etc.
+ *
+ */
 abstract class RecordsInterface
 {
 

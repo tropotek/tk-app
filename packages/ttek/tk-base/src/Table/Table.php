@@ -6,6 +6,7 @@ use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
 use Illuminate\Notifications\Action;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
+use Tk\Table\Records\RecordsInterface;
 
 class Table
 {
@@ -22,6 +23,7 @@ class Table
     protected string     $orderBy   = '';
     protected Collection $cells;
     protected Collection $actions;
+    protected RecordsInterface $records;
     private ?BuilderContract $queryBuilder = null;
     private ?array $rows = null;        // cached rows
 
@@ -74,9 +76,20 @@ class Table
     /**
      * Manually set the table rows to display
      */
-    public function setRows(?array $rows): Table
+    public function setRows(?array $rows): static
     {
         $this->rows = $rows;
+        return $this;
+    }
+
+    public function getRecords(): RecordsInterface
+    {
+        return $this->records;
+    }
+
+    public function setRecords(RecordsInterface $records): static
+    {
+        $this->records = $records;
         return $this;
     }
 
