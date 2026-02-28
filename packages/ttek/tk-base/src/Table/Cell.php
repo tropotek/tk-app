@@ -212,21 +212,19 @@ class Cell
         $url = url()->query($url, [$key => null]);
 
         $orderBy = $this->getOrderBy();
-
         $tableOrderBy = $this->getTable()->getOrderBy();
-
         $dir = '-';
-        if ($tableOrderBy && $tableOrderBy[0] == '-') {
+        if (str_starts_with($tableOrderBy, '-')) {
             $tableOrderBy = substr($tableOrderBy, 1);
             $dir = '';
         }
 
-        if ($tableOrderBy == $orderBy) {
+        if ($tableOrderBy == $orderBy) {    // if ordered by currrent cell
             // set to DESC
             if ($dir == '-') {
                 $url = url()->query($url, [$key => $dir.$orderBy]);
             } else {
-                // set to table default order
+                // remove cell order
                 $url = url()->query($url, [$key => null]);
             }
         } else {
