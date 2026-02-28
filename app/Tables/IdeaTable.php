@@ -47,12 +47,28 @@ class IdeaTable extends Table
         // get the filtered rows using the request
         //$this->getRows(request()->all());
 
+        // $recs = new QueryRecords($this->buildQuery($filters));
+        // $this->setRecords($recs);
+
+        // $recs = new ArrayRecords($this->getRows($filters));
+        // $this->setRecords($recs);
     }
+
+//    public function getRows(array $filters): array
+//    {
+//        // get the records from a source
+//
+//        // filter the records
+//
+//        // return the filtered records
+//        return [];
+//    }
 
     public function query(array $filters = []): ?BuilderContract
     {
         $query = Idea::query();
 
+        // filter records
         if (!empty($filter['search'])) {
             $filter['lSearch'] = '%' . strtolower($filter['search']) . '%';
             $w  = "user_id = :search ";
@@ -67,7 +83,7 @@ class IdeaTable extends Table
         if (!empty($filters['status'])) {
             $query->where('status', '=', $filters['status']);
         }
-        //vd($query->toSql());
+
         return $query;
     }
 
