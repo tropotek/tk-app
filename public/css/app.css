@@ -54,8 +54,34 @@ html {
 .tk-table .max-width {
     width: 100%;
 }
-
-
+/* list table sorting arrows */
+.tk-table thead th {
+    padding-left: 0.5em;
+}
+.tk-table thead th a {
+    position: relative;                /* This is needed for the absolute positioning. */
+    padding-left: 0.8em;
+}
+.tk-table thead th a::before,
+.tk-table thead th a::after {
+    position: absolute;
+    left: -0.3em;
+    font-family: 'Font Awesome 7 Free'; /* Use FontAwesome's font so that you can set the content */
+    opacity: 0.15;                      /* Set opacity to gray out icons by default */
+    /*font-size: 0.75em;*/              /* reduce the size of the arrows */
+}
+.tk-table thead th a::before {
+    content: '\f0de';                   /* Font Awesome's up arrow */
+    top: calc(50% - 0.75em);            /* Tricky to calculate the top offset */
+}
+.tk-table thead th a::after {
+    content: '\f0dd';                   /* Font Awesome's down arrow */
+    bottom: calc(50% - 0.75em);
+}
+.tk-table thead th a.asc::after,
+.tk-table thead th a.desc::before {
+    opacity: 1;                         /* When sorting, set full opacity on the direction */
+}
 
 
 
