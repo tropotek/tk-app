@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\Log;
 class Table
 {
 
-    const string PARAM_LIMIT    = 'limit';
-    const string PARAM_OFFSET   = 'offset';
-    const string PARAM_PAGE     = 'page';
-    const string PARAM_TOTAL    = 'total';
-    const string PARAM_ORDERBY  = 'orderBy';
+    const string PARAM_LIMIT    = 'l';
+    const string PARAM_OFFSET   = 'o';
+    const string PARAM_PAGE     = 'p';
+    const string PARAM_TOTAL    = 't';
+    const string PARAM_ORDERBY  = 'ob';
 
     protected string     $id        = '';
     protected int        $limit     = 50;
@@ -26,7 +26,7 @@ class Table
     private ?array $rows = null;        // cached rows
 
 
-    public function __construct(string $id = 'thetable', $defaultOrderBy = '', $defaultLimit = 50)
+    public function __construct(string $id = 't', $defaultOrderBy = '', $defaultLimit = 50)
     {
         $this->cells = new Collection();
         $this->actions = new Collection();
@@ -111,19 +111,14 @@ class Table
     }
 
     /**
-     * ensure the id is unique
+     * ensure the id is unique if duplicates exist
      */
     protected function setId(string $id): static
     {
         static $instances = [];
         if ($this->getId()) return $this;
-        if (isset($instances[$id])) {
-            $instances[$id]++;
-        } else {
-            $instances[$id] = 0;
-        }
-        if ($instances[$id] > 0) $id = $instances[$id].$id;
-        $this->id = $id;
+        $instances[$id] = isset($instances[$id]) ? $instances[$id]++ : 0;
+        $this->id = ($instances[$id] > 0) ? $instances[$id].$id : $id;
         return $this;
     }
 

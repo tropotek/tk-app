@@ -14,13 +14,15 @@ final class Breadcrumbs
     const string CRUMB_RESET  = '_cr';
 
     protected Collection  $stack;
-    protected string      $homeTitle     = 'Dashboard';
-    protected string      $homeUrl       = '/';
+    protected string      $homeTitle     = '';
+    protected string      $homeUrl       = '';
 
 
-    public function __construct()
+    public function __construct(string $homeTitle = 'Dashboard', string $homeUrl = '/')
     {
         $this->stack = collect();
+        $this->homeTitle = $homeTitle;
+        $this->homeUrl = $homeUrl;
     }
 
     /**
@@ -139,21 +141,9 @@ final class Breadcrumbs
         return $this->homeTitle;
     }
 
-    public function setHomeTitle(string $homeTitle): self
-    {
-        $this->homeTitle = $homeTitle;
-        return $this;
-    }
-
     public function getHomeUrl(): string
     {
         return $this->homeUrl;
-    }
-
-    public function setHomeUrl(string $homeUrl): self
-    {
-        $this->homeUrl = $homeUrl;
-        return $this;
     }
 
     /**
@@ -169,14 +159,8 @@ final class Breadcrumbs
      */
     public function toArray(): array
     {
-        $homeCrumb = [
-            'name' => $this->getHomeTitle(),
-            'title' => $this->getHomeTitle(),
-            'url' => $this->getHomeUrl(),
-        ];
-        $crumbs = $this->stack->toArray();
-        array_unshift($crumbs, $homeCrumb);
-        return $crumbs;
+        $crumbs = [$this->getHomeTitle() => $this->homeUrl];
+        return $crumbs + array_column($this->stack->toArray(), 'url', 'title');
     }
 
     public function __toString(): string

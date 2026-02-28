@@ -2,17 +2,17 @@
 @php
     use Tk\Support\Facades\Breadcrumbs;
     $crumbs = Breadcrumbs::toArray();
-    $lastIdx = count($crumbs)-1;
+    $last = array_key_last($crumbs);
 @endphp
 
 <div class="{{ config('app.resources.layout', 'container') }} mt-3">
     <nav class="breadcrumb-component" aria-label="breadcrumb">
         <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
-            @foreach ($crumbs as $i => $crumb)
-                @if($i == $lastIdx)
-                    <li class="breadcrumb-item">{{ $crumb['title'] }}</li>
+            @foreach ($crumbs as $title => $url)
+                @if($title == $last)
+                    <li class="breadcrumb-item">{{ $title }}</li>
                 @else
-                    <li class="breadcrumb-item"><a href="{{ $crumb['url'] }}">{{ $crumb['title'] }}</a></li>
+                    <li class="breadcrumb-item"><a href="{{ $url }}">{{ $title }}</a></li>
                 @endif
             @endforeach
         </ol>

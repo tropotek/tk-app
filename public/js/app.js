@@ -18,14 +18,12 @@ class InitStack {
             console.warn('selector not defined');
             return;
         }
-        console.log(selector);
         // initially run the init callback on the document
         this._apply(document.body, selector, callback);
 
         // add to the callback stack
         if (!this.stack[selector]) this.stack[selector] = [];
         this.stack[selector].push(callback);
-        console.log(this.stack);
     }
 
     remove(selector) {

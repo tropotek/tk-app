@@ -18,7 +18,7 @@ class IdeaController extends Controller
         $this->setPageTitle('ideas|Idea Manager');
         //Gate::authorize('admin-view');
 
-        $table = new IdeaTable('myTable');
+        $table = new IdeaTable();
 
         //$ideas = Auth::user()->ideas()->orderBy('created_at', 'desc')->get();
         return view('ideas.index', [
