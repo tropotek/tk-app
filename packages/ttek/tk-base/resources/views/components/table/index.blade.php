@@ -44,19 +44,25 @@
 
     <div class="d-flex">
         <div class="p-2 ps-0 flex-grow-1">
-            <input type="text" name="search" placeholder="Search" class="form-control" />
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search" />
+                <button class="btn btn-outline-secondary" type="button" id="fid-search"><i class="fa fa-search"></i></button>
+            </div>
         </div>
         <div class="p-2">
-            <select name="limit" class="form-select">
-                <option value="0">All</option>
-                <option value="4">4</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-            </select>
+            <div class="input-group mb-3">
+                <label class="input-group-text" for="fid-limit"><i class="fa fa-list"></i></label>
+                <select name="limit" id="fid-limit" class="form-select">
+                    <option value="0">All</option>
+                    <option value="4">4</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </div>
         </div>
         <div class="p-2 pe-0">
-            <button type="button" class="btn btn-primary">Create</button>
+            <button type="button" class="btn btn-success"><i class="fa fa-plus-circle"></i> Create</button>
         </div>
     </div>
 
