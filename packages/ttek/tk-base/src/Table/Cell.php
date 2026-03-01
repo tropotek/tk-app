@@ -3,10 +3,13 @@
 namespace Tk\Table;
 
 use Illuminate\View\ComponentAttributeBag;
+use Tk\Table\Traits\HasAttributes;
 use Tk\Utils\Str;
 
 class Cell
 {
+    use HasAttributes;
+
     const string TYPE_ROW_SELECT = 'rowselect';
 
     protected string     $name     = '';
@@ -17,7 +20,6 @@ class Cell
     protected mixed      $value    = null;  // null|string|callable
     protected mixed      $html     = null;  // null|string|callable
     protected ?Table     $table    = null;
-    protected ComponentAttributeBag $attributes;
     protected ComponentAttributeBag $headerAttrs;
 
     // the current row being rendered, null if not rendering
@@ -28,7 +30,7 @@ class Cell
     {
         $this->name = $name;
         $this->orderBy = $name;
-        $this->attributes = new ComponentAttributeBag();
+        $this->_attributes = new ComponentAttributeBag();
         $this->headerAttrs = new ComponentAttributeBag();
 
         $this->addClass('m'.ucfirst($name));
@@ -110,26 +112,6 @@ class Cell
     public function getName(): string
     {
         return $this->name;
-    }
-
-    public function getAttributes(): ComponentAttributeBag
-    {
-        return $this->attributes;
-    }
-
-    /**
-     * Add a CSS class to the cell
-     */
-    public function addClass(string $class): static
-    {
-        $this->attributes = $this->attributes->class($class);
-        return $this;
-    }
-
-    public function addAttr(array $attrs): static
-    {
-        $this->attributes = $this->attributes->merge($attrs);
-        return $this;
     }
 
     public function setHeader(string $header): static

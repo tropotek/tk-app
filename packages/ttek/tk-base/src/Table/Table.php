@@ -6,10 +6,14 @@ use Illuminate\Notifications\Action;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
+use Illuminate\View\ComponentAttributeBag;
 use Tk\Table\Records\RecordsInterface;
+use Tk\Table\Traits\HasAttributes;
 
 class Table
 {
+    use HasAttributes;
+
     const string QUERY_LIMIT    = 'tl';
     const string QUERY_PAGE     = 'tp';
     const string QUERY_ORDER    = 'to';
@@ -26,6 +30,7 @@ class Table
 
     public function __construct(string $id = 't')
     {
+        $this->_attributes = new ComponentAttributeBag();
         $this->cells = new Collection();
         $this->actions = new Collection();
         $this->setId($id);

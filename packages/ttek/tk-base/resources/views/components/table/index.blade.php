@@ -6,8 +6,9 @@
     'table',
 ])
 @php
+    $attributes = $attributes->merge($table->getAttributes()->all());
 @endphp
-
+{{-- TODO I think all filters belong in a filtered table template possibly using form elements--}}
 <div class="tk-table-wrapper table-responsive p-1">
 
     <div class="d-flex">
