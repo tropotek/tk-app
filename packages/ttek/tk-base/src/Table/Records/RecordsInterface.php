@@ -43,6 +43,8 @@ abstract class RecordsInterface
     public function setTable(Table $table): static
     {
         $this->table = $table;
+        // refresh the table orderBy, limit and page values
+        // required so Result objects have access to the current table state
         $this->table->refreshState();
         return $this;
     }

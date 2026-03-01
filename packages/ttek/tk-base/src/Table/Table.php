@@ -45,10 +45,10 @@ class Table
     public function refreshState(): void
     {
         /*
-         * TODO Add a configurable enabled middleware object to to hide table params
-         *      Then we can check for session vars if exists, use them or query string
+         * TODO Add a configurable enabled middleware object to hide table query params
+         *      Then we can store the state of the table in the session.
          *      Might be a good place to start thinking about the table sessions, user
-         *      table state saving and such...
+         *      state saving in the DB, etc...
          */
         $this->setPage((int)request()->input($this->makeIdKey(self::QUERY_PAGE), $this->page));
         $this->setLimit((int)request()->input($this->makeIdKey(self::QUERY_LIMIT), $this->limit));
@@ -56,7 +56,8 @@ class Table
     }
 
     /**
-     * Override this method in your parent table objects to build the columns
+     * Override this method in your parent table objects
+     * Add cells and build record results
      */
     protected function build(): void { }
 
