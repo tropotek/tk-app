@@ -23,7 +23,7 @@
 
     <main class="flex-grow-1 pt-5">
         <x-tk-base::breadcrumbs />
-        <x-alerts />
+        <x-ui.alerts />
 
         <div class="{{ config('app.resources.layout', 'container') }}">
             <div class="mb-5 clearfix">

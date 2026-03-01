@@ -19,7 +19,7 @@
                             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                                 <span>{{ Auth::user()->name }}</span>
                             </a>
-                            <x-usernav />
+                            <x-ui.usernav />
                         </li>
                     @endauth
                 </ul>
@@ -42,7 +42,7 @@
                             <img src="{{asset('/img/mdo.jpeg') }}" alt="mdo" width="32" height="32" class="rounded-circle" />
                             <span>{{ Auth::user()->name }}</span>
                         </a>
-                        <x-usernav class="dropdown-menu-end" />
+                        <x-ui.usernav class="dropdown-menu-end" />
                     </div>
                 @else
                     <div class="dropdown">
