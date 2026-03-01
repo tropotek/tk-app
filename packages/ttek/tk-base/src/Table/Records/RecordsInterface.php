@@ -43,6 +43,7 @@ abstract class RecordsInterface
     public function setTable(Table $table): static
     {
         $this->table = $table;
+        $this->table->refreshState();
         return $this;
     }
 

@@ -34,10 +34,10 @@ class Table
     }
 
     /**
-     * The pace to update the table from the request or session.
-     * Called after the RecordsInterface is set.
+     * Called by Records to update the table from the request or session.
+     * Called when a Records object is added to the table
      */
-    protected function refreshState(): void
+    public function refreshState(): void
     {
         // TODO: how do we handle the defaults?
         // TODO: Should this me moved to a parent class?
@@ -70,7 +70,6 @@ class Table
     {
         $this->records = $records;
         $records->setTable($this);
-        $this->refreshState();
         return $this;
     }
 
