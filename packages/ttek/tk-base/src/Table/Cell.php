@@ -7,10 +7,12 @@ use Tk\Utils\Str;
 
 class Cell
 {
+    const string TYPE_ROW_SELECT = 'rowselect';
 
     protected string     $name     = '';
     protected string     $header   = '';
     protected string     $orderBy  = '';
+    protected string     $type     = '';
     protected bool       $sortable = false;
     protected mixed      $value    = null;  // null|string|callable
     protected mixed      $html     = null;  // null|string|callable
@@ -178,6 +180,17 @@ class Cell
     public function getOrderBy(): string
     {
         return $this->orderBy;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+        return $this;
     }
 
     /**

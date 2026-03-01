@@ -24,6 +24,22 @@
                 <option value="cancelled">Cancelled</option>
             </select>
         </div>
+        <div class="p-2 pe-0">
+            <select name="limit" class="form-select">
+                <option value="">Status</option>
+                <option value="pending">Pending</option>
+                <option value="in_progress">In Progress</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+        </div>
+        <div class="p-2 pe-0">
+            <select name="limit" class="form-select">
+                <option value="">Status</option>
+                <option value="pending">Pending</option>
+                <option value="in_progress">In Progress</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+        </div>
     </div>
 
     <div class="d-flex">
@@ -46,15 +62,19 @@
 
 
     <table
-            {{ $attributes->merge([
-                'class'     => 'tk-table table table-hover',
-                'id'        => $table->getId(),
-            ]) }}
+        {{ $attributes->merge([
+            'class'     => 'tk-table table table-hover',
+            'id'        => $table->getId(),
+        ]) }}
     >
         <thead class="table-light">
         <tr>
             @foreach ($table->getCells() as $cell)
-                <x-tk-base::table.header :cell="$cell"/>
+                @if($cell->getType())
+                    <x-dynamic-component :component="'tk-base::table.cell.' . $cell->getType() . '-header'" :$cell />
+                @else
+                    <x-tk-base::table.header :$cell/>
+                @endif
             @endforeach
         </tr>
         </thead>

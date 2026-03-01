@@ -1,7 +1,11 @@
 /**
- *
- *
- *
+ * TODO move initStack to own file and add document...
+ *   execute an init then push onto init stack for future execution
+ *   init.add('.tk-form', function(){ console.log('form 1 init called'); });
+ *   init.add('.tk-form', function(){ console.log('form 2 init called'); });
+ *   init.add('.tk-table', function(){ console.log('table 1 init called'); });
+ *   init.execute(document.body); // execute all inits on document
+ *   init.execute(document.body, '.tk-form'); // execute all inits for form selector on document
  *
  */
 class InitStack {
@@ -24,6 +28,8 @@ class InitStack {
         // add to the callback stack
         if (!this.stack[selector]) this.stack[selector] = [];
         this.stack[selector].push(callback);
+
+        return callback;
     }
 
     remove(selector) {
@@ -68,70 +74,140 @@ class InitStack {
             console.warn('target is not a Element');
             return;
         }
-
         // apply all inits for the selector
         const elms = this.getElements(target, selector);
         for (let i = 0; i < elms.length; i++) {
             init.apply(elms[i], [target, selector]);
         }
     }
-
-    // TODO move to own file and add documentation
-    // execute an init then push onto init stack for future execution
-    // init.add('.tk-form', function(){ console.log('form 1 init called'); });
-    // init.add('.tk-form', function(){ console.log('form 2 init called'); });
-    // init.add('.tk-table', function(){ console.log('table 1 init called'); });
-    //
-    //init.execute(document.body); // execute all inits on document
-    //init.execute(document.body, '.tk-form'); // execute all inits for form selector on document
-
 }
-
-
 
 // global javascript init stack
 const init = new InitStack();
+
 // global JS config object
 let tkConfig = {};
 
-$(function() {
+
+
+// Var dump function for debugging
+function vd() {
+    if (tkConfig.isProd) return;
+    for (let k in arguments) console.log(arguments[k]);
+}
+
+function copyToClipboard(text) {
+    if (navigator.clipboard) {
+        // Modern versions of Chromium browsers, Firefox, etc.
+        navigator.clipboard.writeText(text);
+    } else if (window.clipboardData) {
+        // Internet Explorer.
+        window.clipboardData.setData('Text', text);
+    } else {
+        // Fallback method using Textarea.
+        var textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.top = '-999999px';
+        textArea.style.left = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            if (!document.execCommand('copy')) {
+                console.warn('Could not copy text to clipboard');
+            }
+        } catch (error) {
+            console.warn('Could not copy text to clipboard');
+        }
+        document.body.removeChild(textArea);
+    }
+}
+
+function clearForm(form) {
+    $(':input', form).each(function () {
+        var type = this.type;
+        var tag = this.tagName.toLowerCase(); // normalize case
+        if (type === 'text' || type === 'password' || tag === 'textarea')
+            this.value = "";
+        else if (type === 'checkbox' || type === 'radio')
+            this.checked = false;
+        else if (tag === 'select')
+            this.selectedIndex = 1;
+    });
+}
+
+
+/**
+ *
+ */
+const forms = function () {
+    "use strict";
 
     /**
-     * TODO:
-     *   We need a way to initialize elements:
-     *     - When the page is loaded
-     *     - When dynamic content is added/swapped to the page and needs js init
-     *     - A function to manually init elements for non eventable cases
+     *
      */
+    let initFormValidation = function () {
+        if (this.matches('.needs-validation') !== true) return;
+        // Loop over them and prevent submission
+        const form = this;
+        form.addEventListener('submit', event => {
+            const elements = form.querySelectorAll('input,textarea,select');
+            elements.forEach(element => {
+                element.classList.remove('is-invalid');
+            });
 
-    // bootstrap form validation
-    init.add('.tk-form', function(){
-        // Example starter JavaScript for disabling form submissions if there are invalid fields
-        (() => {
-            'use strict'
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
 
-            if (this.matches('.needs-validation') !== true) return;
-            // Loop over them and prevent submission
-            const form = this;
-            form.addEventListener('submit', event => {
-                const elements = form.querySelectorAll('input,textarea,select');
-                elements.forEach(element => {
-                    element.classList.remove('is-invalid');
+                form.classList.add('was-validated');
+                const invalidElements = form.querySelectorAll(':invalid');
+                // Add the specified class to each invalid element
+                invalidElements.forEach(element => {
+                    element.classList.add('is-invalid');
                 });
+            }
+        }, false);
+    };
 
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
 
-                    form.classList.add('was-validated');
-                    const invalidElements = form.querySelectorAll(':invalid');
-                    // Add the specified class to each invalid element
-                    invalidElements.forEach(element => {
-                        element.classList.add('is-invalid');
-                    });
-                }
-            }, false);
-        })();
-    });
+    return {
+        initFormValidation: initFormValidation,
+    }
+}();
+
+
+/**
+ *
+ */
+const tables = function () {
+    "use strict";
+
+    /**
+     *
+     */
+    let initCheckboxSelect = function () {
+        const table = this;
+        $('.trs-head', this).on('change', function (e) {
+            let trs = $(this);
+            let name = trs.data('trsName');
+            let list = $(`input[name^="${name}"]`, table);
+            list.prop('checked', trs.prop('checked'));
+        }).trigger('change');
+    };
+
+
+    return {
+        initCheckboxSelect: initCheckboxSelect,
+    }
+}();
+
+
+$(function() {
+    // enable javascript functions
+    // adding functions to the initStack if they are to be used with dynamic content
+    init.add('.tk-form', forms.initFormValidation);
+    init.add('.tk-table', tables.initCheckboxSelect);
 
 });

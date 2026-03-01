@@ -20,9 +20,12 @@ class IdeaTable extends Table
             return ['data-test-id' => $row->id];
         });
 
+
+        $this->appendCell('id')
+            ->setType(Cell::TYPE_ROW_SELECT);
+
         $this->appendCell('title')
             ->setSortable()
-            //->addClass('max-width')  // TODO might stop using this method, let the table resize organically
             ->setHtml(function ($row , Cell $cell) {
                 return "<a href='/ideas/{$row->id}/edit'>{$cell->getValue($row)}</a>";
             });

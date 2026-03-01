@@ -14,6 +14,10 @@
     $attributes->merge($table->getRowAttrs($row))
 }}>
     @foreach ($table->getCells($row) as $cell)
-        <x-tk-base::table.cell :$row :$cell />
+        @if($cell->getType())
+            <x-dynamic-component :component="'tk-base::table.cell.' . $cell->getType()" :$row :$cell />
+        @else
+            <x-tk-base::table.cell :$row :$cell />
+       @endif
     @endforeach
 </tr>
