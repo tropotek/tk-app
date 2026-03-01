@@ -8,16 +8,14 @@
 @php
 @endphp
 
-<div class="tk-table-wrapper table-responsive">
+<div class="tk-table-wrapper table-responsive p-1">
 
     <div class="d-flex">
-        <div class="p-2 ps-0 flex-grow-1">
+        <div class="p-2 ps-0">
+            <i class="fa-solid fa-filter align-middle"></i>
         </div>
         <div class="p-2">
-            <i class="fa-solid fa-filter fa-lg"></i>
-        </div>
-        <div class="p-2 pe-0">
-            <select name="limit" class="form-select">
+            <select name="limit" class="form-select form-select-sm">
                 <option value="">Status</option>
                 <option value="pending">Pending</option>
                 <option value="in_progress">In Progress</option>
@@ -25,7 +23,7 @@
             </select>
         </div>
         <div class="p-2 pe-0">
-            <select name="limit" class="form-select">
+            <select name="limit" class="form-select form-select-sm">
                 <option value="">Status</option>
                 <option value="pending">Pending</option>
                 <option value="in_progress">In Progress</option>
@@ -33,24 +31,29 @@
             </select>
         </div>
         <div class="p-2 pe-0">
-            <select name="limit" class="form-select">
+            <select name="limit" class="form-select form-select-sm">
                 <option value="">Status</option>
                 <option value="pending">Pending</option>
                 <option value="in_progress">In Progress</option>
                 <option value="cancelled">Cancelled</option>
             </select>
+        </div>
+        <div class="p-2 pe-0 flex-grow-1">
         </div>
     </div>
 
     <div class="d-flex">
-        <div class="p-2 ps-0 flex-grow-1">
-            <div class="input-group">
+        <div class="p-2 ps-0">
+            <button type="button" class="btn btn-sm btn-success"><i class="fa fa-plus-circle"></i> Create</button>
+        </div>
+        <div class="p-2 flex-grow-1">
+            <div class="input-group input-group-sm">
                 <input type="text" class="form-control" placeholder="Search" />
                 <button class="btn btn-outline-secondary" type="button" id="fid-search"><i class="fa fa-search"></i></button>
             </div>
         </div>
-        <div class="p-2">
-            <div class="input-group mb-3">
+        <div class="p-2 pe-0">
+            <div class="input-group input-group-sm  mb-3">
                 <label class="input-group-text" for="fid-limit"><i class="fa fa-list"></i></label>
                 <select name="limit" id="fid-limit" class="form-select">
                     <option value="0">All</option>
@@ -60,9 +63,6 @@
                     <option value="100">100</option>
                 </select>
             </div>
-        </div>
-        <div class="p-2 pe-0">
-            <button type="button" class="btn btn-success"><i class="fa fa-plus-circle"></i> Create</button>
         </div>
     </div>
 
