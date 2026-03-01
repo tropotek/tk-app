@@ -21,7 +21,7 @@ class Table
     protected Collection $cells;
     protected Collection $actions;
     protected RecordsInterface $records;
-    protected mixed      $rowAttrs = null;
+    protected mixed      $rowAttrs = null;   // ?callable
 
 
     public function __construct(string $id = 't')
@@ -39,9 +39,6 @@ class Table
      */
     public function refreshState(): void
     {
-        // TODO: how do we handle the defaults?
-        // TODO: Should this me moved to a parent class?
-        // TODO: what if we want session params?
         /*
          * TODO Add a configurable enabled middleware object to to hide table params
          *      Then we can check for session vars if exists, use them or query string
