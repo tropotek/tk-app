@@ -20,7 +20,7 @@ class QueryTable extends Controller
         $table = new IdeaTable();
 
         // example of using the action params
-        if ($table->hasRequest() && $request->has('tbl_delete')) {
+        if ($request->has('tbl_delete')) {
             vd($table->getParams(), $request->all());
 
             // perform required action (delete, csv, etc...)

@@ -49,6 +49,7 @@ class TableSessionParams
                     $request->session()->save();
                 }
 
+                $query[Table::QUERY_ID] = null;
                 // remove all table query params
                 $url = trim($request->fullUrlWithQuery($query), '?');
                 return redirect($url);

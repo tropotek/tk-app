@@ -5,6 +5,7 @@ namespace Tk\Table\Records;
 use Illuminate\Container\Container;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Tk\Table\Table;
 
 /**
  * Populate a table with rows from an array.
@@ -60,9 +61,12 @@ class ArrayRecords extends RecordsInterface
         $total = $this->countAll();
         $perPage = $this->getTable()->getLimit();
         $currentPage = $this->getTable()->getPage();
-        $pageKey = $this->getTable()->key(\Tk\Table\Table::QUERY_PAGE);
+        $pageKey = $this->getTable()->key(Table::QUERY_PAGE);
         $options = [
-            'path' => $this->getTable()->url([\Tk\Table\Table::QUERY_PAGE => null]),
+            'path' => $this->getTable()->url([
+                Table::QUERY_PAGE => null,
+                Table::QUERY_ID => $this->getTable()->getId()
+            ]),
             'pageName' => $pageKey,
         ];
         return Container::getInstance()->makeWith(LengthAwarePaginator::class, compact(

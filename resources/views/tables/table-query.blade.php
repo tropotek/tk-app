@@ -23,7 +23,7 @@
                         </a>
                     </div>
                     <div class="p-2 ps-0">
-                        <button type="submit" name="tbl_delete" value="yes" class="btn btn-sm btn-danger">
+                        <button type="submit" name="tbl_delete" value="{{ $table->getId() }}" class="btn btn-sm btn-danger">
                             <i class="fa fa-trash"></i> Delete
                         </button>
                     </div>

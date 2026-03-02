@@ -135,10 +135,10 @@ class Table
     /**
      * returns true if the current request is from this table id
      */
-    public function hasRequest(): bool
-    {
-        return request()->input(Table::QUERY_ID) == $this->getId();
-    }
+//    public function hasRequest(): bool
+//    {
+//        return request()->input(Table::QUERY_ID) == $this->getId();
+//    }
 
     /**
      * Override this method in your parent table objects
@@ -376,18 +376,18 @@ class Table
             $url = request()->fullUrl();
         }
         $url = url()->query($url, [self::QUERY_ID => null]);
-        unset($params[self::QUERY_ID]);
 
         $add = [];
         foreach ($params as $param => $value) {
+            if ($param == self::QUERY_ID) continue;
             if (!str_starts_with($param, $this->getId().'_')) {
                 $add[$this->key($param)] = $value;
             }
         }
-
-        if (!array_key_exists(self::QUERY_ID, $params) && count(array_filter($add))) {
+        if (!isset($add[self::QUERY_ID]) && count($params)) {
             $add[self::QUERY_ID] = $this->getId();
         }
+
         return url()->query($url, $add);
     }
 

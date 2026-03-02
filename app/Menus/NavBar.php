@@ -11,7 +11,6 @@ final class NavBar extends MenuInterface
 
     public function build(): static
     {
-        vd(auth()->check());
         $this->addChildren([
             MenuItem::make('Dashboard', '/'),
 
@@ -25,8 +24,7 @@ final class NavBar extends MenuInterface
             MenuItem::make('Tables')->addChildren([
                 MenuItem::make('Sql Query', '/tableQuery'),
                 MenuItem::make('Array Rows', '/tableArray'),
-                MenuItem::make('Csv File', '/tableCsv')
-                    ->setVisible(auth()->check()),
+                MenuItem::make('Csv File', '/tableCsv'),
             ]),
 
             MenuItem::make('Ideas Example', '/ideas')
@@ -36,7 +34,8 @@ final class NavBar extends MenuInterface
 
             MenuItem::make('Logout', '/logout')
                 ->setTitleVisible(false)
-                ->setIcon('fa-solid fa-right-from-bracket'),
+                ->setIcon('fa-solid fa-right-from-bracket')
+                ->setVisible(auth()->check()),
 
         ]);
 
