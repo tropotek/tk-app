@@ -43,7 +43,7 @@ class Table
     }
 
     /**
-     * Called by Records to update the table from the request or session.
+     * Called by Records to update the table params from the request/session.
      * Called when a Records object is added to the table
      */
     public function refreshParams(): void
@@ -55,8 +55,8 @@ class Table
     }
 
     /**
-     * return all available table state properties
-     * Optionally remove the table id from the key
+     * Return all table state params
+     * Optionally remove the table id from the param key
      */
     public function getParams(bool $removeId = true): array
     {
@@ -72,9 +72,6 @@ class Table
         }
 
         $query = request()->query();
-        // TODO Should we be validating the query params here???
-        //      not sure if its needed between the request and sql validations???
-        //      NOTE: Test for potential SQL injection issues here!!!!
         foreach ($query as $k => $v) {
             if (str_starts_with($k, $this->getId().'_')) {
                 if ($removeId) {
@@ -105,40 +102,6 @@ class Table
 
         return $default;
     }
-
-    // TODO This should not be needed as state params can be cleared by resetting the table
-//    public function setParam(string|array $key, null|string|array $value = null): static
-//    {
-//        $keys = $key;
-//        if (is_string($key)) {
-//            $keys = [$key => $value];
-//        }
-//
-//        if (Session::exists(self::SESSION_PRE.$this->getId())) {
-//            $state = Session::get(self::SESSION_PRE.$this->getId());
-//            foreach ($keys as $k => $v) {
-//                $k = $this->key($k);
-//                if (isset($state[$k])) {
-//                    if (is_null($v)) {
-//                        unset($state[$k]);
-//                    } else {
-//                        $state[$k] = $v;
-//                    }
-//                }
-//            }
-//
-//            Session::put(self::SESSION_PRE.$this->getId(), $state);
-//        }
-//        return $this;
-//    }
-
-    /**
-     * returns true if the current request is from this table id
-     */
-//    public function hasRequest(): bool
-//    {
-//        return request()->input(Table::QUERY_ID) == $this->getId();
-//    }
 
     /**
      * Override this method in your parent table objects
@@ -198,8 +161,6 @@ class Table
 
         // generate unique id from url path
         if (empty($id)) $id = \Tk\Utils\Str::shortHash(request()->path(), 5);
-        // md5 may not hav enough entropy, scope for clash is greater
-        //$id = substr(md5(request()->path()), 0, 5);
 
         $instances[$id] = isset($instances[$id]) ? ($instances[$id]+1) : 0;
         $this->id = ($instances[$id] > 0) ? $id.$instances[$id] : $id;
@@ -356,8 +317,6 @@ class Table
         return $tableId . '_' . $key;
     }
 
-    // View helper functions
-
     /**
      * modify url query params
      * renames all params to use the `{id}_key` format
@@ -391,21 +350,4 @@ class Table
         return url()->query($url, $add);
     }
 
-    /**
-     * return a url with all table state params removed
-     * optionally set/remove params with supplied query array
-     */
-//    public function resetUrl(array $query = []): string
-//    {
-//        $url = request()->fullUrl();
-//        $q = request()->query();
-//        foreach ($q as $k => $v) {
-//            if (str_starts_with($k, $this->getId().'_')) {
-//                $q[$k] = null;
-//            }
-//        }
-//        $q[self::QUERY_ID] = null;
-//        $query = array_merge($q, $query);
-//        return url()->query($url, $query);
-//    }
 }
