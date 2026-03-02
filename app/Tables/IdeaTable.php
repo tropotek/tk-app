@@ -13,10 +13,9 @@ class IdeaTable extends Table
 
     protected function build(): void
     {
-        $this->addClass('testing');
-        $this->addAttr(['data-test' => 'testing']);
-
-        $this->setLimit(3);
+//        $this->addClass('testing');
+//        $this->addAttr(['data-test' => 'testing']);
+        $this->setLimit(10);
 
         $this->addRowAttrs(function (Idea $row, Table $table) {
             return ['data-test-id' => $row->id];

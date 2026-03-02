@@ -50,7 +50,6 @@ class TableSessionState
             }
 
             // remove all table query params
-            vd('REdirecting');
             $url = trim($request->fullUrlWithQuery($query), '?');
             return redirect($url);
         }
