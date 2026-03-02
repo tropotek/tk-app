@@ -25,6 +25,7 @@ class IdeaController extends Controller
         if (isset($tableParams['row_id'])) {
             vd($tableParams);
 
+            // perform required action (delete, csv, etc...)
 
             // clear action params once done
             $table->setState([

@@ -19,6 +19,22 @@ class QueryTable extends Controller
 
         $table = new IdeaTable();
 
+        // example of using the action params
+        $tableParams = $table->getStateList();
+        if (isset($tableParams['row_id'])) {
+            vd($tableParams);
+
+            // perform required action (delete, csv, etc...)
+
+            // clear action params once done
+            $table->setState([
+                'row_id' => null,
+                'row_id_all' => null,
+            ]);
+
+            return redirect(request()->fullUrl())->with('success', "Table Action Completed.");
+        }
+
         return view('tables.table-query', Compact('table'));
     }
 
