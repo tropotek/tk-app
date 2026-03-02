@@ -11,7 +11,7 @@
 @endphp
 <td {{ $attributes->merge($cell->getAttributes()->toArray()) }}>
     <input type="checkbox"
-           name="{{ $cell->getName() }}[]"
+           name="{{ $cell->getTable()->key($cell->getName()) }}[]"
            value="{{ $cell->getValue($row) }}"
            class="trs-row"
     />

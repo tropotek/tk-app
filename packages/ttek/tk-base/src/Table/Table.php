@@ -19,10 +19,10 @@ class Table
 
     // Table url query names
     const string QUERY_ID       = '_tid';   // reserved param for table queries
-    const string QUERY_RESET    = 'tr';
-    const string QUERY_LIMIT    = 'tl';
-    const string QUERY_PAGE     = 'tp';
-    const string QUERY_ORDER    = 'to';
+    const string QUERY_RESET    = 'tr_';
+    const string QUERY_LIMIT    = 'tl_';
+    const string QUERY_PAGE     = 'tp_';
+    const string QUERY_ORDER    = 'to_';
 
     protected string     $id        = '';
     protected int        $limit     = 50;
@@ -72,6 +72,31 @@ class Table
         }
 
         return $default;
+    }
+
+    public function setState(string|array $key, null|string|array $value = null): static
+    {
+        $keys = $key;
+        if (is_string($key)) {
+            $keys = [$key => $value];
+        }
+
+        if (Session::exists(self::SESSION_PRE.$this->getId())) {
+            $state = Session::get(self::SESSION_PRE.$this->getId());
+            foreach ($keys as $k => $v) {
+                $k = $this->key($k);
+                if (isset($state[$k])) {
+                    if (is_null($v)) {
+                        unset($state[$k]);
+                    } else {
+                        $state[$k] = $v;
+                    }
+                }
+            }
+
+            Session::put(self::SESSION_PRE.$this->getId(), $state);
+        }
+        return $this;
     }
 
     /**

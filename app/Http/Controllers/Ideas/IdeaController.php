@@ -20,6 +20,21 @@ class IdeaController extends Controller
 
         $table = new IdeaTable();
 
+        // example of using the action params
+        $tableParams = $table->getStateList();
+        if (isset($tableParams['row_id'])) {
+            vd($tableParams);
+
+
+            // clear action params once done
+            $table->setState([
+                'row_id' => null,
+                'row_id_all' => null,
+            ]);
+
+            return redirect(request()->fullUrl())->with('success', "Table Action Completed.");
+        }
+
         //$ideas = Auth::user()->ideas()->orderBy('created_at', 'desc')->get();
         return view('ideas.index', [
             'ideas' => auth()->user()->ideas,
@@ -94,6 +109,7 @@ class IdeaController extends Controller
 
     public function destroy(Idea $idea)
     {
+        vd("delete idea {$idea->id}");
         Gate::authorize('update', $idea);
         $idea->delete();
         return redirect('/ideas');
@@ -101,6 +117,7 @@ class IdeaController extends Controller
 
     public function deleteAll()
     {
+        vd('Delete All Ideas');
         Auth::user()->ideas()->delete();
         return redirect('/ideas');
     }

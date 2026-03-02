@@ -22,8 +22,11 @@ class IdeaTable extends Table
         });
 
 
-        $this->appendCell('id')
-            ->setComponent(Cell::COMP_ROW_SELECT);
+        $this->appendCell('row_id')
+            ->setComponent(Cell::COMP_ROW_SELECT)
+            ->setValue(function ($row , Cell $cell) {
+                return $row->id;
+            });
 
         $this->appendCell('title')
             ->setSortable()

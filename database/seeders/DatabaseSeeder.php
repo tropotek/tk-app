@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use Database\Factories\IdeaFactory;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -27,5 +28,6 @@ class DatabaseSeeder extends Seeder
 
         User::factory(10)->create();
 
+        IdeaFactory::times(88)->create();
     }
 }
