@@ -42,7 +42,7 @@
 
     @if ($table->getLimit() > 0 && $table->getPaginator() && $showPaginator)
         <div class="mt-2">
-            {{ $table->getPaginator() }}
+            {{ $table->getPaginator()->links('vendor.pagination.small') }}
         </div>
    @endif
 

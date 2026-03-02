@@ -4,7 +4,6 @@ namespace App\Tables;
 
 use App\Models\Idea;
 use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
-use Illuminate\Support\Facades\Request;
 use Tk\Table\Cell;
 use Tk\Table\Records\QueryRecords;
 use Tk\Table\Table;
@@ -63,8 +62,10 @@ class IdeaTable extends Table
 
     public function buildQuery(): ?BuilderContract
     {
+        // get table filter query
         $filters = $this->getStateList();
 
+        // get idea query builder
         $query = Idea::query();
 
         // filter records
@@ -85,7 +86,7 @@ class IdeaTable extends Table
         if (!empty($filters['status'])) {
             $query->where('status', '=', $filters['status']);
         }
-vd($query->toRawSql());
+
         return $query;
     }
 
