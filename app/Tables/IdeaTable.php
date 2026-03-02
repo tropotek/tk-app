@@ -87,6 +87,7 @@ class IdeaTable extends Table
             $query->where('status', '=', $filters['status']);
         }
 
+        //vd($query->toRawSql());
         return $query;
     }
 

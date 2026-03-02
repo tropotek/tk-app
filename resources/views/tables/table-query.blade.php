@@ -10,7 +10,7 @@
                 <x-slot name="filters">
                     <x-tk-base::table.filters.select
                         :name="$table->key('status')"
-                        :options="[ '' => '- Status -', 'pending' => 'Pending', 'in_progress' => 'In Progress', 'cancelled' => 'Cancelled']"
+                        :options="[ '' => '- Status -', 'pending' => 'Pending', 'in_progress' => 'In Progress', 'completed' => 'Completed', 'cancelled' => 'Cancelled']"
                         value="{{ $table->getState('status') }}"
                     />
                 </x-slot>
