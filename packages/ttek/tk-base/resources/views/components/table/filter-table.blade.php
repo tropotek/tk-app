@@ -1,7 +1,4 @@
 @php use Tk\Table\Table; @endphp
-<?php
-/** @var Table $table */
-?>
 @props([
     // required
     'table',
@@ -39,40 +36,12 @@
 
             <div class="p-2 flex-grow-1">
                 @if ($showSearch)
-                    <div class="input-group input-group-sm">
-                        <input type="text" class="form-control" placeholder="Search"
-                            id="fid-{{ $table->key('search') }}"
-                            name="{{ $table->key('search') }}" value="{{ $table->getState('search', '') }}"/>
-                        <button class="btn btn-outline-secondary" type="submit" id="fid-search-btn">
-                            <i class="fa fa-search"></i>
-                        </button>
-                    </div>
+                    <x-tk-base::table.filters.search />
                 @endif
             </div>
 
             @if($showLimit)
-                <div class="p-2 pe-0">
-                    <div class="limit-links input-group input-group-sm mb-2 me-1" title="Results per page">
-                        <label class="input-group-text" for="fid-limit"><i class="fa fa-list"></i></label>
-                        <button type="button" class="form-select" data-bs-toggle="dropdown">
-                            <span>{{ $table->getLimit() ?: 'ALL' }}</span>
-                        </button>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item"
-                                href="{{ $table->url([Table::QUERY_PAGE => '1', Table::QUERY_LIMIT => '0']) }}">All</a>
-                            <a class="dropdown-item"
-                                href="{{ $table->url([Table::QUERY_PAGE => '1', Table::QUERY_LIMIT => '3']) }}">3</a>
-                            <a class="dropdown-item"
-                                href="{{ $table->url([Table::QUERY_PAGE => '1', Table::QUERY_LIMIT => '10']) }}">10</a>
-                            <a class="dropdown-item"
-                                href="{{ $table->url([Table::QUERY_PAGE => '1', Table::QUERY_LIMIT => '25']) }}">25</a>
-                            <a class="dropdown-item"
-                                href="{{ $table->url([Table::QUERY_PAGE => '1', Table::QUERY_LIMIT => '50']) }}">50</a>
-                            <a class="dropdown-item"
-                                href="{{ $table->url([Table::QUERY_PAGE => '1', Table::QUERY_LIMIT => '100']) }}">100</a>
-                        </div>
-                    </div>
-                </div>
+                <x-tk-base::table.filters.limit />
             @endif
         </div>
 

@@ -23,9 +23,9 @@
         <tr>
             @foreach ($table->getCells() as $cell)
                 @if($cell->componentExists($cell->getComponentHead()))
-                    <x-dynamic-component :component="$cell->getComponentHead()" :$cell/>
+                    <x-dynamic-component :component="$cell->getComponentHead()" :$cell />
                 @else
-                    <x-tk-base::table.header :$cell/>
+                    <x-tk-base::table.header :$cell />
                 @endif
             @endforeach
         </tr>
@@ -33,8 +33,8 @@
 
         <tbody>
         @if($table->hasRecords())
-            @foreach ($table->getRecords()->toArray() as $i => $row)
-                <x-tk-base::table.row :idx="$i" :$row/>
+            @foreach ($table->getRecords() as $i => $row)
+                <x-tk-base::table.row :idx="$i" :$row />
             @endforeach
         @endif
         </tbody>

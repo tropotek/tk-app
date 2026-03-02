@@ -2,8 +2,6 @@
 
 namespace Tk\Table\Records;
 
-use Tk\Table\Table;
-use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
 
 /**
  * Populate a table with rows from a CSV file.s

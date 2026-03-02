@@ -15,9 +15,9 @@
 }}>
     @foreach ($table->getCells($row) as $cell)
         @if($cell->getComponent() && $cell->componentExists($cell->getComponent()))
-            <x-dynamic-component :component="$cell->getComponent()" :$row :$cell/>
+            <x-dynamic-component :component="$cell->getComponent()" :$row :$cell />
         @else
-            <x-tk-base::table.cell :$row :$cell/>
+            <x-tk-base::table.cell :$row :$cell />
         @endif
     @endforeach
 </tr>

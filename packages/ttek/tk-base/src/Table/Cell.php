@@ -199,8 +199,8 @@ class Cell
      * Check if a component exists
      *
      * @note View::exists() function requires a view namespace,
-     *       use this method to prepend the `packages.`
-     *       namespace to the component path.
+     *       use this method to prepend `components.`
+     *       to the path so the function can find the template..
      */
     public function componentExists(string $component): bool
     {
@@ -264,19 +264,16 @@ class Cell
             // set to DESC
             if ($dir == '-') {
                 $url = $this->table->url([Table::QUERY_ORDER => $dir.$orderBy]);
-                //$url = url()->query($url, [$key => $dir.$orderBy]);
             } else {
                 // remove cell order
                 // TODO: When default desc order by set to this col we cannot
                 //       toggle the order by when setting it to null, as the default then becomes set.
                 //       Using an empty string may be fine, just means we have an empty query param in the url?
                 //$url = url()->query($url, [$key => null]);
-                //$url = url()->query($url, [$key => '']);
                 $url = $this->table->url([Table::QUERY_ORDER => '']);
             }
         } else {
             // set to ASC
-            //$url = url()->query($url, [$key => $orderBy]);
             $url = $this->table->url([Table::QUERY_ORDER => $orderBy]);
         }
 

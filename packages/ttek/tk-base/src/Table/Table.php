@@ -2,7 +2,6 @@
 
 namespace Tk\Table;
 
-use Illuminate\Notifications\Action;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
@@ -15,7 +14,10 @@ class Table
 {
     use HasAttributes;
 
+    // table sessions id keys: `SESSION_PRE.$table->getId()`
     const string SESSION_PRE    = '_tbl_';
+
+    // Table url query names
     const string QUERY_ID       = '_tid';   // reserved param for table queries
     const string QUERY_RESET    = 'tr';
     const string QUERY_LIMIT    = 'tl';
@@ -50,7 +52,6 @@ class Table
         $this->setPage((int)$this->getState(self::QUERY_PAGE, $this->page));
         $this->setLimit((int)$this->getState(self::QUERY_LIMIT, $this->limit));
         $this->setOrderBy((string)$this->getState(self::QUERY_ORDER, $this->orderBy));
-
     }
 
     /**
@@ -313,6 +314,8 @@ class Table
         if (str_starts_with($key, $tableId.'_')) return $key;
         return $tableId . '_' . $key;
     }
+
+    // View helper functions
 
     /**
      * modify url query params

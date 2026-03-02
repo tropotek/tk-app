@@ -2,11 +2,9 @@
 
 namespace Tk\Table\Records;
 
-
 use Illuminate\Container\Container;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Tk\Table\Table;
 
 /**
  * Populate a table with rows from an array.
@@ -44,6 +42,9 @@ class ArrayRecords extends RecordsInterface
         return $this->paginateRows($this->rows);
     }
 
+    /**
+     * @interface RecordsInterface
+     */
     public function toArray(): array
     {
         if (!isset($this->records)) {

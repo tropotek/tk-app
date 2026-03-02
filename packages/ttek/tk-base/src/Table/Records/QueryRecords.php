@@ -2,7 +2,6 @@
 
 namespace Tk\Table\Records;
 
-
 use Illuminate\Pagination\AbstractPaginator;
 use Tk\Table\Table;
 use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
@@ -64,6 +63,9 @@ class QueryRecords extends RecordsInterface
         return $this->query;
     }
 
+    /**
+     * @interface RecordsInterface
+     */
     public function toArray(): array
     {
         if (!isset($this->records)) {

@@ -7,10 +7,8 @@ use Tk\Table\Table;
 
 /**
  *
- * @todo make this iterable with paging etc.
- *
  */
-abstract class RecordsInterface
+abstract class RecordsInterface implements \IteratorAggregate, \Countable
 {
 
     protected Table $table;
@@ -19,12 +17,22 @@ abstract class RecordsInterface
     protected int $total = 0;
 
     /**
-     * This method should write the filtered, sorted, and pagenated rows to the
+     * This method should write the filtered, sorted, and paginated rows to the
      * $this->records array when not set, then return the records array
-     *
      */
     abstract public function toArray(): array;
 
+    /**
+     * @interface \IteratorAggregate
+     */
+    public function getIterator(): \Traversable
+    {
+        return new \ArrayIterator($this->toArray());
+    }
+
+    /**
+     * @interface \Countable
+     */
     public function count(): int
     {
         return count($this->toArray());
