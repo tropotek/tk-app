@@ -28,12 +28,13 @@ class ArrayRecords extends RecordsInterface
             throw new \Exception('Table or rows not set');
         }
 
-        $this->total = count($this->rows);
-
         // filter results using callable
         if ($this->filter) {
             $this->rows = call_user_func($this->filter, $this->getTable()->getParams(), $this->rows);
         }
+
+        // Set total rows found
+        $this->total = count($this->rows);
 
         // sort results
         $columns = array_filter(array_map('trim', explode(',', $this->getTable()->getOrderBy())));
