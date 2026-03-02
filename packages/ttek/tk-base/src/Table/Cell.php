@@ -10,16 +10,17 @@ class Cell
 {
     use HasAttributes;
 
-    const string TYPE_ROW_SELECT = 'rowselect';
+    // Custom table components
+    const string COMP_ROW_SELECT = 'tk-base::table.cell.rowselect';
 
-    protected string     $name     = '';
-    protected string     $header   = '';
-    protected string     $orderBy  = '';
-    protected string     $type     = '';
-    protected bool       $sortable = false;
-    protected mixed      $value    = null;  // null|string|callable
-    protected mixed      $html     = null;  // null|string|callable
-    protected ?Table     $table    = null;
+    protected string     $name      = '';
+    protected string     $header    = '';
+    protected string     $orderBy   = '';
+    protected string     $component = '';
+    protected bool       $sortable  = false;
+    protected mixed      $value     = null;  // null|string|callable
+    protected mixed      $html      = null;  // null|string|callable
+    protected ?Table     $table     = null;
     protected ComponentAttributeBag $headerAttrs;
 
     // the current row being rendered, null if not rendering
@@ -59,9 +60,10 @@ class Cell
     }
 
     /**
-     * Return the raw value of a cell, without display markup
-     * If value is null then get value from row using the cell name
-     * value should be exportable for csv|text formats
+     * Return the raw value without display markup
+     * If the cell value is a string, return the static string
+     * If the cell value is a callable, return the result of the callable
+     * If the cell value is null, return the value from the row array or object.
      */
     public function getValue(object|array $row): mixed
     {
@@ -81,14 +83,17 @@ class Cell
     /**
      * @callable function (mixed $row, Cell $cell):string { return ''; }
      */
-    public function setValue(string|callable $value): Cell
+    public function setValue(null|string|callable $value): Cell
     {
         $this->value = $value;
         return $this;
     }
 
     /**
-     * Return the value with any display markup if required
+     * Return the value with any display markup if required.
+     * If the cell html is a string, return the static string
+     * If the cell html is a callable, return the result of the callable
+     * If the cell html is null, return the raw cell value
      */
     public function getHtml(object|array $row): string
     {
@@ -103,7 +108,7 @@ class Cell
     /**
      * @callable function (mixed $row, Cell $cell):string { return ''; }
      */
-    public function setHtml(mixed $html): Cell
+    public function setHtml(null|string|callable $html): Cell
     {
         $this->html = $html;
         return $this;
@@ -164,15 +169,49 @@ class Cell
         return $this->orderBy;
     }
 
-    public function getType(): string
+    public function getComponent(): string
     {
-        return $this->type;
+        return $this->component;
     }
 
-    public function setType(string $type): static
+    /**
+     * return the head component name renderer
+     */
+    public function getComponentHead(): string
     {
-        $this->type = $type;
+        if (empty($this->component)) return '';
+        return $this->component . '-head';
+    }
+
+    /**
+     * Set the view component name to use for this cell
+     */
+    public function setComponent(string $component): static
+    {
+        if (str_starts_with($component, 'x-')) {
+            $component = substr($component, 2);
+        }
+        $this->component = $component;
         return $this;
+    }
+
+    /**
+     * Check if a component exists
+     *
+     * @note View::exists() function requires a view namespace,
+     *       use this method to prepend the `packages.`
+     *       namespace to the component path.
+     */
+    public function componentExists(string $component): bool
+    {
+        if (!$component) return false;
+        if (str_contains($component, '::')) {
+            [$pkg, $comp] = explode('::', $component);
+            $component = $pkg.'::components.'.$comp;
+        } else {
+            $component = 'components.'.$component;
+        }
+        return view()->exists($component);
     }
 
     /**
@@ -212,9 +251,9 @@ class Cell
         if (!$this->getTable()) return '';
         if (!$this->isSortable()) return '';
 
-        $key = $this->getTable()->makeIdKey(Table::QUERY_ORDER);
-        $url = request()->url();
-        $url = url()->query($url, [$key => null]);
+//        $key = $this->getTable()->key(Table::QUERY_ORDER);
+//        $url = request()->url();
+        //$url = url()->query($url, [$key => null]);
 
         $orderBy = $this->getOrderBy();
         $tableOrderBy = $this->getTable()->getOrderBy();
@@ -224,18 +263,21 @@ class Cell
         if (str_replace('-', '', $tableOrderBy) == $orderBy) {     // if ordered by current cell
             // set to DESC
             if ($dir == '-') {
-                $url = url()->query($url, [$key => $dir.$orderBy]);
+                $url = $this->table->url([Table::QUERY_ORDER => $dir.$orderBy]);
+                //$url = url()->query($url, [$key => $dir.$orderBy]);
             } else {
                 // remove cell order
                 // TODO: When default desc order by set to this col we cannot
                 //       toggle the order by when setting it to null, as the default then becomes set.
                 //       Using an empty string may be fine, just means we have an empty query param in the url?
                 //$url = url()->query($url, [$key => null]);
-                $url = url()->query($url, [$key => '']);
+                //$url = url()->query($url, [$key => '']);
+                $url = $this->table->url([Table::QUERY_ORDER => '']);
             }
         } else {
             // set to ASC
-            $url = url()->query($url, [$key => $orderBy]);
+            //$url = url()->query($url, [$key => $orderBy]);
+            $url = $this->table->url([Table::QUERY_ORDER => $orderBy]);
         }
 
         return $url;
@@ -246,7 +288,8 @@ class Cell
         $orderBy = $this->getOrderBy();
         $tableOrderBy = $this->getTable()->getOrderBy();
 
-        if (str_replace('-', '', $tableOrderBy) == $orderBy) {    // if ordered by current cell
+        // if ordered by current cell
+        if (str_replace('-', '', $tableOrderBy) == $orderBy) {
             if (str_starts_with($tableOrderBy, '-')) {
                 return 'desc';
             } elseif (!empty($this->getTable()->getOrderBy())) {

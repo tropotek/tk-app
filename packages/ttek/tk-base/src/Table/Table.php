@@ -6,6 +6,7 @@ use Illuminate\Notifications\Action;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 use Illuminate\View\ComponentAttributeBag;
 use Tk\Table\Records\RecordsInterface;
 use Tk\Table\Traits\HasAttributes;
@@ -14,6 +15,9 @@ class Table
 {
     use HasAttributes;
 
+    const string SESSION_PRE    = '_tbl_';
+    const string QUERY_ID       = '_tid';   // reserved param for table queries
+    const string QUERY_RESET    = 'tr';
     const string QUERY_LIMIT    = 'tl';
     const string QUERY_PAGE     = 'tp';
     const string QUERY_ORDER    = 'to';
@@ -23,7 +27,6 @@ class Table
     protected int        $page      = 1;
     protected string     $orderBy   = '';
     protected Collection $cells;
-    protected Collection $actions;
     protected RecordsInterface $records;
     protected mixed      $rowAttrs = null;   // ?callable
 
@@ -32,7 +35,6 @@ class Table
     {
         $this->_attributes = new ComponentAttributeBag();
         $this->cells = new Collection();
-        $this->actions = new Collection();
         $this->setId($id);
 
         $this->build();
@@ -44,15 +46,63 @@ class Table
      */
     public function refreshState(): void
     {
-        /*
-         * TODO Add a configurable enabled middleware object to hide table query params
-         *      Then we can store the state of the table in the session.
-         *      Might be a good place to start thinking about the table sessions, user
-         *      state saving in the DB, etc...
-         */
-        $this->setPage((int)request()->input($this->makeIdKey(self::QUERY_PAGE), $this->page));
-        $this->setLimit((int)request()->input($this->makeIdKey(self::QUERY_LIMIT), $this->limit));
-        $this->setOrderBy((string)request()->input($this->makeIdKey(self::QUERY_ORDER), $this->orderBy));
+        // set table state from storage
+        $this->setPage((int)$this->getState(self::QUERY_PAGE, $this->page));
+        $this->setLimit((int)$this->getState(self::QUERY_LIMIT, $this->limit));
+        $this->setOrderBy((string)$this->getState(self::QUERY_ORDER, $this->orderBy));
+
+    }
+
+    /**
+     * Get the table's current state property from the session or the request
+     */
+    public function getState($key, mixed $default = null): mixed
+    {
+        $key = $this->key($key);
+        if (request()->has($this->key($key))) {
+            return request()->input($this->key($key));
+        }
+
+        if (
+            Session::exists(self::SESSION_PRE.$this->getId()) &&
+            isset(Session::get(self::SESSION_PRE.$this->getId())[$key])
+        ) {
+            return Session::get(self::SESSION_PRE.$this->getId())[$key];
+        }
+
+        return $default;
+    }
+
+    /**
+     * return all available table state properties
+     * Optionally remove the table id from the key
+     */
+    public function getStateList(bool $removeId = true): array
+    {
+        $list = [];
+
+        if (Session::exists(self::SESSION_PRE.$this->getId())) {
+            foreach (Session::get(self::SESSION_PRE.$this->getId()) as $k => $v) {
+                if ($removeId) {
+                    $k = substr($k, strlen($this->getId() . '_'));
+                }
+                $list[$k] = $v;
+            };
+        }
+
+        $query = request()->query();
+        // TODO Should we be validating the query params here???
+        //      not sure if its needed between the request and sql validations???
+        //      NOTE: Test for potential SQL injection issues here!!!!
+        foreach ($query as $k => $v) {
+            if (str_starts_with($k, $this->getId().'_')) {
+                if ($removeId) {
+                    $k = substr($k, strlen($this->getId() . '_'));
+                }
+                $list[$k] = $v;
+            }
+        }
+        return $list;
     }
 
     /**
@@ -249,26 +299,66 @@ class Table
         return $cell;
     }
 
-    /**
-     * @return Collection<int,Action>
-     */
-    public function getActions(): Collection
+    public function key(string $key): string
     {
-        return $this->actions;
+        return self::makeKey($this->getId(), $key);
     }
-
-
-
-
-
-
 
     /**
      * Create a table specific key using the table id
-     * returns: `{id}_{$key}`
+     * returns: `{$tableId}_{$key}`
      */
-    public function makeIdKey(string $key, string $dash = '_'): string
+    public static function makeKey(string $tableId, string $key): string
     {
-        return $this->getId() . $dash . $key;
+        if (str_starts_with($key, $tableId.'_')) return $key;
+        return $tableId . '_' . $key;
+    }
+
+    /**
+     * modify url query params
+     * renames all params to use the `{id}_key` format
+     * Optionally send $params as the first argument to add the params to the current url
+     *
+     * @example
+     *  $url = $table->url($myUrl, ['tp' => 1, 'tl' => 10]);
+     *  // returns: /my-url?_tid={id}&{id}_tl=10&{id}_tp=1
+     *  $url = $table->url(['tp' => 1, 'tl' => 10]);
+     *  // returns: /current-url?_tid={id}&{id}_tl=10&{id}_tp=1
+     */
+    public function url(array|string $url, ?array $params = null): string
+    {
+        if (is_array($url)) {
+            $params = $url;
+            $url = request()->fullUrl();
+        }
+        $url = url()->query($url, [self::QUERY_ID => null]);
+        unset($params[self::QUERY_ID]);
+
+        $add = [];
+        foreach ($params as $param => $value) {
+            if (!str_starts_with($param, $this->getId().'_')) {
+                $add[$this->key($param)] = $value;
+            }
+        }
+
+        if (!array_key_exists(self::QUERY_ID, $params) && count(array_filter($add))) {
+            $add[self::QUERY_ID] = $this->getId();
+        }
+        return url()->query($url, $add);
+    }
+
+    /**
+     * return a url with all table params removed
+     */
+    public function resetUrl(): string
+    {
+        $url = request()->fullUrl();
+        $query = request()->query();
+        foreach ($query as $k => $v) {
+            if (str_starts_with($k, $this->getId().'_')) {
+                $query[$k] = null;
+            }
+        }
+        return url()->query($url, $query);
     }
 }

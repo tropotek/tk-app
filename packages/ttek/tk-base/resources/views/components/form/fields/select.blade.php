@@ -9,13 +9,17 @@
     'fieldCss'  => '',
     'help'      => '',
     'errorText' => '',
+    'withField' => true,
 ])
 @php
     $cleanName = str_replace(['[', ']'], '', $name);
     $value = old($cleanName, $value ?? '');
+    if (!$withField) {
+        $mode = 'edit';
+    }
 @endphp
 
-<x-tk-base::form.ui.field :$errorText>
+<x-tk-base::form.ui.field :$errorText :$withField>
     @if($mode == 'view')
         <input {{ $attributes->merge([
             'type'     => 'text',

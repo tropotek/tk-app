@@ -10,6 +10,7 @@
     'preText' => '',
     'postText' => '',
     'errorText' => '',
+    'withField' => true,
 ])
 
 @php
@@ -20,11 +21,15 @@
     }
 @endphp
 
-<div {{ $fieldAttrs->merge(['class' => $fieldCss]) }}>
-    @if($label) <x-tk-base::form.ui.label for="fid_{{ $cleanName }}" :$label /> @endif
-
+@if ($withField === false)
     {{ $slot }}
+@else
+    <div {{ $fieldAttrs->merge(['class' => $fieldCss]) }}>
+            @if($label) <x-tk-base::form.ui.label for="fid_{{ $cleanName }}" :$label /> @endif
 
-    <x-tk-base::form.ui.error :message="$errors->first($name) ?: ($errorText ?: 'Please enter a valid value')" />
-    @if($help) <x-tk-base::form.ui.help :$help /> @endif
-</div>
+            {{ $slot }}
+
+            <x-tk-base::form.ui.error :message="$errors->first($name) ?: ($errorText ?: 'Please enter a valid value')" />
+            @if($help) <x-tk-base::form.ui.help :$help /> @endif
+    </div>
+@endif

@@ -13,6 +13,7 @@ use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
 class QueryRecords extends RecordsInterface
 {
     protected BuilderContract $query;
+    protected ?AbstractPaginator $paginator = null;
 
     public function __construct(BuilderContract $query)
     {
@@ -41,10 +42,14 @@ class QueryRecords extends RecordsInterface
         $this->total = $this->getQuery()->count();
 
         // paginate results
-        $this->getQuery()->forPage(
-            $this->getTable()->getPage(),
-            $this->getTable()->getLimit()
-        );
+        if ($this->getTable()->getLimit() > 0) {
+            $this->paginator = $this->getQuery()->paginate(
+                $this->getTable()->getLimit(),
+                '[*]',
+                $this->getTable()->key(\Tk\Table\Table::QUERY_PAGE),
+                $this->getTable()->getPage()
+            )->withQueryString()->appends(Table::QUERY_ID, $this->getTable()->getId());
+        }
     }
 
     public function setTable(Table $table): static
@@ -74,9 +79,6 @@ class QueryRecords extends RecordsInterface
 
     public function getPaginator(): ?AbstractPaginator
     {
-        return \App\Models\Idea::paginate(
-            $this->getTable()->getLimit(),
-            '[*]',
-            $this->getTable()->makeIdKey(\Tk\Table\Table::QUERY_PAGE));
+        return $this->paginator;
     }
 }

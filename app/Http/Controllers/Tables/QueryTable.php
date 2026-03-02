@@ -19,7 +19,7 @@ class QueryTable extends Controller
 
         $table = new IdeaTable();
 
-        return view('tables.table-example', Compact('table'));
+        return view('tables.table-query', Compact('table'));
     }
 
 }

@@ -25,7 +25,7 @@ class IdeaTable extends Table
 
 
         $this->appendCell('id')
-            ->setType(Cell::TYPE_ROW_SELECT);
+            ->setComponent(Cell::COMP_ROW_SELECT);
 
         $this->appendCell('title')
             ->setSortable()
@@ -58,23 +58,24 @@ class IdeaTable extends Table
                 return $row->updated_at->format('Y-m-d h:i');
             });
 
-        $filters = Request::validate([
-            'search' => 'string',
-        ]);
-
-        $this->setRecords(new QueryRecords($this->buildQuery($filters)));
+        $this->setRecords(new QueryRecords($this->buildQuery()));
     }
 
-    public function buildQuery(array $filters = []): ?BuilderContract
+    public function buildQuery(): ?BuilderContract
     {
+        $filters = $this->getStateList();
+
         $query = Idea::query();
 
         // filter records
-        if (!empty($filter['search'])) {
-            $filter['lSearch'] = '%' . strtolower($filter['search']) . '%';
-            $w  = "user_id = :search ";
-            $w .= "OR LOWER(CONCAT_WS(' ', title, description)) LIKE :lSearch ";
-            $query->whereRaw($w, $filter);
+        if (!empty($filters['search'])) {
+            $q = "LOWER(CONCAT_WS(' ', title, description)) LIKE ?";
+            $params = ['%' . strtolower($filters['search']) . '%'];
+            if (is_numeric($filters['search']) && intval($filters['search']) > 0) {
+                $q .= " OR id = ?";
+                $params[] = (int)$filters['search'];
+            }
+            $query->whereRaw("($q)", $params);
         }
 
         if (!empty($filters['title'])) {
@@ -84,7 +85,7 @@ class IdeaTable extends Table
         if (!empty($filters['status'])) {
             $query->where('status', '=', $filters['status']);
         }
-
+vd($query->toRawSql());
         return $query;
     }
 
