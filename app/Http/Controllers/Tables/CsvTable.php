@@ -33,7 +33,36 @@ class CsvTable extends Controller
         $table->appendCell('Type')->setSortable();
         $table->appendCell('Created')->setSortable();
 
-        $table->setRecords(new CsvRecords(app_path('../public/assets/test.csv')));
+        $records = new CsvRecords(app_path('../public/assets/test.csv'));
+
+        // Setup array filters for records
+        $records->filter(function ($filters, $rows) {
+            $s = $filters['search'] ?? '';
+            if ($s) {
+                $s = strtolower(preg_replace("/[^a-zA-Z0-9@'\. -]/", ' ', $s));
+                foreach (array_filter(explode(' ', $s)) as $term) {
+                    $rows = array_filter($rows, fn($r) => str_contains(
+                        strtolower("{$r['Status']} {$r['Type']}"), $term)
+                    );
+                }
+            }
+
+            $s = $filters['status'] ?? '';
+            $rows = match($s) {
+                '', 'all' => $rows,
+                default   => array_filter($rows, fn($r) => $r['Status'] == $s),
+            };
+
+            $s = $filters['type'] ?? '';
+            $rows = match($s) {
+                '', 'all' => $rows,
+                default   => array_filter($rows, fn($r) => $r['Type'] == $s),
+            };
+
+            return $rows;
+        });
+
+        $table->setRecords($records);
 
         return $table;
     }

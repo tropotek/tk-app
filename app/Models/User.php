@@ -7,11 +7,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
+/**
+ *
+ * For roles and permissions tutorial:
+ * @see https://devsolutionsdaily.com/blog/laravel-12-livewire-4-spatie-role-and-permission-setup-tutorial
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasRoles, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass-assignable.

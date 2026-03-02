@@ -27,14 +27,14 @@
             'id'       => 'fid-'.$cleanName,
             'value'    => is_array($value) ? implode(', ', $value) : $value,
             'readonly' => 'readonly',
-            'class'    => 'form-control-plaintext fw-bold',
+            'class'    => 'form-control-plaintext',
         ]) }}
         />
     @else
         <select {{ $attributes->merge([
                 'name'  => $name,
                 'id'    => 'fid-'.$cleanName,
-                'class' => 'form-select fw-bold' . ( $errors->has($name) ? ' is-invalid' : '')
+                'class' => 'form-select' . ( $errors->has($name) ? ' is-invalid' : '')
             ]) }}
         >
             @foreach ($options as $val => $text)

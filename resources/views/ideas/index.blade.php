@@ -10,9 +10,9 @@
 
                         <x-slot name="filters">
                             <x-tk-base::table.filters.select
-                                :name="$table->key('status')"
-                                :options="['' => '- Status -', 'pending' => 'Pending', 'in_progress' => 'In Progress', 'completed' => 'Completed', 'cancelled' => 'Cancelled']"
-                                value="{{ $table->getState('status') }}"
+                                    :name="$table->key('status')"
+                                    :options="['' => '- Status -', 'pending' => 'Pending', 'in_progress' => 'In Progress', 'completed' => 'Completed', 'cancelled' => 'Cancelled']"
+                                    value="{{ $table->getParam('status') }}"
                             />
                         </x-slot>
 
@@ -44,18 +44,21 @@
                     @foreach ($ideas as $idea)
                         <li class="list-group-item">
                             <a href="/ideas/{{ $idea->id }}">
-                                {{ $idea->title }} <em class="d-inline-block float-end">[{{ $idea->status->label() }}]</em>
+                                {{ $idea->title }} <em class="d-inline-block float-end">[{{ $idea->status->label() }}
+                                    ]</em>
                             </a>
                         </li>
                     @endforeach
                 </ul>
 
-                <div class="modal fade" id="idea-dialog" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal fade" id="idea-dialog" tabindex="-1" aria-labelledby="exampleModalLabel"
+                     aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Idea</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
 

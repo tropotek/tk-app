@@ -19,7 +19,7 @@
         <div class="form-check {{$errors->has($name) ? ' is-invalid' : ''}}">
             @if($mode == 'view')
                 <i class="text-primary fa-lg {{ \Tk\Utils\Form::isSelected($optValue, $value) ? ' fa-regular fa-circle-dot' : 'fa-regular fa-circle' }}"></i>
-                <span class="fw-bold text-muted">{{ $text }}</span>
+                <span class="text-muted">{{ $text }}</span>
             @else
                 <input {{ $attributes->merge([
                         'type'     => 'radio',
@@ -30,7 +30,7 @@
                         'class'    => 'form-check-input' . ( $errors->has($name) ? ' is-invalid' : ''),
                     ]) }}
                 />
-                <label class="form-check-label fw-bold" for="fid-{{ $name }}-{{ $optValue }}">{{ $text }}</label>
+                <label class="form-check-label" for="fid-{{ $name }}-{{ $optValue }}">{{ $text }}</label>
             @endif
         </div>
     @endforeach

@@ -4,16 +4,14 @@ namespace App\Http\Controllers\Ideas;
 
 use App\Http\Controllers\Controller;
 use App\Models\Idea;
-use App\Models\User;
 use App\Tables\IdeaTable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
-use Tk\Table\Cell;
 
 class IdeaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $this->setPageTitle('ideas|Idea Manager');
         //Gate::authorize('admin-view');
@@ -21,19 +19,19 @@ class IdeaController extends Controller
         $table = new IdeaTable();
 
         // example of using the action params
-        $tableParams = $table->getStateList();
-        if (isset($tableParams['row_id'])) {
-            vd($tableParams);
+        if ($table->hasRequest() && $request->has('tbl_delete')) {
+            vd($table->getParams(), $request->all());
 
             // perform required action (delete, csv, etc...)
 
-            // clear action params once done
-            $table->setState([
+            // reset the url removing the action params
+            $url = $table->resetUrl([
+                'tbl_delete' => null,
                 'row_id' => null,
                 'row_id_all' => null,
             ]);
 
-            return redirect(request()->fullUrl())->with('success', "Table Action Completed.");
+            return redirect($url)->with('success', "Table Action Completed.");
         }
 
         //$ideas = Auth::user()->ideas()->orderBy('created_at', 'desc')->get();

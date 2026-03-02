@@ -22,8 +22,8 @@ class QueryRecords extends RecordsInterface
     protected function initQuery(): void
     {
         // filter results using callable
-        if ($this->getFilter()) {
-            $this->query = call_user_func($this->getFilter(), $this->getQuery());
+        if ($this->filter) {
+            $this->query = call_user_func($this->filter, $this->getTable()->getParams(), $this->getQuery());
         }
 
         // sort results

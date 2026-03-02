@@ -65,7 +65,7 @@ class IdeaTable extends Table
     public function buildQuery(): ?BuilderContract
     {
         // get table filter query
-        $filters = $this->getStateList();
+        $filters = $this->getParams();
 
         // get idea query builder
         $query = Idea::query();

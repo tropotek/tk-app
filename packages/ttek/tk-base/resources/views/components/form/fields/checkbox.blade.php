@@ -27,7 +27,7 @@
                     }
                 @endphp
                 <i class="fa-lg {{ $css }}"></i>
-                <span class="fw-bold text-muted">{{ $text }}</span>
+                <span class="text-muted">{{ $text }}</span>
             @else
                 <input {{ $attributes->merge([
                         'type'     => 'checkbox',
@@ -38,7 +38,7 @@
                         'class'    => 'form-check-input' . ( $errors->has($name) ? ' is-invalid' : ''),
                     ]) }}
                 />
-                <label class="form-check-label fw-bold" for="fid-{{ $cleanName }}-{{ $optValue }}">{{ $text }}</label>
+                <label class="form-check-label" for="fid-{{ $cleanName }}-{{ $optValue }}">{{ $text }}</label>
             @endif
         </div>
     @endforeach

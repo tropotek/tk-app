@@ -12,9 +12,9 @@
 
 <th {{ $attributes->merge(['class' => 'text-center ' . ($cell->getOrderByDir() ?: null)]) }}>
     <input type="checkbox"
-           name="{{ $cell->getTable()->key($cell->getName()) }}_all"
+           name="{{ $cell->getName() }}_all"
            title="Select All"
            class="trs-head"
-           data-trs-name="{{ $cell->getTable()->key($cell->getName()) }}"
+           data-trs-name="{{ $cell->getName() }}"
     />
 </th>

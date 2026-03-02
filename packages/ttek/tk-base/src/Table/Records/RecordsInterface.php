@@ -53,16 +53,14 @@ abstract class RecordsInterface implements \IteratorAggregate, \Countable
         $this->table = $table;
         // refresh the table orderBy, limit and page values
         // required so Result objects have access to the current table state
-        $this->table->refreshState();
+        $this->table->refreshParams();
         return $this;
     }
 
-    public function getFilter(): ?callable
-    {
-        return $this->filter;
-    }
-
-    public function setFilter(callable $filter): static
+    /**
+     * @callable function(array $filters, array|query $rows): array;
+     */
+    public function filter(callable $filter): static
     {
         $this->filter = $filter;
         return $this;

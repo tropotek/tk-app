@@ -22,13 +22,13 @@
 @endphp
 <x-tk-base::form.ui.field :$preText :$errorText>
     @if($mode == 'view')
-        <p {{ $attributes->merge([ 'class' => 'form-control-plaintext fw-bold' ]) }}>{!! $value !!}</p>
+        <p {{ $attributes->merge([ 'class' => 'form-control-plaintex' ]) }}>{!! $value !!}</p>
     @else
         <input {{ $attributes->merge([
                 'type'     => 'file',
                 'name'     => $cleanName,
                 'id'       => 'fid-'.$cleanName,
-                'class'    => 'form-control fw-bold' . ( $errors->has($name) ? ' is-invalid' : ''),
+                'class'    => 'form-control' . ( $errors->has($name) ? ' is-invalid' : ''),
             ]) }}
         />
     @endif

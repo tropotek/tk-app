@@ -33,7 +33,7 @@ class Table
     protected mixed      $rowAttrs = null;   // ?callable
 
 
-    public function __construct(string $id = 't')
+    public function __construct(string $id = '')
     {
         $this->_attributes = new ComponentAttributeBag();
         $this->cells = new Collection();
@@ -46,64 +46,19 @@ class Table
      * Called by Records to update the table from the request or session.
      * Called when a Records object is added to the table
      */
-    public function refreshState(): void
+    public function refreshParams(): void
     {
         // set table state from storage
-        $this->setPage((int)$this->getState(self::QUERY_PAGE, $this->page));
-        $this->setLimit((int)$this->getState(self::QUERY_LIMIT, $this->limit));
-        $this->setOrderBy((string)$this->getState(self::QUERY_ORDER, $this->orderBy));
-    }
-
-    /**
-     * Get the table's current state property from the session or the request
-     */
-    public function getState($key, mixed $default = null): mixed
-    {
-        $key = $this->key($key);
-        if (request()->has($this->key($key))) {
-            return request()->input($this->key($key));
-        }
-
-        if (
-            Session::exists(self::SESSION_PRE.$this->getId()) &&
-            isset(Session::get(self::SESSION_PRE.$this->getId())[$key])
-        ) {
-            return Session::get(self::SESSION_PRE.$this->getId())[$key];
-        }
-
-        return $default;
-    }
-
-    public function setState(string|array $key, null|string|array $value = null): static
-    {
-        $keys = $key;
-        if (is_string($key)) {
-            $keys = [$key => $value];
-        }
-
-        if (Session::exists(self::SESSION_PRE.$this->getId())) {
-            $state = Session::get(self::SESSION_PRE.$this->getId());
-            foreach ($keys as $k => $v) {
-                $k = $this->key($k);
-                if (isset($state[$k])) {
-                    if (is_null($v)) {
-                        unset($state[$k]);
-                    } else {
-                        $state[$k] = $v;
-                    }
-                }
-            }
-
-            Session::put(self::SESSION_PRE.$this->getId(), $state);
-        }
-        return $this;
+        $this->setPage((int)$this->getParam(self::QUERY_PAGE, $this->page));
+        $this->setLimit((int)$this->getParam(self::QUERY_LIMIT, $this->limit));
+        $this->setOrderBy((string)$this->getParam(self::QUERY_ORDER, $this->orderBy));
     }
 
     /**
      * return all available table state properties
      * Optionally remove the table id from the key
      */
-    public function getStateList(bool $removeId = true): array
+    public function getParams(bool $removeId = true): array
     {
         $list = [];
 
@@ -129,6 +84,60 @@ class Table
             }
         }
         return $list;
+    }
+
+    /**
+     * Get the table's current state property from the session or the request
+     */
+    public function getParam(string $key, mixed $default = null): mixed
+    {
+        $key = $this->key($key);
+        if (request()->has($this->key($key))) {
+            return request()->input($this->key($key));
+        }
+
+        if (
+            Session::exists(self::SESSION_PRE.$this->getId()) &&
+            isset(Session::get(self::SESSION_PRE.$this->getId())[$key])
+        ) {
+            return Session::get(self::SESSION_PRE.$this->getId())[$key];
+        }
+
+        return $default;
+    }
+
+    // TODO This should not be needed as state params can be cleared by resetting the table
+//    public function setParam(string|array $key, null|string|array $value = null): static
+//    {
+//        $keys = $key;
+//        if (is_string($key)) {
+//            $keys = [$key => $value];
+//        }
+//
+//        if (Session::exists(self::SESSION_PRE.$this->getId())) {
+//            $state = Session::get(self::SESSION_PRE.$this->getId());
+//            foreach ($keys as $k => $v) {
+//                $k = $this->key($k);
+//                if (isset($state[$k])) {
+//                    if (is_null($v)) {
+//                        unset($state[$k]);
+//                    } else {
+//                        $state[$k] = $v;
+//                    }
+//                }
+//            }
+//
+//            Session::put(self::SESSION_PRE.$this->getId(), $state);
+//        }
+//        return $this;
+//    }
+
+    /**
+     * returns true if the current request is from this table id
+     */
+    public function hasRequest(): bool
+    {
+        return request()->input(Table::QUERY_ID) == $this->getId();
     }
 
     /**
@@ -186,10 +195,13 @@ class Table
     {
         static $instances = [];
         if ($this->getId()) return $this;
+        // generate unique id from url path
+        if (empty($id)) $id = \Tk\Utils\Str::shortHash(request()->path());
         $instances[$id] = isset($instances[$id]) ? ($instances[$id]+1) : 0;
         $this->id = ($instances[$id] > 0) ? $id.$instances[$id] : $id;
         return $this;
     }
+
 
     public function getId(): string
     {
@@ -376,17 +388,20 @@ class Table
     }
 
     /**
-     * return a url with all table params removed
+     * return a url with all table state params removed
+     * optionally set/remove params with supplied query array
      */
-    public function resetUrl(): string
+    public function resetUrl(array $query = []): string
     {
         $url = request()->fullUrl();
-        $query = request()->query();
-        foreach ($query as $k => $v) {
+        $q = request()->query();
+        foreach ($q as $k => $v) {
             if (str_starts_with($k, $this->getId().'_')) {
-                $query[$k] = null;
+                $q[$k] = null;
             }
         }
+        $q[self::QUERY_ID] = null;
+        $query = array_merge($q, $query);
         return url()->query($url, $query);
     }
 }

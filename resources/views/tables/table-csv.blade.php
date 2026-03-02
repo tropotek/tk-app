@@ -10,14 +10,14 @@
                 <x-slot name="filters">
                     <x-tk-base::table.filters.select
                         :name="$table->key('status')"
-                        :options="[ '' => '- Status -', 'pending' => 'Pending', 'in_progress' => 'In Progress', 'cancelled' => 'Cancelled']"
-                        value="{{ $table->getState('status') }}"
+                        :options="[ '' => '- Status -', 'Pending' => 'Pending', 'In Pprogress' => 'In Progress', 'Cancelled' => 'Cancelled']"
+                        value="{{ $table->getParam('status') }}"
                     />
 
                     <x-tk-base::table.filters.select
                         :name="$table->key('type')"
                         :options="[ '' => '- Type -', 'Biopsy' => 'Biopsy', 'Necropsy' => 'Necropsy']"
-                        value="{{ $table->getState('type') }}"
+                        value="{{ $table->getParam('type') }}"
                     />
                 </x-slot>
 

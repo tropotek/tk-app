@@ -59,5 +59,4 @@ class CsvRecords extends ArrayRecords
         return parent::initArray();
     }
 
-
 }

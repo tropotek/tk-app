@@ -30,8 +30,8 @@ class ArrayRecords extends RecordsInterface
         $this->total = count($this->rows);
 
         // filter results using callable
-        if ($this->getFilter()) {
-            $this->rows = call_user_func($this->getFilter(), $this->rows);
+        if ($this->filter) {
+            $this->rows = call_user_func($this->filter, $this->getTable()->getParams(), $this->rows);
         }
 
         // sort results
