@@ -69,6 +69,7 @@ class IdeaTable extends Table
 
         // get idea query builder
         $query = Idea::query();
+        $query->where('user_id', '=', auth()->id());
 
         // filter records
         if (!empty($filters['search'])) {

@@ -28,6 +28,6 @@ class DatabaseSeeder extends Seeder
 
         User::factory(10)->create();
 
-        IdeaFactory::times(88)->create();
+        IdeaFactory::times(512)->create();
     }
 }

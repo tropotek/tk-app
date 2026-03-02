@@ -44,7 +44,7 @@
                     @foreach ($ideas as $idea)
                         <li class="list-group-item">
                             <a href="/ideas/{{ $idea->id }}">
-                                {{ $idea->description }} <em class="d-inline-block float-end">[{{ $idea->status->label() }}]</em>
+                                {{ $idea->title }} <em class="d-inline-block float-end">[{{ $idea->status->label() }}]</em>
                             </a>
                         </li>
                     @endforeach

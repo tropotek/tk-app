@@ -18,8 +18,9 @@ class IdeaFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory(),
+            'user_id' => User::query()->inRandomOrder()->value('id'),
             'title' => $this->faker->sentence(),
+            'status' => $this->faker->randomElement(['pending', 'in_progress', 'completed']),
             'description' => $this->faker->paragraph(),
         ];
     }
