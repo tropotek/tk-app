@@ -195,8 +195,12 @@ class Table
     {
         static $instances = [];
         if ($this->getId()) return $this;
+
         // generate unique id from url path
-        if (empty($id)) $id = \Tk\Utils\Str::shortHash(request()->path());
+        if (empty($id)) $id = \Tk\Utils\Str::shortHash(request()->path(), 5);
+        // md5 may not hav enough entropy, scope for clash is greater
+        //$id = substr(md5(request()->path()), 0, 5);
+
         $instances[$id] = isset($instances[$id]) ? ($instances[$id]+1) : 0;
         $this->id = ($instances[$id] > 0) ? $id.$instances[$id] : $id;
         return $this;
