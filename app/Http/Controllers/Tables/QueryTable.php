@@ -23,6 +23,12 @@ class QueryTable extends Controller
         if ($request->has('tbl_delete')) {
             vd($table->getParams(), $request->all());
 
+            // (optional) for controllers with multiple tables
+//            if ($request->get('tbl_delete') == $table->getId()) {
+//                // do the $table actions
+//            }
+//            ... Check of other table instance id's
+
             // perform required action (delete, csv, etc...)
 
             // reset the url removing the action params
