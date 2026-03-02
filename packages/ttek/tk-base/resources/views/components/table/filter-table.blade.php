@@ -17,7 +17,7 @@
         @if (!empty($filters) && $filters->hasActualContent())
             <div class="d-flex">
                 <div class="p-2 ps-0">
-                    <a title="Click to reset table filters" href="{{ $table->url($table->resetUrl(), [Table::QUERY_RESET => '1']) }}">
+                    <a title="Click to reset table filters" href="{{ $table->url(request()->fullUrl(), [Table::QUERY_RESET => '1']) }}">
                         <i class="fa-solid fa-filter align-middle"></i>
                     </a>
                 </div>

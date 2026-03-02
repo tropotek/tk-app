@@ -26,13 +26,13 @@ class QueryTable extends Controller
             // perform required action (delete, csv, etc...)
 
             // reset the url removing the action params
-            $url = $table->resetUrl([
+            $url = $request->fullUrlWithQuery([
                 'tbl_delete' => null,
                 'row_id' => null,
                 'row_id_all' => null,
             ]);
 
-            return redirect($url)->with('success', "Table Action Completed.");
+            return redirect(trim($url, '?'))->with('success', "Table Action Completed.");
         }
 
         return view('tables.table-query', Compact('table'));

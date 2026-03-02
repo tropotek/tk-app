@@ -7,8 +7,8 @@
 ])
 @props([
     // optional
-    'preText' => '',
-    'postText' => '',
+    'preText'   => '',
+    'postText'  => '',
     'errorText' => '',
     'withField' => true,
 ])

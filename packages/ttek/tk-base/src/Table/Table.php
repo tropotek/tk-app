@@ -395,17 +395,17 @@ class Table
      * return a url with all table state params removed
      * optionally set/remove params with supplied query array
      */
-    public function resetUrl(array $query = []): string
-    {
-        $url = request()->fullUrl();
-        $q = request()->query();
-        foreach ($q as $k => $v) {
-            if (str_starts_with($k, $this->getId().'_')) {
-                $q[$k] = null;
-            }
-        }
-        $q[self::QUERY_ID] = null;
-        $query = array_merge($q, $query);
-        return url()->query($url, $query);
-    }
+//    public function resetUrl(array $query = []): string
+//    {
+//        $url = request()->fullUrl();
+//        $q = request()->query();
+//        foreach ($q as $k => $v) {
+//            if (str_starts_with($k, $this->getId().'_')) {
+//                $q[$k] = null;
+//            }
+//        }
+//        $q[self::QUERY_ID] = null;
+//        $query = array_merge($q, $query);
+//        return url()->query($url, $query);
+//    }
 }
