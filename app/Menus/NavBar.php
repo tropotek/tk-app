@@ -11,6 +11,7 @@ final class NavBar extends MenuInterface
 
     public function build(): static
     {
+        vd(auth()->check());
         $this->addChildren([
             MenuItem::make('Dashboard', '/'),
 
@@ -24,33 +25,14 @@ final class NavBar extends MenuInterface
             MenuItem::make('Tables')->addChildren([
                 MenuItem::make('Sql Query', '/tableQuery'),
                 MenuItem::make('Array Rows', '/tableArray'),
-                MenuItem::make('Csv File', '/tableCsv'),
+                MenuItem::make('Csv File', '/tableCsv')
+                    ->setVisible(auth()->check()),
             ]),
 
-            MenuItem::make('Layout', '/examples'),
+            MenuItem::make('Ideas Example', '/ideas')
+                ->setVisible(auth()->check()),
 
-            MenuItem::make('Ideas', '/ideas')
-                ->setVisible(auth()->check()
-            ),
-
-            MenuItem::make('Dropdown')->addChildren([
-                MenuItem::make('Manage PCE', '/'),
-                MenuItem::make('Manage FCE', '/')->setDisabled(true),
-                MenuItem::makeSeparator(),
-                MenuItem::make('Registrar Dashboard', '/')->setDisabled(true),
-                MenuItem::make('Manage Open Grades', '/')->setDisabled(true)
-                    ->setDisabled(true)
-                    ->setVisible(auth()->hasUser()),    // eg: set a required permission
-            ]),
-
-            MenuItem::make('Admin')->addChildren([
-                MenuItem::make('Ideas', '/ideas'),
-                MenuItem::makeSeparator(),
-                MenuItem::make('Countries', '/'),
-                MenuItem::make('Regions', '/'),
-                MenuItem::make('Currencies', '/'),
-                MenuItem::make('Programs', '/'),
-            ])->setVisible(auth()->check() && auth()->user()->can('admin-view')),
+            MenuItem::make('Layout Example', '/examples'),
 
             MenuItem::make('Logout', '/logout')
                 ->setTitleVisible(false)

@@ -203,11 +203,11 @@ class MenuItem
      */
     public function removeHidden(): static
     {
+        if ($this->hasChildren()) {
+            $this->children = array_filter($this->children, fn(self $itm) => $itm->isVisible());
+        }
         foreach ($this->children as $child) {
             $child->removeHidden();
-            if ($child->hasChildren()) {
-                $child->children = array_filter($child->children, fn(self $itm) => $itm->isVisible());
-            }
         }
         return $this;
     }
