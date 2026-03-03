@@ -19,7 +19,7 @@
 </head>
 <body class="d-flex flex-column h-100 bg-white">
 
-    <x-header />
+    <x-pages.meta.header />
 
     <main class="flex-grow-1 pt-5">
         <x-tk-base::breadcrumbs />
@@ -33,7 +33,7 @@
 
     </main>
 
-    <x-footer />
+    <x-pages.meta.footer />
 
     <x-ui.modal.about />
 </body>

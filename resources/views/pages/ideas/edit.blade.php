@@ -3,7 +3,7 @@
     'action' => '/ideas/' . $idea->id,
     'method' => 'patch'
 ])
-<x-layout.main>
+<x-pages.main>
     <h3>Create Idea</h3>
 
     <form action="/ideas/{{ $idea->id }}" method="POST" id="btn-delete-idea">
@@ -42,4 +42,4 @@
 
     </x-tk-base::form>
 
-</x-layout.main>
+</x-pages.main>

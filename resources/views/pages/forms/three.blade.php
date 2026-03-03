@@ -1,15 +1,15 @@
 @props([
     'mode'   => 'view',       // ['view', 'edit', 'create']
     'values' => [],
-    'action' => '/formFieldset/submit',
+    'action' => '/formThree/submit',
     'method' => 'post',
 ])
 
-<x-layout.main>
+<x-pages.main>
     <p>&nbsp;</p>
     <p>
-        Alternatively rather than using the <code>form.ui.fieldgroup</code> template,
-        we can use the <code>form.ui.fieldset</code> template to include a title and style them as needed.
+        By using the <code>form.ui.fieldgroup</code> template to contain the fields, we can create
+        field columns dynamically leveraging the bootstrap <code>col</code> class to size the columns as needed.
     </p>
     <p>&nbsp;</p>
 
@@ -17,18 +17,19 @@
 
         <x-slot:buttons>
             <x-tk-base::form.buttons.default-btns
-                editRoute="/formFieldset/edit"
-                cancelRoute="/formFieldset" />
+                editRoute="/formThree/edit"
+                cancelRoute="/formThree" />
         </x-slot:buttons>
 
         <x-slot:fields>
             <x-tk-base::form.fields.hidden
                 name="testId"
+                id="lettitgo"
                 :value="$values['testId'] ?? ''"
             />
 
 
-            <x-tk-base::form.ui.fieldset legend="Fieldset One" class="col">
+            <x-tk-base::form.ui.fieldgroup class="col">
                 <x-tk-base::form.fields.select
                     name="title"
                     :options="['' => '-- Select --', 'mr' => 'Mr', 'mrs' => 'Mrs', 'miss' => 'Miss']"
@@ -37,7 +38,7 @@
 
                 <x-tk-base::form.fields.input
                     name="firstName"
-                    required=""
+                    required="required"
                     :value="$values['firstName'] ?? ''"
                 />
 
@@ -45,9 +46,9 @@
                     name="lastName"
                     :value="$values['lastName'] ?? ''"
                 />
-            </x-tk-base::form.ui.fieldset>
+            </x-tk-base::form.ui.fieldgroup>
 
-            <x-tk-base::form.ui.fieldset legend="Fieldset Two" class="col">
+            <x-tk-base::form.ui.fieldgroup class="col">
 
                 <x-tk-base::form.fields.select
                     name="gender"
@@ -81,9 +82,9 @@
             </x-tk-base::form.ui.fieldgroup>
 
 
-            <x-tk-base::form.ui.fieldset legend="Fieldset three" class="col">
+            <x-tk-base::form.ui.fieldgroup class="col">
                 <x-tk-base::form.fields.file
-                    label="Profile Image"
+                    label="Upload Logo"
                     name="image"
                     help="Upload a company logo"
                     value="<a href='/' target='_blank'>A Link To The File</a>"
@@ -93,7 +94,7 @@
                     name="options[]"
                     :options="['option1' => 'Option 1', 'option2' => 'Option 2', 'option3' => 'Option 3']"
                     help="Who are you..."
-                    :value="$values['options'] ?? []"
+                    :value="$values['options'] ?? ''"
                 />
 
                 <x-tk-base::form.fields.radio
@@ -118,10 +119,4 @@
     <p>&nbsp;</p>
     <p>&nbsp;</p>
     <p>&nbsp;</p>
-    <p>&nbsp;</p>
-    <p>&nbsp;</p>
-    <p>&nbsp;</p>
-    <p>&nbsp;</p>
-    <p>&nbsp;</p>
-    <p>&nbsp;</p>
-</x-layout.main>
+</x-pages.main>

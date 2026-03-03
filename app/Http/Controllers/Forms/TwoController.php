@@ -26,7 +26,7 @@ class TwoController extends Controller
     public function index(Request $request)
     {
         $this->setPageTitle('Form Two View');
-        return view('forms.two', [
+        return view('pages.forms.two', [
             'mode' => 'view',
             'values' => $this->values,
         ]);
@@ -35,7 +35,7 @@ class TwoController extends Controller
     public function edit(Request $request)
     {
         $this->setPageTitle('Form Two Edit');
-        return view('forms.two', [
+        return view('pages.forms.two', [
             'mode' => 'edit',
             'values' => $this->values,
         ]);
@@ -44,7 +44,7 @@ class TwoController extends Controller
     public function create(Request $request)
     {
         $this->setPageTitle('Form Two Create');
-        return view('forms.two', [
+        return view('pages.forms.two', [
             'mode' => 'create'
         ]);
     }

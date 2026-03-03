@@ -3,7 +3,7 @@
     'action' => '/ideas',
     'method' => 'post',
 ])
-<x-layout.main>
+<x-pages.main>
     <h3>Create Idea</h3>
 
     <x-tk-base::form :$method :$action :$mode>
@@ -35,4 +35,4 @@
 
     </x-tk-base::form>
 
-</x-layout.main>
+</x-pages.main>

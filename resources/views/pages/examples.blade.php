@@ -1,4 +1,4 @@
-<x-layout.main>
+<x-pages.main>
 
     <div class="alert-component row">
         <div class="col-12">
@@ -91,4 +91,4 @@
         </div>
 
     </div>
-</x-layout.main>
+</x-pages.main>

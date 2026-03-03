@@ -26,7 +26,7 @@ class OneController extends Controller
     public function index(Request $request)
     {
         $this->setPageTitle('form one|Form One View');
-        return view('forms.one', [
+        return view('pages.forms.one', [
             'mode' => 'view',
             'values' => $this->values,
         ]);
@@ -35,7 +35,7 @@ class OneController extends Controller
     public function edit(Request $request)
     {
         $this->setPageTitle('form one|Form One Edit');
-        return view('forms.one', [
+        return view('pages.forms.one', [
             'mode' => 'edit',
             'values' => $this->values,
         ]);
@@ -44,7 +44,7 @@ class OneController extends Controller
     public function create(Request $request)
     {
         $this->setPageTitle('form one|Form One Create');
-        return view('forms.one', [
+        return view('pages.forms.one', [
             'mode' => 'create'
         ]);
     }

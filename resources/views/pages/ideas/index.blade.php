@@ -1,4 +1,4 @@
-<x-layout.main>
+<x-pages.main>
 
     <div class="row">
         <div class="col-lg-9 col-md-8 col-sm-6 col-xs-12">
@@ -75,4 +75,4 @@
 
         </div>
     </div>
-</x-layout.main>
+</x-pages.main>

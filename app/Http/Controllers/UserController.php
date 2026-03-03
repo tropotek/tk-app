@@ -28,7 +28,7 @@ class UserController extends Controller
             return redirect('/');
         }
 
-        return view('login');
+        return view('pages.login');
     }
 
     public function logout()
@@ -50,6 +50,6 @@ class UserController extends Controller
             return redirect('/')->with('success', 'Registration successful. You are now logged in!');
         }
 
-        return view('register');
+        return view('pages.register');
     }
 }

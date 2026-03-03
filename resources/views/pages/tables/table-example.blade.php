@@ -1,4 +1,4 @@
-<x-layout.main>
+<x-pages.main>
     <div class=" mb-2">
         <h2>{{ $pageTitle }}</h2>
     </div>
@@ -9,4 +9,4 @@
         </div>
     </div>
 
-</x-layout.main>
+</x-pages.main>

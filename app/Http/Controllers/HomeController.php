@@ -20,7 +20,7 @@ class HomeController extends Controller
             return redirect('/')->with($type, "This is a {$type} flash message.");
         }
 
-        return view('home');
+        return view('pages.home');
     }
 
 }

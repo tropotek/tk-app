@@ -21,7 +21,7 @@ class ArrayTable extends Controller
         $table1 = $this->buildTable($request);
         $table2 = $this->buildTable($request);
 
-        return view('tables.table-array', Compact('table1', 'table2'));
+        return view('pages.tables.table-array', Compact('table1', 'table2'));
     }
 
     protected function buildTable(Request $request): Table

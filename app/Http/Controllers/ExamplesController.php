@@ -16,7 +16,7 @@ class ExamplesController extends Controller
 
         $table = $this->buildTable($request);
 
-        return view('examples', ['table' => $table]);
+        return view('pages.examples', ['table' => $table]);
     }
 
     protected function buildTable(Request $request): Table

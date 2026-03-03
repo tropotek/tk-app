@@ -5,11 +5,11 @@
     'method' => 'post',
 ])
 
-<x-layout.main>
+<x-pages.main>
     <p>&nbsp;</p>
     <p>Use a detail template with side columns</p>
 
-    <x-ui.double-side-col :$mode>
+    <x-layouts.double-col :$mode>
         <x-slot:title>Side Cols Template Example</x-slot:title>
 
         {{-- Buttons outside the form require the `form=""` attribute to submit the correct form --}}
@@ -161,9 +161,9 @@
             </div>
         </x-slot:col3>
 
-    </x-ui.double-side-col>
+    </x-layouts.double-col>
 
     <p>&nbsp;</p>
     <p>&nbsp;</p>
     <p>&nbsp;</p>
-</x-layout.main>
+</x-pages.main>

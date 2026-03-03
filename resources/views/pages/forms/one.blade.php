@@ -5,7 +5,7 @@
     'method' => 'post',
 ])
 
-<x-layout.main>
+<x-pages.main>
     <p>&nbsp;</p>
     <p>
         This example shows one main column, the first row of fields highlight how
@@ -114,4 +114,4 @@
     <p>&nbsp;</p>
     <p>&nbsp;</p>
     <p>&nbsp;</p>
-</x-layout.main>
+</x-pages.main>

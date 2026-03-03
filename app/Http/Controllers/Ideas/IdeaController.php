@@ -33,7 +33,7 @@ class IdeaController extends Controller
             return redirect(trim($url, '?'))->with('success', "Table Action Completed.");
         }
 
-        return view('ideas.index', [
+        return view('pages.ideas.index', [
             'ideas' => auth()->user()->ideas,
             'table' => $table,
         ]);
@@ -41,7 +41,7 @@ class IdeaController extends Controller
     public function create()
     {
         $this->setPageTitle('idea|Idea Create');
-        return view('ideas.create');
+        return view('pages.ideas.create');
     }
 
     public function show(Idea $idea)
@@ -49,7 +49,7 @@ class IdeaController extends Controller
         $this->setPageTitle('idea|Idea View');
         //Gate::authorize('update', $idea);
 
-        return view('ideas.edit',[
+        return view('pages.ideas.edit',[
             'mode' => 'view',
             'idea' => $idea,
         ]);
@@ -60,7 +60,7 @@ class IdeaController extends Controller
         $this->setPageTitle('idea|Idea Edit');
         Gate::authorize('update', $idea);
 
-        return view('ideas.edit',[
+        return view('pages.ideas.edit',[
             'mode' => 'edit',
             'idea' => $idea,
         ]);

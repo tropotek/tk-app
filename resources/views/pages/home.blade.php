@@ -1,4 +1,4 @@
-<x-layout.main>
+<x-pages.main>
     <div class="container">
         <div class="col text-center">
             @auth
@@ -22,4 +22,4 @@
         <div>
         </div>
     </div>
-</x-layout.main>
+</x-pages.main>

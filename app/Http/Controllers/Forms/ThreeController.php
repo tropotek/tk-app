@@ -24,7 +24,7 @@ class ThreeController extends Controller
     ];
 
     //protected string $view = 'forms.three';
-    protected string $view = 'forms.threedetail';
+    protected string $view = 'pages.forms.threedetail';
 
     public function index(Request $request)
     {

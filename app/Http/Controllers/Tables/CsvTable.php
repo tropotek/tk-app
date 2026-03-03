@@ -19,7 +19,7 @@ class CsvTable extends Controller
 
         $table = $this->buildCsvTable($request);
 
-        return view('tables.table-csv', Compact('table'));
+        return view('pages.tables.table-csv', Compact('table'));
     }
 
     protected function buildCsvTable(Request $request): Table

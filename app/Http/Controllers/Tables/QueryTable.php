@@ -41,7 +41,7 @@ class QueryTable extends Controller
             return redirect(trim($url, '?'))->with('success', "Table Action Completed.");
         }
 
-        return view('tables.table-query', Compact('table'));
+        return view('pages.tables.table-query', Compact('table'));
     }
 
 }

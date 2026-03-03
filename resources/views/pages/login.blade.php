@@ -1,4 +1,4 @@
-<x-layout.public>
+<x-pages.public>
     <div class="row">
         <h1 class="h3 mb-3 fw-normal text-center">Login</h1>
 
@@ -47,4 +47,4 @@
             </p>
         </div>
     </div>
-</x-layout.public>
+</x-pages.public>

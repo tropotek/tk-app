@@ -1,15 +1,15 @@
 @props([
     'mode'   => 'view',       // ['view', 'edit', 'create']
     'values' => [],
-    'action' => '/formTwo/submit',
+    'action' => '/formFieldset/submit',
     'method' => 'post',
 ])
 
-<x-layout.main>
+<x-pages.main>
     <p>&nbsp;</p>
     <p>
-        By using the <code>form.ui.fieldgroup</code> template to contain the fields, we can create
-        field columns dynamically leveraging the bootstrap <code>col</code> class to size the columns as needed.
+        Alternatively rather than using the <code>form.ui.fieldgroup</code> template,
+        we can use the <code>form.ui.fieldset</code> template to include a title and style them as needed.
     </p>
     <p>&nbsp;</p>
 
@@ -17,8 +17,8 @@
 
         <x-slot:buttons>
             <x-tk-base::form.buttons.default-btns
-                editRoute="/formTwo/edit"
-                cancelRoute="/formTwo" />
+                editRoute="/formFieldset/edit"
+                cancelRoute="/formFieldset" />
         </x-slot:buttons>
 
         <x-slot:fields>
@@ -27,26 +27,27 @@
                 :value="$values['testId'] ?? ''"
             />
 
-            <x-tk-base::form.ui.fieldgroup class="col">
+
+            <x-tk-base::form.ui.fieldset legend="Fieldset One" class="col">
                 <x-tk-base::form.fields.select
                     name="title"
                     :options="['' => '-- Select --', 'mr' => 'Mr', 'mrs' => 'Mrs', 'miss' => 'Miss']"
-                    fieldCss="col-sm-2"
                     :value="$values['title'] ?? ''"
                 />
 
                 <x-tk-base::form.fields.input
                     name="firstName"
-                    fieldCss="col-sm-5"
                     required=""
                     :value="$values['firstName'] ?? ''"
                 />
 
                 <x-tk-base::form.fields.input
                     name="lastName"
-                    fieldCss="col-sm-5"
                     :value="$values['lastName'] ?? ''"
                 />
+            </x-tk-base::form.ui.fieldset>
+
+            <x-tk-base::form.ui.fieldset legend="Fieldset Two" class="col">
 
                 <x-tk-base::form.fields.select
                     name="gender"
@@ -79,9 +80,10 @@
                 />
             </x-tk-base::form.ui.fieldgroup>
 
-            <x-tk-base::form.ui.fieldgroup class="col">
+
+            <x-tk-base::form.ui.fieldset legend="Fieldset three" class="col">
                 <x-tk-base::form.fields.file
-                    label="Upload Logo"
+                    label="Profile Image"
                     name="image"
                     help="Upload a company logo"
                     value="<a href='/' target='_blank'>A Link To The File</a>"
@@ -91,25 +93,24 @@
                     name="options[]"
                     :options="['option1' => 'Option 1', 'option2' => 'Option 2', 'option3' => 'Option 3']"
                     help="Who are you..."
-                    fieldCss="col-sm-6"
-                    :value="$values['options'] ?? ''"
+                    :value="$values['options'] ?? []"
                 />
 
                 <x-tk-base::form.fields.radio
                     name="options2"
                     :options="['option1' => 'Option 1', 'option2' => 'Option 2', 'option3' => 'Option 3']"
                     help="Who are you..."
-                    fieldCss="col-sm-6"
                     :value="$values['options2'] ?? ''"
-                />
-
-                <x-tk-base::form.fields.textarea
-                    name="description"
-                    help="Hello whats up"
-                    :value="$values['description'] ?? ''"
                 />
             </x-tk-base::form.ui.fieldgroup>
 
+
+            {{-- Render this field outside a field group --}}
+            <x-tk-base::form.fields.textarea
+                name="description"
+                help="Hello whats up"
+                :value="$values['description'] ?? ''"
+            />
         </x-slot>
 
     </x-tk-base::form>
@@ -117,4 +118,10 @@
     <p>&nbsp;</p>
     <p>&nbsp;</p>
     <p>&nbsp;</p>
-</x-layout.main>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+</x-pages.main>
