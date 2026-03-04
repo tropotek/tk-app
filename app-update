@@ -19,10 +19,7 @@ cp -f vendor/twbs/bootstrap/dist/js/bootstrap.bundle.min.js* public/js/
 cp -f vendor/htmx/htmx/htmx.min.js public/js/
 cp -f vendor/jquery/jquery/jquery-3.7.1.min.js public/js/jquery.min.js
 
-# todo add a flag to force refresh for devs and creating prod images
-
-
-
+# todo add a flag to force refresh for devs and creating prod image
 # database setup
 if [[ ! -f database/storage/database.sqlite ]]; then
   echo "  Generating APP_KEY"
@@ -36,4 +33,4 @@ if [[ ! -f database/storage/database.sqlite ]]; then
 fi
 
 cd ..
-chwon -r 1000:1000 ./
+chown -r 1000:1000 ./
