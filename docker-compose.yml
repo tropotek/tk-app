@@ -1,20 +1,35 @@
+# Development environment
+name: ${APP_NAME}
+
 services:
   app:
     build:
-      context: . # build context is the current directory
-      dockerfile: Dockerfile # specify the Dockerfile name
+      context: .
+      dockerfile: app/Dockerfile
     container_name: ${APP_NAME}
+    restart: unless-stopped
     tty: true
-    restart: always
     ports:
       - "${HTTP_LOCAL_PORT:-80}:80"
-      # - "443:443"
-      # - "443:443/udp"
+#      - "${HTTPS_LOCAL_PORT:-443}:443"
+#      - "${HTTPS_LOCAL_PORT:-443}:443/udp"
     volumes:
-      - ./:/app
-      - ./docker/php.ini:/usr/local/etc/php/conf.d/99-overrides.ini
+      - ./app:/app
+      - ./app/docker/php.ini:/usr/local/etc/php/conf.d/overrides.ini
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "25m"
+        max-file: "1"
+#    entrypoint: ["frankenphp"]
+#    command: ["php-server", "--root=/app/public", "--listen=:80"]
     environment:
+      # diable HTTPS
       SERVER_NAME: :80
+      APP_NAME: "${APP_NAME:-tk-app}"
+      APP_URL: "https://localhost:${HTTPS_LOCAL_PORT:-80}/"
+      MAIL_HOST: mailpit
+      MAIL_PORT: ${MAILPIT_SMTP_PORT:-1025}
 
   mailpit:
     image: axllent/mailpit
@@ -30,3 +45,41 @@ services:
       MP_DATABASE: /data/mailpit.db
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
+
+#  composer:
+#    profiles: [ "tools" ]
+#    image: composer:latest
+#    working_dir: /app
+#    volumes:
+#      - .:/app
+#    entrypoint: [ "composer" ]
+#    command: [ "install", "--no-interaction", "--prefer-dist" ]
+#    restart: "no"
+
+#  migrate:
+#    profiles: [ "tools" ]
+#    build:
+#      context: .
+#      dockerfile: app/Dockerfile
+#    volumes:
+#      - ./app:/app
+#    entrypoint: ["php"]
+#    command: [
+#      "/app/artisan",
+#      "migrate",
+#      "--no-ansi",
+#      "--force"
+#    ]
+#    restart: "no"
+
+#  artisan:
+#    profiles: [ "tools" ]
+#    build:
+#      context: .
+#      dockerfile: app/Dockerfile
+#    volumes:
+#      - ./:/app
+#    working_dir: /app
+#    entrypoint: [ "php" ]
+#    command: [ "artisan", "tk:update" ]
+#    restart: "no"

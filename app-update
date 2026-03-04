@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# restrict to the app path
+SCRIPT=$(realpath "$0")
+APP_PATH=$(dirname "$SCRIPT")
+cd "$APP_PATH" || exit 1
+
 # get latest code from repo
 git pull
 git config --global --add safe.directory /app
@@ -7,23 +12,22 @@ git config --global --add safe.directory /app
 # install composer dependencies
 composer install
 
-# generate APP_KEY if none exists
-if ! grep -q '^APP_KEY=base64:' .env; then
-  echo "Generating APP_KEY..."
-  (
-    php artisan key:generate --force
-  )
-fi
-
 # copy assets to public folder
 cp -f vendor/twbs/bootstrap/dist/css/bootstrap.min.css* public/css/
 cp -f vendor/twbs/bootstrap/dist/js/bootstrap.bundle.min.js* public/js/
 cp -f vendor/htmx/htmx/htmx.min.js public/js/
 cp -f vendor/jquery/jquery/jquery-3.7.1.min.js public/js/jquery.min.js
 
-# database migrations
-touch database/database.sqlite
-php artisan migrate:fresh --seed
-#php artisan migrate    # may cause errors if the key has been re-generated
+# todo add a flag to force refresh for devs and creating prod images
+
+# database setup
+if [[ ! -f database/storage/database.sqlite ]]; then
+  echo "  Generating APP_KEY"
+  php artisan key:generate --force
+  echo "  Creating Database"
+  touch database/storage/database.sqlite
+  echo "  Migrating Database"
+  php artisan migrate:fresh --seed
+fi
 
 chwon -r 1000:1000 ./
