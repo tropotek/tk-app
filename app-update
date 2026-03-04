@@ -31,6 +31,8 @@ if [[ ! -f database/storage/database.sqlite ]]; then
   touch database/storage/database.sqlite
   echo "  Migrating Database"
   php artisan migrate:fresh --seed
+
+  php artisan storage:link
 fi
 
 cd ..
