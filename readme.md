@@ -3,22 +3,25 @@
 
 ## Installation With Docker
 
-```
-$ cd tk-app
 
+
+```
 copy the .env example file and update as required
+$ cd /tk-app        # project path
+$ cp .env.example .env
+$ cd app
 $ cp .env.example .env
 
-# Start docker container
+# Start dev docker container
+$ cd /tk-app
 $ docker compose up --build -d
 
 # Open docker terminal in the tk-app container
 $ docker exec -it tk-app /bin/bash
 
 # from within the container terminal
-$ cd /app
-$ ./bin/app-update
-$ chown -R 1000:1000 .
+$ cd /tk-app
+$ ./app-update
 ```
 Once complete, then browse to http://localhost:8081
 
@@ -51,7 +54,5 @@ $ sudo chown -R $USER:$USER .
 
 
 # Tk-Base Package
-
-This is where the Form, Table and menu libs will be located.
 
 View the [tk-base readme](app/packages/ttek/tk-base/src/readme.md) here.
