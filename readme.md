@@ -55,4 +55,6 @@ $ sudo chown -R $USER:$USER .
 
 # Tk-Base Package
 
+Thi package contains all libs for base functionality like Menus, Breadcrumbs, Tables, etc...
+
 View the [tk-base readme](app/packages/ttek/tk-base/src/readme.md) here.
