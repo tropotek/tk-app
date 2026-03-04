@@ -1,0 +1,17 @@
+# User-specific stuff
+.env
+.env.*
+.git
+.idea/
+.vscode/
+.phpunit.result.cache
+
+# Other data
+vendor/
+node_modules/
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+public/hot
+tests/

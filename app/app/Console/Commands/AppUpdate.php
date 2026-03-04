@@ -32,7 +32,6 @@ class AppUpdate extends Command
 //        cp -f vendor/htmx/htmx/htmx.min.js public/js/
 //        cp -f vendor/jquery/jquery/jquery-3.7.1.min.js public/js/jquery.min.js
 //
-//        # todo add a flag to force refresh for devs and creating prod image
 //        # database setup
 //        if [[ ! -f database/storage/database.sqlite ]]; then
 //          echo "  Generating APP_KEY"
