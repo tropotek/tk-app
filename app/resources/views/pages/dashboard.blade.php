@@ -1,12 +1,12 @@
 <x-pages.main>
     <div class="container">
         <div class="col text-center">
-            <h1 class="text-primary">Example App Home Page</h1>
+            @auth
+                <h1 class="text-primary">Welcome {{ auth()->user()->name }}</h1>
+            @else
+                <h1 class="text-primary">Hello, world.</h1>
+            @endauth
         </div>
-
-        <p>&nbsp;</p>
-        <p><strong><a href="{{ route('login') }}">Login</a> as U: admin@example.com P: password</strong></p>
-        <p>&nbsp;</p>
 
         <p>Test flash message alerts:</p>
         <ul class="list-unstyled">&nbsp;

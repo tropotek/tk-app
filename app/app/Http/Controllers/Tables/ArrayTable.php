@@ -15,7 +15,7 @@ class ArrayTable extends Controller
 
     public function index(Request $request)
     {
-        $this->setPageTitle('Array Table');
+        $this->setTitle('Array Table');
 
 
         $table1 = $this->buildTable($request);

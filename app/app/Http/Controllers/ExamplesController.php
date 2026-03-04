@@ -12,11 +12,13 @@ class ExamplesController extends Controller
 
     public function index(Request $request)
     {
-        $this->setPageTitle('Examples');
+        $this->setTitle('Examples');
 
         $table = $this->buildTable($request);
 
-        return view('pages.examples', ['table' => $table]);
+        return view('pages.examples', [
+            'table' => $table
+        ]);
     }
 
     protected function buildTable(Request $request): Table

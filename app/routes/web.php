@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExamplesController;
 use App\Http\Controllers\Forms\FieldsetController;
 use App\Http\Controllers\Forms\OneController;
@@ -12,6 +13,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'doDefault'])->name('home');
+Route::get('/dashboard', [DashboardController::class, 'doDefault'])->name('dashboard');
 
 Route::middleware('guest')->group(function () {
     Route::match(['get', 'post'], '/register', [UserController::class, 'register'])->name('register');

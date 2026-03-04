@@ -5,8 +5,9 @@ namespace Tk\Breadcrumbs;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Session;
 
-
+// internal Breadcrumbs use only
 final class Crumb
 {
     public function __construct(
@@ -31,7 +32,19 @@ final class Breadcrumbs
     {
         $this->stack = collect();
         $this->homeTitle = $homeTitle;
-        $this->homeUrl = $homeUrl;
+        $this->homeUrl = $this->normalizeUrl($homeUrl);
+    }
+
+    public static function make(string $homeTitle = 'Dashboard', string $homeUrl = '/'): self
+    {
+        $breadcrumbs = Session::get(self::class);
+        if ($breadcrumbs instanceof self && $breadcrumbs->homeTitle == $homeTitle) {
+            return $breadcrumbs;
+        }
+
+        $breadcrumbs = new self($homeTitle, $homeUrl);
+        Session::put(self::class, $breadcrumbs);
+        return $breadcrumbs;
     }
 
     /**
@@ -43,18 +56,39 @@ final class Breadcrumbs
      */
     protected function createCrumb(string $title, string $url): Crumb
     {
-        [$name, $title] = array_map('trim', explode('|', $title.'|'));
-        if (!$title) $title = $name;
-        $title = ucwords(strip_tags($title));
-        return new Crumb($name, $title, $url);
+        [$name, $title] = $this->parseTitle($title);
+        return new Crumb($name, $title, $this->normalizeUrl($url));
     }
 
     /**
-     * push a crumb to the stack returning the page title
+     * Normalize crumb urls to the path and query string only
+     */
+    private function normalizeUrl(string $url): string
+    {
+        $parts = parse_url($url);
+        $path = $parts['path'] ?? '/';
+        $queryString = $parts['query'] ?? '';
+        return $path . ($queryString ? '?' . $queryString : '');
+    }
+
+    /**
+     * Parse a page title into its crumb name and page title parts
+     */
+    public function parseTitle(string $title): array
+    {
+        [$name, $title] = array_map('trim', explode('|', $title.'|'));
+        if (!$title) $title = $name;
+        $title = ucwords(strip_tags($title));
+        return [$name, $title];
+    }
+
+    /**
+     * Push a crumb to the stack returning the page title
      */
     public function push(string $title, ?string $url = null, ?string $name = null): string
     {
         $url = $url ?? request()->getRequestUri();
+        $url = parse_url($url, PHP_URL_PATH);
         if ($url === $this->getHomeUrl()) {
             $this->reset();
             return $this->getHomeTitle();
@@ -130,6 +164,10 @@ final class Breadcrumbs
         return $url;
     }
 
+
+    /**
+     * The home url is excluded from the count
+     */
     public function count(): int
     {
         return $this->stack->count();
@@ -144,9 +182,6 @@ final class Breadcrumbs
         return $this->count() == 0;
     }
 
-    /**
-     * reset crumb stack
-     */
     public function reset(): self
     {
         $this->stack = collect();
@@ -164,7 +199,7 @@ final class Breadcrumbs
     }
 
     /**
-     * Add a reset breadcrumb query string to a url
+     * Add a reset breadcrumb query param to a url
      */
     public function getResetUrl(string $url): string
     {

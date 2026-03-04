@@ -3,28 +3,37 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\View;
+use Tk\Contracts\Http\Controllers\BreadcrumbsController;
+use Tk\Support\Facades\Breadcrumbs;
 
-abstract class Controller
+abstract class Controller implements BreadcrumbsController
 {
-    private string $pageTitle = '';
+    // the page title view property
+    const string TITLE = 'title';
+
+    private string $title = '';
+
 
     /**
      * Set the page title and push a breadcrumb
      */
-    public function setPageTitle(string $title): Controller
+    public function setTitle(string $title, bool $withCrumb = true): static
     {
+        $this->title = $title;
         // push a breadcrumb to the stack
-        $this->pageTitle = breadcrumbs()->push($title);
+        if ($withCrumb) {
+            $this->title = Breadcrumbs::push($this->title);
+        }
 
-        // Make the page title accessible to all views
-        View::share('pageTitle', $this->pageTitle);
+        // set $pageTitle to all views
+        View::share(self::TITLE, $this->title);
 
         return $this;
     }
 
-    public function getPageTitle(): string
+    public function getTitle(): string
     {
-        return $this->pageTitle;
+        return $this->title;
     }
 
 }
