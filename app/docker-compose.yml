@@ -1,0 +1,28 @@
+# Production environment
+name: ${APP_NAME}-prod
+
+services:
+  app:
+    build:
+      context: .
+    container_name: ${APP_NAME}-prod
+    tty: true
+    restart: always
+    ports:
+      - "8080:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - db:/app/database/storage
+      - storage:/app/storage
+      - ./docker/php.ini:/usr/local/etc/php/conf.d/99-overrides.ini
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: "https://${DOMAIN:-localhost}/"
+
+volumes:
+  db:
+  storage:
+
+
