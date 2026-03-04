@@ -19,9 +19,6 @@ $ docker compose up --build -d
 # Open docker terminal in the tk-app container
 $ docker exec -it tk-app /bin/bash
 
-# from within the container terminal
-$ cd /tk-app
-$ ./app-update
 ```
 Once complete, then browse to http://localhost:8081
 
@@ -39,8 +36,7 @@ $ docker logs -f tk-app
 
 Tail the laravel log:
 ```
-$ cd /app
-$ tail -f storage/logs/laravel.log
+$ tail -f app/storage/logs/laravel.log
 ```
 
 

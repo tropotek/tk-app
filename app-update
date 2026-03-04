@@ -6,12 +6,12 @@ APP_PATH=$(dirname "$SCRIPT")
 cd "$APP_PATH" || exit 1
 
 # get latest code from repo
-git pull
-git config --global --add safe.directory .
+#git pull
+#git config --global --add safe.directory .
 
 cd app
 # install composer dependencies
-composer install
+#composer install
 
 # copy assets to public folder
 cp -f vendor/twbs/bootstrap/dist/css/bootstrap.min.css* public/css/
@@ -20,6 +20,8 @@ cp -f vendor/htmx/htmx/htmx.min.js public/js/
 cp -f vendor/jquery/jquery/jquery-3.7.1.min.js public/js/jquery.min.js
 
 # todo add a flag to force refresh for devs and creating prod images
+
+
 
 # database setup
 if [[ ! -f database/storage/database.sqlite ]]; then

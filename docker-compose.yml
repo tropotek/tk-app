@@ -16,11 +16,11 @@ services:
     volumes:
       - ./app:/app
       - ./app/docker/php.ini:/usr/local/etc/php/conf.d/overrides.ini
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "25m"
-        max-file: "1"
+#    logging:
+#      driver: "json-file"
+#      options:
+#        max-size: "25m"
+#        max-file: "1"
 #    entrypoint: ["frankenphp"]
 #    command: ["php-server", "--root=/app/public", "--listen=:80"]
     environment:
@@ -35,6 +35,7 @@ services:
     image: axllent/mailpit
     container_name: ${APP_NAME}_mailpit
     restart: unless-stopped
+    tty: true
     volumes:
       - ./docker/mailpit:/data
     ports:
@@ -46,40 +47,44 @@ services:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
 
-#  composer:
-#    profiles: [ "tools" ]
-#    image: composer:latest
-#    working_dir: /app
-#    volumes:
-#      - .:/app
-#    entrypoint: [ "composer" ]
-#    command: [ "install", "--no-interaction", "--prefer-dist" ]
-#    restart: "no"
-
-#  migrate:
-#    profiles: [ "tools" ]
-#    build:
-#      context: .
-#      dockerfile: app/Dockerfile
-#    volumes:
-#      - ./app:/app
-#    entrypoint: ["php"]
-#    command: [
-#      "/app/artisan",
-#      "migrate",
-#      "--no-ansi",
-#      "--force"
-#    ]
-#    restart: "no"
+  composer:
+    profiles: [ "tools" ]
+    image: composer:latest
+    working_dir: /app
+    tty: true
+    volumes:
+      - ./app:/app
+    entrypoint: [ "composer" ]
+    command: [ "install", "--no-interaction", "--prefer-dist" ]
+    restart: "no"
 
 #  artisan:
 #    profiles: [ "tools" ]
 #    build:
 #      context: .
 #      dockerfile: app/Dockerfile
+#    tty: true
 #    volumes:
-#      - ./:/app
+#      - ./app:/app
 #    working_dir: /app
 #    entrypoint: [ "php" ]
-#    command: [ "artisan", "tk:update" ]
+#    command: [ "artisan", "app:update" ]
 #    restart: "no"
+
+  migrate:
+    profiles: [ "tools" ]
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    volumes:
+      - ./app:/app
+    working_dir: /app
+    tty: true
+    entrypoint: ["php"]
+    command: [
+      "/app/artisan",
+      "migrate",
+      "--no-ansi",
+      "--force"
+    ]
+    restart: "no"
