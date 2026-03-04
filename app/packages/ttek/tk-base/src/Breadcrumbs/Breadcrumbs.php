@@ -52,7 +52,7 @@ final class Breadcrumbs
     /**
      * push a crumb to the stack returning the page title
      */
-    public function push(string $title, ?string $url = null): string
+    public function push(string $title, ?string $url = null, ?string $name = null): string
     {
         $url = $url ?? request()->getRequestUri();
         if ($url === $this->getHomeUrl()) {
@@ -61,6 +61,7 @@ final class Breadcrumbs
         }
 
         $crumb = $this->createCrumb($title, $url);
+        if ($name) $crumb->name = $name;
 
         // look for this page already in the breadcrumbs
         // if found rewind breadcrumbs to before this page
@@ -80,7 +81,7 @@ final class Breadcrumbs
                 if ($refererParts['query'] ?? '') $topBc->url .= ("?" . $refererParts['query']);
                 if ($refererParts['fragment'] ?? '') $topBc->url .= ("#" . $refererParts['fragment']);
             }
-            $this->push($topBc->title, $topBc->url);
+            $this->push($topBc->title, $topBc->url, $topBc->name);
         }
 
 	    // add this page to the top of the breadcrumbs
