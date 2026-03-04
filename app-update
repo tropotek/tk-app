@@ -7,8 +7,9 @@ cd "$APP_PATH" || exit 1
 
 # get latest code from repo
 git pull
-git config --global --add safe.directory /app
+git config --global --add safe.directory .
 
+cd app
 # install composer dependencies
 composer install
 
@@ -30,4 +31,5 @@ if [[ ! -f database/storage/database.sqlite ]]; then
   php artisan migrate:fresh --seed
 fi
 
+cd ..
 chwon -r 1000:1000 ./
