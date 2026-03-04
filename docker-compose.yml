@@ -97,3 +97,9 @@ services:
       "--force"
     ]
     restart: "no"
+
+
+# Networks
+# ggl: Docker comose with macvlan
+# ggl: Docker comose with ipvlan
+# ggl: Docker comose with ipvlan l3
