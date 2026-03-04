@@ -26,7 +26,7 @@ class FieldsetController extends Controller
 
     public function index(Request $request)
     {
-        $this->setPageTitle('Fieldset View');
+        $this->setTitle('Fieldset View');
 
         return view('pages.forms.fieldset', [
             'mode' => 'view',
@@ -36,7 +36,7 @@ class FieldsetController extends Controller
 
     public function edit(Request $request)
     {
-        $this->setPageTitle('Fieldset Edit');
+        $this->setTitle('Fieldset Edit');
 
         return view('pages.forms.fieldset', [
             'mode' => 'edit',
@@ -46,7 +46,7 @@ class FieldsetController extends Controller
 
     public function create(Request $request)
     {
-        $this->setPageTitle('Fieldset Create');
+        $this->setTitle('Fieldset Create');
 
         return view('pages.forms.fieldset', [
             'mode' => 'create'

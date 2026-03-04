@@ -4,9 +4,11 @@ namespace Tk;
 
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Tk\Support\Facades\Breadcrumbs;
 use Tk\Support\Facades\Menu;
+use Tk\View\Composers\DefaultPageTitle;
 
 class TkBaseServiceProvider extends ServiceProvider
 {
@@ -23,18 +25,12 @@ class TkBaseServiceProvider extends ServiceProvider
 
         // Breadcrumbs
         AliasLoader::getInstance()->alias('Breadcrumbs', Breadcrumbs::class);
-        // TODO: need to consider if the app should handle this part ????
+        // bind the Breadcrumbs Alias to an existing Breadcrumbs instance if exists
         $this->app->bind(\Tk\Breadcrumbs\Breadcrumbs::class, function() {
-            // Get the breadcrumbs from the session if they exist
-            $breadcrumbs = Session::get(\Tk\Breadcrumbs\Breadcrumbs::class);
-            if ($breadcrumbs instanceof \Tk\Breadcrumbs\Breadcrumbs) {
-                return $breadcrumbs;
+            if (auth()->check()) {
+                return \Tk\Breadcrumbs\Breadcrumbs::make('Dashboard', route('dashboard'));
             }
-
-            // Create a new Breadcrumb instance
-            $breadcrumbs = new \Tk\Breadcrumbs\Breadcrumbs();
-            Session::put(\Tk\Breadcrumbs\Breadcrumbs::class, $breadcrumbs);
-            return $breadcrumbs;
+            return \Tk\Breadcrumbs\Breadcrumbs::make('Home', route('home'));
         });
 
     }
@@ -48,6 +44,9 @@ class TkBaseServiceProvider extends ServiceProvider
 
         // Load views
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'tk-base');
+
+        // set a default controller TITLE if none set
+        View::composer('*', DefaultPageTitle::class);
 
         // Load routes (optional)
         // $this->loadRoutesFrom(__DIR__.'/routes/web.php');

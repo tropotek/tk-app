@@ -7,20 +7,24 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpFoundation\Response;
 
-class Breadcrumbs
+class ResetBreadcrumbs
 {
     /**
      * Reset the breadcrumbs when a request contains a reset query param
+     * Dump Breadcrumbs session on logout
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response) $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->has(\Tk\Breadcrumbs\Breadcrumbs::CRUMB_RESET)) {
-            // reset breadcrumbs
-            \Tk\Support\Facades\Breadcrumbs::reset();
+        // remove breadcrumbs on logout
+        if ($request->routeIs('logout')) {
+            Session::forget(\Tk\Breadcrumbs\Breadcrumbs::class);
+        }
 
-            // redirect back without the breadcrumb reset parameter
+        // reset breadcrumbs on request
+        if ($request->has(\Tk\Breadcrumbs\Breadcrumbs::CRUMB_RESET)) {
+            \Tk\Support\Facades\Breadcrumbs::reset();
             Session::save();
             $url = $request->fullUrlWithoutQuery(\Tk\Breadcrumbs\Breadcrumbs::CRUMB_RESET);
             return redirect($url);

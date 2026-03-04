@@ -3,7 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Tk\Middleware\Breadcrumbs;
+use Tk\Middleware\ResetBreadcrumbs;
 use Tk\Middleware\TableSessionParams;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -23,7 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // resets breadcrumb stack and redirects
         $middleware->appendToGroup('web', [
-            Breadcrumbs::class,
+            ResetBreadcrumbs::class,
             TableSessionParams::class,
         ]);
     })

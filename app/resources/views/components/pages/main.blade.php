@@ -1,10 +1,11 @@
+@props(['title'])
 <!DOCTYPE html>
 <html class="h-100" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>{{ ($pageTitle ?? '') . ' - ' . config('app.name', 'Example App') }}</title>
+    <title>{{ $title }} {{ config('app.name', 'Example App') }}</title>
 
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('css/fontawesome/css/fontawesome.min.css') }}">
@@ -21,11 +22,13 @@
 
     <x-pages.meta.header />
 
-    <main class="flex-grow-1 pt-5">
-        <x-tk-base::breadcrumbs />
-        <x-ui.alerts />
+    <main class="flex-grow-1 pt-5 mt-3">
 
         <div class="{{ config('app.resources.layout', 'container') }}">
+
+            <x-tk-base::breadcrumbs />
+            <x-ui.alerts />
+
             <div class="mb-5 clearfix">
                 {{ $slot }}
             </div>

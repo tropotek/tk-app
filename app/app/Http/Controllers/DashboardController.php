@@ -5,19 +5,20 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class HomeController extends Controller
+class DashboardController extends Controller
 {
 
     public function doDefault(Request $request)
     {
-        $this->setTitle('Home');
+        $this->setTitle('Dashboard');
+
 
         if ($request->has('alert')) {
             $type = $request->input('alert');
             return redirect('/')->with($type, "This is a {$type} flash message.");
         }
 
-        return view('pages.home');
+        return view('pages.dashboard');
     }
 
 }

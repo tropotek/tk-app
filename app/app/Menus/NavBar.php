@@ -12,7 +12,7 @@ final class NavBar extends MenuInterface
     public function build(): static
     {
         $this->addChildren([
-            MenuItem::make('Dashboard', '/'),
+            MenuItem::make('Dashboard', route('dashboard')),
 
             MenuItem::make('Forms')->addChildren([
                 MenuItem::make('One Column', '/formOne'),
