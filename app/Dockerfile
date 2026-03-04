@@ -29,6 +29,7 @@ RUN install-php-extensions \
     pdo_sqlite \
     gd \
     tidy \
+    sockets \
     zip
 
 # Setup .bashrc
