@@ -5,7 +5,7 @@ services:
   app:
     build:
       context: .
-    container_name: ${APP_NAME}-prod
+    container_name: ${APP_NAME}
     tty: true
     restart: always
     ports:
