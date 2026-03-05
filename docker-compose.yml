@@ -21,7 +21,9 @@ services:
       SERVER_NAME: "${SERVER_NAME:-localhost}"
 
   mailpit:
-    profiles: [ "local" ]
+    # mailpit wont shutdown with a profile ?????
+    # PhpStorm issue, docker compose down does not have a profile flag
+#    profiles: [ "local" ]
     image: axllent/mailpit
     restart: unless-stopped
     tty: true
