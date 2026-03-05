@@ -1,5 +1,5 @@
-# Development environment
-name: tk-app
+# Development
+name: tk-app-dev
 
 services:
   app:
@@ -8,7 +8,7 @@ services:
     restart: unless-stopped
     tty: true
     ports:
-      - "${HTTP_LOCAL_PORT:-80}:80"
+      - "${HTTP_PORT:-80}:80"
     volumes:
       - ./app:/app
       - ./app/docker/php.ini:/usr/local/etc/php/conf.d/overrides.ini
@@ -54,7 +54,7 @@ services:
 # Networks
 # ggl: Docker comose with macvlan
 # ggl: Docker comose with ipvlan
-# ggl: Docker comose with ipvlan l3
+# ggl: Docker comose with ipvlan l3 (for local lan???)
 networks:
   app-network:
     driver: bridge
