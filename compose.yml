@@ -13,7 +13,7 @@ services:
       - ./app:/app
       - ./app/docker/php.ini:/usr/local/etc/php/conf.d/overrides.ini
     networks:
-      - app-network
+      - network
     environment:
       SERVER_NAME: ":80"
       APP_ENV: local
@@ -37,7 +37,7 @@ services:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
     networks:
-      - app-network
+      - network
 
   queue:
     build:
@@ -48,7 +48,7 @@ services:
     command: ["/app/artisan", "queue:work", "--verbose", "--tries=5", "--timeout=90", "--sleep=3"]
     restart: unless-stopped
     networks:
-      - app-network
+      - network
 
 
 # Networks
@@ -56,5 +56,5 @@ services:
 # ggl: Docker comose with ipvlan
 # ggl: Docker comose with ipvlan l3 (for local lan???)
 networks:
-  app-network:
+  network:
     driver: bridge

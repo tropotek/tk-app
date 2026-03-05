@@ -34,3 +34,9 @@ fi
 
 cd ..
 chown -r 1000:1000 ./
+
+
+# up
+# docker compose -f compose.yml -p tk-app --profile local up --force-recreate -d --build
+# down
+#docker compose -f compose.yml -p tk-app --profile "*" down --remove-orphans

@@ -1,3 +1,5 @@
+# TODO: Use a single compose file for dev/prod when phpStorm sorts its profile tags out.
+
 # Production
 name: ${APP_NAME:-tk-app}
 
@@ -16,7 +18,7 @@ services:
       - storage:/app/storage
       - ./app/docker/php.ini:/usr/local/etc/php/conf.d/overrides.ini
     networks:
-      - app-network
+      - network
     environment:
       SERVER_NAME: "${SERVER_NAME:-localhost}"
 
@@ -24,31 +26,31 @@ services:
     build:
       context: ..
     volumes:
-      - ./app:/app
+      - .:/app
     entrypoint: ["php"]
     command: ["/app/artisan", "queue:work", "--verbose", "--tries=5", "--timeout=90", "--sleep=3"]
     restart: unless-stopped
     networks:
-      - app-network
+      - network
 
   composer:
     image: composer:latest
     working_dir: /app
     tty: true
     volumes:
-      - ./app:/app
+      - .:/app
     entrypoint: [ "composer" ]
     command: [ "install", "--no-interaction", "--prefer-dist" ]
     restart: "no"
     networks:
-      - app-network
+      - network
 
   artisan:
     build:
       context: ..
     tty: true
     volumes:
-      - ./app:/app
+      - .:/app
     working_dir: /app
     entrypoint: [ "php" ]
     command: [ "artisan", "app:update" ]
@@ -57,13 +59,13 @@ services:
         condition: service_completed_successfully
     restart: "no"
     networks:
-      - app-network
+      - network
 
   migrate:
     build:
       context: ..
     volumes:
-      - ./app:/app
+      - .:/app
     working_dir: /app
     tty: true
     depends_on:
@@ -78,12 +80,12 @@ services:
     ]
     restart: "no"
     networks:
-      - app-network
+      - network
 
 volumes:
   db:
   storage:
 
 networks:
-  app-network:
+  network:
     driver: bridge
