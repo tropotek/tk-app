@@ -1,13 +1,13 @@
 @props([
-	'title'  => '',
-	'btnrow' => '',
-	'col1'   => '',
-	'col2'   => '',
-	'col3'   => '',
+	'pageTitle' => '',
+	'btnrow'    => '',
+	'col1'      => '',
+	'col2'      => '',
+	'col3'      => '',
 ])
 
-@if (!empty($title) && $title->hasActualContent())
-    <h3 class="mb-4">{{ $title }}</h3>
+@if (!empty($pageTitle) && $pageTitle->hasActualContent())
+    <h3 class="mb-4">{{ $pageTitle }}</h3>
 @endif
 
 @if(!empty($btnrow) && $btnrow->hasActualContent())
