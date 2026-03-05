@@ -1,9 +1,21 @@
-# Tk App - Laravel Examples 
+# Tk App - Laravel Docker Example 
+
+# Introduction 
+
+This is an experimental app working with Docker and Laravel.
+
+# Contents
+
+- [Installation](#docker-installation)
+- [Common Issues](#common-issues)
+- [Templating Starndards](app/resources/views/readme.md)
+- [tk-base Package](app/packages/ttek/tk-base/src/readme.md)
+    - [Form Templates](app/packages/ttek/tk-base/resources/views/components/form/readme.md)
+    - [Menu Builder](app/packages/ttek/tk-base/src/Menu/readme.md)
+    - [Breadcrumbs](app/packages/ttek/tk-base/src/Breadcrumbs/readme.md)
 
 
-## Installation With Docker
-
-
+## Docker Installation
 
 ```
 copy the .env example file and update as required
@@ -40,7 +52,7 @@ $ tail -f app/storage/logs/laravel.log
 ```
 
 
-## Issues
+## Common Issues
 
 If you experience permission issues, run the following in your PC terminal:
 ```
@@ -48,9 +60,3 @@ $ cd tk-app
 $ sudo chown -R $USER:$USER .
 ```
 
-
-# Tk-Base Package
-
-Thi package contains all libs for base functionality like Menus, Breadcrumbs, Tables, etc...
-
-View the [tk-base readme](app/packages/ttek/tk-base/src/readme.md) here.
