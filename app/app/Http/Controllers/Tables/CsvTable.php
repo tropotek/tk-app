@@ -15,7 +15,7 @@ class CsvTable extends Controller
 
     public function index(Request $request)
     {
-        $this->setTitle('Csv File Table');
+        $this->setPageName('Csv File Table');
 
         $table = $this->buildCsvTable($request);
 

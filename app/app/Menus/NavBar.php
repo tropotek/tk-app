@@ -37,7 +37,7 @@ final class NavBar extends MenuInterface
                 ->setIcon('fa-solid fa-right-from-bracket')
                 ->setVisible(auth()->check()),
 
-        ]);
+        ])->setVisible(auth()->check());
 
         // Reset breadcrumbs if menu item selected
         $this->appendQuery([Breadcrumbs::CRUMB_RESET => '1']);

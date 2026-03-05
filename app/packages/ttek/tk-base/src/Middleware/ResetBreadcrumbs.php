@@ -18,7 +18,7 @@ class ResetBreadcrumbs
     public function handle(Request $request, Closure $next): Response
     {
         // remove breadcrumbs on logout
-        if ($request->routeIs('logout')) {
+        if ($request->routeIs('logout') || $request->routeIs('login')) {
             Session::forget(\Tk\Breadcrumbs\Breadcrumbs::class);
         }
 

@@ -6,10 +6,10 @@ interface BreadcrumbsController
 {
 
     /**
-     * Set the page title for the controller and push a Crumb to the Breadcrumbs stack
+     * Set the page name for the controller and push a Crumb to the Breadcrumbs stack
      * EG:
      * ```
-     * public function setTitle(string $title, bool $withCrumb = true): Controller
+     * public function setPageName(string $title, bool $withCrumb = true): Controller
      * {
      *      // push a crumb to the stack
      *      if ($withCrumb) $title = Breadcrumbs::push($title);
@@ -21,6 +21,6 @@ interface BreadcrumbsController
      * }
      * ```
      */
-    public function setTitle(string $title, bool $withCrumb = true): static;
+    public function setPageName(string $pageName, bool $withCrumb = true): static;
 
 }

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Tk\Support\Facades\Breadcrumbs;
 use Tk\Support\Facades\Menu;
-use Tk\View\Composers\DefaultPageTitle;
+use Tk\View\Composers\DefaultPageName;
 
 class TkBaseServiceProvider extends ServiceProvider
 {
@@ -46,7 +46,7 @@ class TkBaseServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'tk-base');
 
         // set a default controller TITLE if none set
-        View::composer('*', DefaultPageTitle::class);
+        View::composer('*', DefaultPageName::class);
 
         // Load routes (optional)
         // $this->loadRoutesFrom(__DIR__.'/routes/web.php');

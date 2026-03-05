@@ -8,32 +8,24 @@ use Tk\Support\Facades\Breadcrumbs;
 
 abstract class Controller implements BreadcrumbsController
 {
-    // the page title view property
-    const string TITLE = 'title';
-
-    private string $title = '';
+    // the page name view property
+    const string PAGE_NAME = 'pageName';
 
 
     /**
      * Set the page title and push a breadcrumb
      */
-    public function setTitle(string $title, bool $withCrumb = true): static
+    public function setPageName(string $pageName, bool $withCrumb = true): static
     {
-        $this->title = $title;
         // push a breadcrumb to the stack
         if ($withCrumb) {
-            $this->title = Breadcrumbs::push($this->title);
+            $pageName = Breadcrumbs::push($pageName);
         }
 
-        // set $pageTitle to all views
-        View::share(self::TITLE, $this->title);
+        // set for all views
+        View::share(self::PAGE_NAME, $pageName);
 
         return $this;
-    }
-
-    public function getTitle(): string
-    {
-        return $this->title;
     }
 
 }

@@ -13,7 +13,7 @@ class IdeaController extends Controller
 {
     public function index(Request $request)
     {
-        $this->setTitle('ideas|Idea Manager');
+        $this->setPageName('ideas|Idea Manager');
 
         $table = new IdeaTable();
 
@@ -40,13 +40,13 @@ class IdeaController extends Controller
     }
     public function create()
     {
-        $this->setTitle('idea|Idea Create');
+        $this->setPageName('idea|Idea Create');
         return view('pages.ideas.create');
     }
 
     public function show(Idea $idea)
     {
-        $this->setTitle('idea|Idea View');
+        $this->setPageName('idea|Idea View');
         //Gate::authorize('update', $idea);
 
         return view('pages.ideas.edit',[
@@ -57,7 +57,7 @@ class IdeaController extends Controller
 
     public function edit(Idea $idea)
     {
-        $this->setTitle('idea|Idea Edit');
+        $this->setPageName('idea|Idea Edit');
         Gate::authorize('update', $idea);
 
         return view('pages.ideas.edit',[

@@ -5,7 +5,7 @@ namespace Tk\View\Composers;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\View;
 
-class DefaultPageTitle
+class DefaultPageName
 {
     /**
      * If a controller has not set the page name,
@@ -13,11 +13,11 @@ class DefaultPageTitle
      */
     public function compose(\Illuminate\View\View $view): void
     {
-        if (View::getShared()[Controller::TITLE] ?? false) return;
+        if (View::getShared()[Controller::PAGE_NAME] ?? false) return;
 
         $basename = basename(request()->path()) ?: '';
         $defaultName = ucwords(str_replace(['/', '_'], ' ', strtolower($basename)));
 
-        View::share(Controller::TITLE, $defaultName);
+        View::share(Controller::PAGE_NAME, $defaultName);
     }
 }

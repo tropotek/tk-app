@@ -28,7 +28,7 @@ class ThreeController extends Controller
 
     public function index(Request $request)
     {
-        $this->setTitle('form three|Form Three View');
+        $this->setPageName('form three|Form Three View');
         return view($this->view, [
             'mode' => 'view',
             'values' => $this->values,
@@ -37,7 +37,7 @@ class ThreeController extends Controller
 
     public function edit(Request $request)
     {
-        $this->setTitle('form three|Form Three Edit');
+        $this->setPageName('form three|Form Three Edit');
         return view($this->view, [
             'mode' => 'edit',
             'values' => $this->values,
@@ -46,7 +46,7 @@ class ThreeController extends Controller
 
     public function create(Request $request)
     {
-        $this->setTitle('form three|Form Three create');
+        $this->setPageName('form three|Form Three create');
         return view($this->view, [
             'mode' => 'create'
         ]);

@@ -12,7 +12,7 @@ class ExamplesController extends Controller
 
     public function index(Request $request)
     {
-        $this->setTitle('Examples');
+        $this->setPageName('Examples');
 
         $table = $this->buildTable($request);
 

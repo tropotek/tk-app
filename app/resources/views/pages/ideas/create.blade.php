@@ -4,7 +4,7 @@
     'method' => 'post',
 ])
 <x-pages.main>
-    <h3>Create Idea</h3>
+    <h3>{{ $pageName }}</h3>
 
     <x-tk-base::form :$method :$action :$mode>
 

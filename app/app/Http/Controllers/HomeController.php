@@ -10,7 +10,11 @@ class HomeController extends Controller
 
     public function doDefault(Request $request)
     {
-        $this->setTitle('Home');
+        $this->setPageName('Home');
+
+        if (auth()->check()) {
+            return redirect(route('dashboard'));
+        }
 
         if ($request->has('alert')) {
             $type = $request->input('alert');

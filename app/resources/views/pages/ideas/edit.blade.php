@@ -4,7 +4,7 @@
     'method' => 'patch'
 ])
 <x-pages.main>
-    <h3>Create Idea</h3>
+    <h3>{{ $pageName }}</h3>
 
     <form action="/ideas/{{ $idea->id }}" method="POST" id="btn-delete-idea">
         @csrf

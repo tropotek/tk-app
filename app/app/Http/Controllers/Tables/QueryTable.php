@@ -15,7 +15,7 @@ class QueryTable extends Controller
 
     public function index(Request $request)
     {
-        $this->setTitle('SQL Query Table');
+        $this->setPageName('SQL Query Table');
 
         $table = new IdeaTable();
 

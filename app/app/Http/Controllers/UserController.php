@@ -12,7 +12,7 @@ class UserController extends Controller
     public function login(Request $request)
     {
         if (auth()->check()) {
-            return redirect('/');
+            return redirect(route('dashboard'));
         }
 
         if ($request->isMethod('post')) {
@@ -25,7 +25,7 @@ class UserController extends Controller
                 $request->session()->regenerate();
             }
 
-            return redirect('/');
+            return redirect(route('dashboard'));
         }
 
         return view('pages.login');
@@ -35,7 +35,7 @@ class UserController extends Controller
     {
         auth()->logout();
         session()->flush();
-        return redirect('/');
+        return redirect(route('home'));
     }
 
     public function register(UserRegisterRequest $request)
@@ -47,7 +47,7 @@ class UserController extends Controller
         if ($request->isMethod('post')) {
             $user = User::create($request->validated());
             auth()->login($user);
-            return redirect('/')->with('success', 'Registration successful. You are now logged in!');
+            return redirect(route('dashboard'))->with('success', 'Registration successful. You are now logged in!');
         }
 
         return view('pages.register');

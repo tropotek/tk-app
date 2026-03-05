@@ -4,7 +4,7 @@
         <div class="col-lg-9 col-md-8 col-sm-6 col-xs-12">
             @if($table->count())
                 <div class="mt-2">
-                    <h2>My Ideas</h2>
+                    <h2>{{ $pageName }}</h2>
 
                     <x-tk-base::table.filter-table :$table>
 

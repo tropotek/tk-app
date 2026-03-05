@@ -10,7 +10,7 @@ class DashboardController extends Controller
 
     public function doDefault(Request $request)
     {
-        $this->setTitle('Dashboard');
+        $this->setPageName('Dashboard');
 
 
         if ($request->has('alert')) {

@@ -7,14 +7,14 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
+
                 <ul class="navbar-nav me-auto mb-2 mb-sm-0">
-
-                    @foreach (menu('NavBar')->getChildren() as $item)
-                        {{-- Pass initial classes to the component --}}
-                        <x-tk-base::navitem :item="$item" level="0" class="nav-item" submenu-class="dropdown-menu" link-class="nav-link" />
-                    @endforeach
-
                     @auth
+                        @foreach (menu('NavBar')->getChildren() as $item)
+                            {{-- Pass initial classes to the component --}}
+                            <x-tk-base::navitem :item="$item" level="0" class="nav-item" submenu-class="dropdown-menu" link-class="nav-link" />
+                        @endforeach
+
                         <li class="nav-item dropdown d-block d-sm-none">
                             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                                 <span>{{ Auth::user()->name }}</span>
@@ -33,9 +33,7 @@
                                     value="search" title="Find a page" id="btn-search"><i class="fa fa-search"></i></button>
                         </div>
                     </form>
-                @endauth
 
-                @auth
                     <div class="dropdown text-end d-none d-sm-block">
                         <a href="#" class="link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
                            aria-expanded="false">
