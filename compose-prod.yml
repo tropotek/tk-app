@@ -1,5 +1,5 @@
 # Development environment
-name: tk-app
+name: tk-app-prod
 
 services:
   app:
@@ -9,34 +9,16 @@ services:
     tty: true
     ports:
       - "${HTTP_LOCAL_PORT:-80}:80"
-      - "${HTTPS_LOCAL_PORT:-443}:443"
-      - "${HTTPS_LOCAL_PORT:-443}:443/udp"
-    # comment out for ssl on production...
-    entrypoint: ["frankenphp"]
-    command: ["php-server", "--root=/app/public", "--listen=:80"]
+      - "443:443"
+      - "443:443/udp"
     volumes:
-      - ./app:/app
+      - db:/app/database/storage
+      - storage:/app/storage
       - ./app/docker/php.ini:/usr/local/etc/php/conf.d/overrides.ini
+    networks:
+      - app-network
     environment:
       SERVER_NAME: "${SERVER_NAME:-localhost}"
-
-  mailpit:
-    # mailpit wont shutdown with a profile ?????
-    # PhpStorm issue, docker compose down does not have a profile flag
-#    profiles: [ "local" ]
-    image: axllent/mailpit
-    restart: unless-stopped
-    tty: true
-    volumes:
-      - ./docker/mailpit:/data
-    ports:
-      - "${MAILPIT_HTTP_PORT:-8025}:8025" # Web UI
-      - "${MAILPIT_SMTP_PORT:-1025}:1025" # SMTP server
-    environment:
-      MP_MAX_MESSAGES: 5000
-      MP_DATABASE: /data/mailpit.db
-      MP_SMTP_AUTH_ACCEPT_ANY: 1
-      MP_SMTP_AUTH_ALLOW_INSECURE: 1
 
   queue:
     build:
@@ -46,9 +28,10 @@ services:
     entrypoint: ["php"]
     command: ["/app/artisan", "queue:work", "--verbose", "--tries=5", "--timeout=90", "--sleep=3"]
     restart: unless-stopped
+    networks:
+      - app-network
 
   composer:
-    profiles: [ "prod" ]
     image: composer:latest
     working_dir: /app
     tty: true
@@ -57,9 +40,10 @@ services:
     entrypoint: [ "composer" ]
     command: [ "install", "--no-interaction", "--prefer-dist" ]
     restart: "no"
+    networks:
+      - app-network
 
   artisan:
-    profiles: [ "prod" ]
     build:
       context: .
     tty: true
@@ -72,9 +56,10 @@ services:
       composer:
         condition: service_completed_successfully
     restart: "no"
+    networks:
+      - app-network
 
   migrate:
-    profiles: [ "prod" ]
     build:
       context: .
     volumes:
@@ -92,8 +77,13 @@ services:
       "--force"
     ]
     restart: "no"
+    networks:
+      - app-network
 
-# Networks
-# ggl: Docker comose with macvlan
-# ggl: Docker comose with ipvlan
-# ggl: Docker comose with ipvlan l3
+volumes:
+  db:
+  storage:
+
+networks:
+  app-network:
+    driver: bridge

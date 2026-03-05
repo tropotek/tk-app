@@ -47,3 +47,4 @@ RUN mkdir -p storage/framework/{sessions,views,cache} \
    && mkdir -p bootstrap/cache
 
 COPY app .
+
