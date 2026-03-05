@@ -54,10 +54,10 @@ final class Breadcrumbs
      *
      * @return Crumb
      */
-    protected function createCrumb(string $title, string $url): Crumb
+    protected function createCrumb(string $pageName, string $url): Crumb
     {
-        [$name, $title] = $this->parseTitle($title);
-        return new Crumb($name, $title, $this->normalizeUrl($url));
+        [$name, $pageName] = $this->parseTitle($pageName);
+        return new Crumb($name, $pageName, $this->normalizeUrl($url));
     }
 
     /**
@@ -74,18 +74,19 @@ final class Breadcrumbs
     /**
      * Parse a page title into its crumb name and page title parts
      */
-    public function parseTitle(string $title): array
+    public function parseTitle(string $pageName): array
     {
-        [$name, $title] = array_map('trim', explode('|', $title.'|'));
-        if (!$title) $title = $name;
-        $title = ucwords(strip_tags($title));
-        return [$name, $title];
+        [$name, $pageName] = array_map('trim', explode('|', $pageName.'|'));
+        if (!$pageName) $pageName = $name;
+        $pageName = ucwords(strip_tags($pageName));
+        return [$name, $pageName];
     }
 
     /**
      * Push a crumb to the stack returning the page title
+     * $name used internally
      */
-    public function push(string $title, ?string $url = null, ?string $name = null): string
+    public function push(string $pageName, ?string $url = null, ?string $name = null): string
     {
         $url = $url ?? request()->getRequestUri();
         $url = parse_url($url, PHP_URL_PATH);
@@ -94,7 +95,7 @@ final class Breadcrumbs
             return $this->getHomeTitle();
         }
 
-        $crumb = $this->createCrumb($title, $url);
+        $crumb = $this->createCrumb($pageName, $url);
         if ($name) $crumb->name = $name;
 
         // look for this page already in the breadcrumbs
@@ -163,7 +164,6 @@ final class Breadcrumbs
 
         return $url;
     }
-
 
     /**
      * The home url is excluded from the count

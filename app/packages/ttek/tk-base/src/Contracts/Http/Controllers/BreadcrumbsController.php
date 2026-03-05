@@ -9,13 +9,13 @@ interface BreadcrumbsController
      * Set the page name for the controller and push a Crumb to the Breadcrumbs stack
      * EG:
      * ```
-     * public function setPageName(string $title, bool $withCrumb = true): Controller
+     * public function setPageName(string $pageName, bool $withCrumb = true): Controller
      * {
      *      // push a crumb to the stack
-     *      if ($withCrumb) $title = Breadcrumbs::push($title);
+     *      if ($withCrumb) $pageName = Breadcrumbs::push($pageName);
      *
      *      // set $pageTitle to all views
-     *      View::share(self::PAGE_TITLE, $title);
+     *      View::share('pageName', $pageName);
      *
      *      return $this;
      * }

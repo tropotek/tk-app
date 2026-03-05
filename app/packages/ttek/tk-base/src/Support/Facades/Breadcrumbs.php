@@ -7,8 +7,8 @@ use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method static array parseTitle(string $title)
- * @method static \Tk\Breadcrumbs\Breadcrumbs push(string $title, ?string $url = null)
+ * @method static array parseTitle(string $pageName)
+ * @method static \Tk\Breadcrumbs\Breadcrumbs push(string $pageName, ?string $url = null)
  * @method static RedirectResponse|Redirector pop()
  * @method static string lastUrl()
  * @method static int count()
