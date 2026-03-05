@@ -24,6 +24,7 @@
             <x-tk-base::form.fields.select
                 name="status"
                 :options="['' => '-- Select --']+\App\Enum\IdeaStatus::getLabels()"
+                required=""
                 :value="\App\Enum\IdeaStatus::PENDING->value"
             />
 
