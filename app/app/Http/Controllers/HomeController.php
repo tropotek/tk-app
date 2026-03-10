@@ -18,7 +18,7 @@ class HomeController extends Controller
 
         if ($request->has('alert')) {
             $type = $request->input('alert');
-            return redirect('/')->with($type, "This is a {$type} flash message.");
+            return redirect($request->fullUrlWithoutQuery(['alert']))->with($type, "This is a {$type} flash message.");
         }
 
         return view('pages.home');

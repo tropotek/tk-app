@@ -10,11 +10,11 @@
 
         <p>Test flash message alerts:</p>
         <ul class="list-unstyled">&nbsp;
-            <a class="btn btn-success" href="/?alert=success">Success</a>
-            <a class="btn btn-info" href="/?alert=info">Info</a>
-            <a class="btn btn-warning" href="/?alert=warning">Warning</a>
-            <a class="btn btn-danger" href="/?alert=danger">Danger</a>
-            <a class="btn btn-danger" href="/?alert=error">Error</a>
+            <a class="btn btn-success" href="{{ request()->fullUrlWithQuery(['alert' => 'success']) }}">Success</a>
+            <a class="btn btn-info" href="{{ request()->fullUrlWithQuery(['alert' => 'info']) }}">Info</a>
+            <a class="btn btn-warning" href="{{ request()->fullUrlWithQuery(['alert' => 'warning']) }}">Warning</a>
+            <a class="btn btn-danger" href="{{ request()->fullUrlWithQuery(['alert' => 'danger']) }}">Danger</a>
+            <a class="btn btn-danger" href="{{ request()->fullUrlWithQuery(['alert' => 'error']) }}">Error</a>
         </ul>
         <p>&nbsp;</p>
         <p>&nbsp;</p>
