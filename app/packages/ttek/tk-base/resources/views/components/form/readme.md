@@ -29,7 +29,7 @@ class ExampleController extends Controller
 ```
 
 Then create the Blade form template `formexample.blade.php`:
-```bladehtmlhtml
+```bladehtml
 @props([
     'mode'   => 'view',       // ['view', 'edit', 'create']
     'action' => '/formExample/submit',
