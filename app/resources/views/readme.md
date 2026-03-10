@@ -56,8 +56,7 @@ These modes affect how fields render:
 - in `create` mode, fields render as editable controls intended for new records
 
 Example:
-```
-blade
+```blade
 <x-tk-base::form
 method="post"
 action="{{ route('users.store') }}"
@@ -76,8 +75,7 @@ A form is usually rendered from a controller by passing:
 - `method`
 
 ### Controller example
-```
-php
+```php
 <?php
 
 namespace App\Http\Controllers;
@@ -132,8 +130,7 @@ class UserController extends Controller
 }
 ```
 ### Blade example
-```
-blade
+```blade
 @props([
     'mode' => 'view',
     'values' => [],
@@ -227,8 +224,7 @@ Use `x-tk-base::form` as the root form component.
 | `fields` | no | slot for form fields |
 
 Example:
-```
-blade
+```blade
 <x-tk-base::form
     method="put"
     action="{{ route('users.update', $userId) }}"
@@ -270,8 +266,7 @@ blade
 | `viewCss`, `editCss`, `createCss`, `cancelCss` | button classes |
 
 Example:
-```
-blade
+```blade
 <x-tk-base::form.buttons.default-btns
     editRoute="{{ route('users.edit', $userId) }}"
     cancelRoute="{{ route('users.show', $userId) }}"
@@ -284,8 +279,7 @@ blade
 ## Field group
 
 Use `x-tk-base::form.ui.fieldgroup` to group related fields in a Bootstrap row.
-```
-blade
+```blade
 <x-tk-base::form.ui.fieldgroup class="col">
     <x-tk-base::form.fields.input
         name="firstName"
@@ -305,8 +299,7 @@ Use this when you want related fields displayed together without a visual legend
 ## Fieldset
 
 Use `x-tk-base::form.ui.fieldset` when the group needs a title or stronger visual separation.
-```
-blade
+```blade
 <x-tk-base::form.ui.fieldset legend="Contact details" class="col">
     <x-tk-base::form.fields.input
         name="email"
@@ -340,8 +333,7 @@ Most field components support these common props:
 The components also use Laravel `old()` values automatically, so validation failures preserve user input.
 
 ## Hidden field
-```
-blade
+```blade
 <x-tk-base::form.fields.hidden
     name="id"
     :value="$values['id'] ?? ''"
@@ -350,8 +342,7 @@ blade
 Use for IDs, tokens, or additional request metadata.
 
 ## Input field
-```
-blade
+```blade
 <x-tk-base::form.fields.input
     name="firstName"
     label="First name"
@@ -363,8 +354,7 @@ blade
 Useful for text, email, number, date, and similar input types.
 
 You can also set `type` explicitly:
-```
-blade
+```blade
 <x-tk-base::form.fields.input
     name="dob"
     label="Date of birth"
@@ -374,8 +364,7 @@ blade
 />
 ```
 ## Select field
-```
-blade
+```blade
 <x-tk-base::form.fields.select
     name="title"
     :options="[
@@ -395,8 +384,7 @@ blade
 - array-style names such as `roles[]` are supported
 
 Optgroup example:
-```
-blade
+```blade
 <x-tk-base::form.fields.select
     name="department"
     :options="[
@@ -413,8 +401,7 @@ blade
 />
 ```
 ## Checkbox field
-```
-blade
+```blade
 <x-tk-base::form.fields.checkbox
     name="options[]"
     :options="[
@@ -426,8 +413,7 @@ blade
 />
 ```
 For a switch-style checkbox:
-```
-blade
+```blade
 <x-tk-base::form.fields.checkbox
     name="best"
     label="Best option"
@@ -443,8 +429,7 @@ blade
 - in `view` mode the component renders icon-based output
 
 ## Radio field
-```
-blade
+```blade
 <x-tk-base::form.fields.radio
     name="status"
     :options="[
@@ -458,8 +443,7 @@ blade
 Use when exactly one option should be selected.
 
 ## File field
-```
-blade
+```blade
 <x-tk-base::form.fields.file
     name="avatar"
     label="Profile image"
@@ -474,8 +458,7 @@ blade
 - use the `value` prop to show a file link or file summary for existing uploads
 
 ## Textarea field
-```
-blade
+```blade
 <x-tk-base::form.fields.textarea
     name="description"
     label="Description"
@@ -494,8 +477,7 @@ The form fields integrate with Laravel validation behavior:
 - invalid fields receive Bootstrap invalid classes when validation errors exist
 
 Example controller action:
-```
-php
+```php
 <?php
 
 namespace App\Http\Controllers;
@@ -538,8 +520,7 @@ For consistency across the project:
 ---
 
 ## Example full form
-```
-blade
+```blade
 @props([
     'mode' => 'view',
     'values' => [],

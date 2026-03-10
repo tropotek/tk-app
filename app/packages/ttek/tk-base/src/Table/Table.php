@@ -117,11 +117,11 @@ class Table
         return $this->records;
     }
 
-    public function setRecords(RecordsInterface $records): static
+    public function setRecords(RecordsInterface $records): RecordsInterface
     {
         $this->records = $records;
         $records->setTable($this);
-        return $this;
+        return $records;
     }
 
     /**

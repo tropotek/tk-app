@@ -131,7 +131,7 @@ class MainNav extends MenuInterface
 
 Then render it with:
 
-```blade
+```bladehtml
 @foreach (menu('MainNav')->getChildren() as $item)
     <x-tk-base::navitem
         :item="$item"
@@ -448,7 +448,7 @@ This can be useful if you want to compare menu items against route names or insp
 
 The included component is:
 
-```blade
+```bladehtml
 <x-tk-base::navitem />
 ```
 
@@ -457,7 +457,7 @@ It expects a `MenuItem` and recursively renders child items.
 
 ### Example navigation
 
-```blade
+```bladehtml
 <ul class="navbar-nav me-auto mb-2 mb-sm-0">
     @foreach (menu('MainNav')->getChildren() as $item)
         <x-tk-base::navitem
@@ -496,7 +496,7 @@ It also prevents rendering nested dropdowns deeper than the configured `maxLevel
 
 ## Example: full Bootstrap 5 navbar
 
-```blade
+```bladehtml
 <header>
     <nav class="navbar navbar-expand-sm fixed-top mb-2 navbar-light bg-light shadow-sm">
         <div class="container">
@@ -730,7 +730,7 @@ class MainNav extends \Tk\Menu\MenuInterface
 
 ### Render in Blade
 
-```blade
+```bladehtml
 @foreach (menu('MainNav')->getChildren() as $item)
     <x-tk-base::navitem
         :item="$item"

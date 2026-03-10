@@ -77,8 +77,7 @@ Concrete implementations include:
 ## 1. Create a table class
 
 Typically, you subclass `Table` and define columns and records in `build()`.
-```
-php
+```php
 <?php
 
 namespace App\Tables;
@@ -123,11 +122,63 @@ class UserTable extends Table
     }
 }
 ```
+
+Optionally, you can create the table object directly within your controller.
+```
+class UserController extends Controller
+{
+    public function index(Request $request)
+    {
+        $table = new Table();
+
+        // Init the table and cells
+        $table->setLimit(10);
+
+        $table->addRowAttrs(function (Idea $row, Table $table) {
+            return ['data-test-id' => $row->id];
+        });
+
+        $table->appendCell(
+            (new Cell('id'))
+                ->setHeader('ID')
+                ->setSortable()
+        );
+
+        $table->appendCell(
+            (new Cell('name'))
+                ->setHeader('Name')
+                ->setSortable()
+        );
+
+        $table->appendCell(
+            (new Cell('email'))
+                ->setHeader('Email')
+                ->setSortable()
+        );
+
+        $table->appendCell(
+            (new Cell('created_at'))
+                ->setHeader('Created')
+                ->setSortable()
+                ->setHtml(fn ($row) => e((string) $row->created_at))
+        );
+
+        $table->setRecords(
+            new QueryRecords(User::query())
+        );
+
+        return view('pages.user.index', [
+            'table' => $table,
+        ]);
+    }
+    
+}
+```
+
 ---
 
 ## 2. Render the table in a controller
-```
-php
+```php
 <?php
 
 namespace App\Http\Controllers;
@@ -153,8 +204,7 @@ class UserController extends Controller
 How you render it depends on the Blade components available in your app, but the controller should pass the built table object into the view.
 
 Example:
-```
-php
+```php
 return view('pages.users.index', [
     'table' => new UserTable('users'),
 ]);
@@ -164,8 +214,7 @@ return view('pages.users.index', [
 ## Defining cells
 
 A `Cell` is keyed by its name.
-```
-php
+```php
 $cell = new Cell('email');
 ```
 By default:
@@ -185,15 +234,13 @@ For example:
 #### `setHeader(string $header)`
 
 Overrides the display label for the column header.
-```
-php
+```php
 (new Cell('created_at'))->setHeader('Created')
 ```
 #### `setSortable(bool $sortable = true)`
 
 Marks the column as sortable.
-```
-php
+```php
 (new Cell('name'))->setSortable()
 ```
 #### `setOrderBy(string $orderBy)`
@@ -201,8 +248,7 @@ php
 Overrides the database/property field used for sorting (cell name by default).
 
 Useful when the display column name differs from the actual sortable field.
-```
-php
+```php
 (new Cell('author'))
     ->setHeader('Author')
     ->setSortable()
@@ -216,8 +262,7 @@ Controls the raw value returned for the cell.
 - `null`: use `$row[$name]` or `$row->{$name}`
 - `string`: use a static value
 - `callable`: compute a value dynamically
-```
-php
+```php
 (new Cell('full_name'))
     ->setValue(fn ($row) => $row->first_name . ' ' . $row->last_name)
 ```
@@ -226,8 +271,7 @@ php
 Controls rendered display output.
 
 If `html` is not set, the cell falls back to the raw value.
-```
-php
+```php
 (new Cell('status'))
     ->setHtml(fn ($row) => $row->active ? 'Active' : 'Inactive')
 ```
@@ -236,8 +280,7 @@ Use this for formatting, badges, links, icons, or other display markup.
 #### `setComponent(string $component)`
 
 Sets a Blade component name used for rendering the cell.
-```
-php
+```php
 (new Cell('actions'))->setComponent('table.action')
 ```
 
@@ -246,22 +289,19 @@ php
 Adds HTML classes to the cell attributes.
 
 This comes from the shared `HasAttributes` trait.
-```
-php
+```php
 (new Cell('email'))->addClass('text-nowrap')
 ```
 #### `addHeaderClass(string $class)`
 
 Adds HTML classes to the header cell.
-```
-php
+```php
 (new Cell('email'))->addHeaderClass('w-25')
 ```
 #### `addHeaderAttr(array $attrs)`
 
 Adds arbitrary header attributes.
-```
-php
+```php
 (new Cell('email'))->addHeaderAttr(['data-test' => 'email-header'])
 ```
 ---
@@ -271,36 +311,31 @@ php
 ### `appendCell(string|Cell $cell, ?string $after = null)`
 
 Adds a cell to the end of the table, or after a named column.
-```
-php
+```php
 $this->appendCell(new Cell('name'));
 $this->appendCell(new Cell('email'), 'name');
 ```
 If you pass a string, a `Cell` is created automatically:
-```
-php
+```php
 $this->appendCell('email');
 ```
 ### `prependCell(string|Cell $cell, ?string $before = null)`
 
 Adds a cell to the beginning of the table, or before a named column.
-```
-php
+```php
 $this->prependCell(new Cell('id'));
 $this->prependCell(new Cell('status'), 'email');
 ```
 ### `getCell(string $name)`
 
 Returns a cell by name.
-```
-php
+```php
 $emailCell = $this->getCell('email');
 ```
 ### `removeCell(string $name)`
 
 Removes a cell from the table.
-```
-php
+```php
 $this->removeCell('internal_notes');
 ```
 ### `getCells(?object|array $row = null)`
@@ -308,8 +343,7 @@ $this->removeCell('internal_notes');
 Returns the cell collection.
 
 If a row is provided, each cell is updated with the current row before rendering.
-```
-php
+```php
 $cells = $table->getCells($row);
 ```
 ---
@@ -319,8 +353,7 @@ $cells = $table->getCells($row);
 A table must have a records source before it can return rows.
 
 ### `setRecords(RecordsInterface $records)`
-```
-php
+```php
 $this->setRecords(new QueryRecords(User::query()));
 ```
 When records are attached, the records object also attaches itself back to the table and refreshes table state from the request/session.
@@ -374,8 +407,7 @@ That is the polite, civilized thing for tables to do.
 ## Table IDs
 
 Each table has an ID.
-```
-php
+```php
 $table = new UserTable('users');
 ```
 If you do not provide one, a short hash based on the current request path is generated.
@@ -385,8 +417,7 @@ If duplicate IDs are created on the same request, a numeric suffix is added auto
 ### `getId()`
 
 Returns the resolved table ID.
-```
-php
+```php
 $table->getId();
 ```
 ---
@@ -396,22 +427,19 @@ $table->getId();
 ### `count()`
 
 Returns the number of rows on the current page.
-```
-php
+```php
 $table->count();
 ```
 ### `countAll()`
 
 Returns the total number of available rows before pagination.
-```
-php
+```php
 $table->countAll();
 ```
 ### `hasRecords()`
 
 Returns `true` when records are set and the current page has rows.
-```
-php
+```php
 $table->hasRecords();
 ```
 ### `getPaginator()`
@@ -421,8 +449,7 @@ Returns a Laravel paginator when supported by the records' implementation.
 - `ArrayRecords` returns a `LengthAwarePaginator`
 - `QueryRecords` returns the paginator created from the query
 - `RecordsInterface` base implementation returns `null`
-```
-php
+```php
 $paginator = $table->getPaginator();
 ```
 ---
@@ -432,8 +459,7 @@ $paginator = $table->getPaginator();
 Sorting is driven by the table’s `orderBy` state. Order by states starting with `-` are descending.
 
 ### Table-level sorting
-```
-php
+```php
 $table->getOrderBy();
 $table->setOrderBy('name');
 $table->setOrderBy('-created_at');
@@ -450,8 +476,7 @@ Invalid values are cleared and logged.
 ### Cell-level sorting
 
 For a sortable cell:
-```
-php
+```php
 (new Cell('name'))->setSortable()
 ```
 you can use:
@@ -477,18 +502,15 @@ Sort cycling works like this:
 Builds a table-aware URL by prefixing params with the table ID and appending `_tid`.
 
 Examples:
-```
-php
+```php
 $url = $table->url(['tp_' => 1, 'tl_' => 25]);
 ```
 or:
-```
-php
+```php
 $url = $table->url('/users', ['tp_' => 2]);
 ```
 In practice, you would usually pass the table constants:
-```
-php
+```php
 $url = $table->url([
     Table::QUERY_PAGE => 2,
     Table::QUERY_LIMIT => 25,
@@ -499,15 +521,13 @@ This ensures generated links are scoped to the correct table instance.
 ### `key(string $key)`
 
 Prefixes a key with the table ID.
-```
-php
+```php
 $table->key(Table::QUERY_PAGE);
 ```
 ### `Table::makeKey(string $tableId, string $key)`
 
 Static version of the same behavior.
-```
-php
+```php
 Table::makeKey('users', Table::QUERY_PAGE);
 ```
 ---
@@ -517,8 +537,7 @@ Table::makeKey('users', Table::QUERY_PAGE);
 You can set HTML attributes for table rows.
 
 ### Static row attributes
-```
-php
+```php
 $table->addRowAttrs([
     'class' => 'align-middle',
 ]);
@@ -526,8 +545,7 @@ $table->addRowAttrs([
 ### Dynamic row attributes
 
 Pass a callable:
-```
-php
+```php
 $table->addRowAttrs(function ($row, $table) {
     return [
         'class' => $row->active ? 'table-success' : 'table-secondary',
@@ -535,8 +553,7 @@ $table->addRowAttrs(function ($row, $table) {
 });
 ```
 ### Reading row attributes
-```
-php
+```php
 $attrs = $table->getRowAttrs($row);
 ```
 ---
@@ -553,45 +570,39 @@ The filter callback receives:
 ---
 
 ### Filtering `ArrayRecords`
-```
-php
+```php
 use Tk\Table\Records\ArrayRecords;
 
-$this->setRecords(
-    (new ArrayRecords($rows))
-        ->filter(function (array $filters, array $rows) {
-            if (!empty($filters['status'])) {
-                $rows = array_filter($rows, function ($row) use ($filters) {
-                    return ($row['status'] ?? null) === $filters['status'];
-                });
-            }
+$this->setRecords(new ArrayRecords($rows))
+    ->filter(function (array $filters, array $rows) {
+        if (!empty($filters['status'])) {
+            $rows = array_filter($rows, function ($row) use ($filters) {
+                return ($row['status'] ?? null) === $filters['status'];
+            });
+        }
 
-            return array_values($rows);
-        })
-);
+        return array_values($rows);
+    });
 ```
 ---
 
 ### Filtering `QueryRecords`
-```
-php
+```php
 use App\Models\User;
 use Tk\Table\Records\QueryRecords;
 
-$this->setRecords(
-    (new QueryRecords(User::query()))
-        ->filter(function (array $filters, $query) {
-            if (!empty($filters['email'])) {
-                $query->where('email', 'like', '%' . $filters['email'] . '%');
-            }
+$this->setRecords(new QueryRecords(User::query()))
+    ->filter(function (array $filters, $query) {
+        if (!empty($filters['email'])) {
+            $query->where('email', 'like', '%' . $filters['email'] . '%');
+        }
 
-            if (!empty($filters['active'])) {
-                $query->where('active', (bool) $filters['active']);
-            }
+        if (!empty($filters['active'])) {
+            $query->where('active', (bool) $filters['active']);
+        }
 
-            return $query;
-        })
-);
+        return $query;
+    });
 ```
 The callback should return the modified query.
 
@@ -600,8 +611,7 @@ The callback should return the modified query.
 ## Working with `ArrayRecords`
 
 Use `ArrayRecords` when your data is already available as an array.
-```
-php
+```php
 use Tk\Table\Records\ArrayRecords;
 
 $this->setRecords(
@@ -629,8 +639,7 @@ Cell values are read by matching the cell name against the row key/property.
 ## Working with `CsvRecords`
 
 Use `CsvRecords` to build a table from a CSV file.
-```
-php
+```php
 use Tk\Table\Records\CsvRecords;
 
 $this->setRecords(
@@ -638,8 +647,7 @@ $this->setRecords(
 );
 ```
 If the CSV has no header row:
-```
-php
+```php
 new CsvRecords(storage_path('app/import/users.csv'), false)
 ```
 ### Behavior
@@ -657,8 +665,7 @@ Use this for modestly sized CSV files. For large files, create your own `QueryRe
 ## Working with `QueryRecords`
 
 Use `QueryRecords` for Eloquent-backed tables.
-```
-php
+```php
 use App\Models\User;
 use Tk\Table\Records\QueryRecords;
 
@@ -690,8 +697,7 @@ When attached to a table, `QueryRecords`:
 ## Accessing records and rows
 
 Because `RecordsInterface` implements `IteratorAggregate` and `Countable`, you can iterate over records easily.
-```
-php
+```php
 foreach ($table->getRecords() as $row) {
     // ...
 }
@@ -710,8 +716,7 @@ A common pattern is:
 - use `setHtml()` for presentation
 
 Example:
-```
-php
+```php
 (new Cell('status'))
     ->setValue(fn ($row) => $row->active ? 'active' : 'inactive')
     ->setHtml(fn ($row, $cell) => $cell->getValue($row) === 'active'
@@ -729,13 +734,11 @@ Use this split when:
 ## Custom cell components
 
 A cell can specify a custom component renderer.
-```
-php
+```php
 (new Cell('actions'))->setComponent('table.action')
 ```
 You can inspect component existence using:
-```
-php
+```php
 $cell->componentExists($cell->getComponent());
 ```
 Cell header components follow the convention:
@@ -756,8 +759,7 @@ table.action-head
 ---
 
 ## Example: complete table using `QueryRecords`
-```
-php
+```php
 <?php
 
 namespace App\Tables;
@@ -804,24 +806,21 @@ class UserTable extends Table
             ];
         });
 
-        $this->setRecords(
-            (new QueryRecords(User::query()))
-                ->filter(function (array $filters, $query) {
-                    if (!empty($filters['name'])) {
-                        $query->where('name', 'like', '%' . $filters['name'] . '%');
-                    }
+        $this->setRecords(new QueryRecords(User::query()))
+            ->filter(function (array $filters, $query) {
+                if (!empty($filters['name'])) {
+                    $query->where('name', 'like', '%' . $filters['name'] . '%');
+                }
 
-                    return $query;
-                })
-        );
+                return $query;
+            });
     }
 }
 ```
 ---
 
 ## Example: complete table using `ArrayRecords`
-```
-php
+```php
 <?php
 
 namespace App\Tables;
@@ -889,8 +888,7 @@ If a cell starts doing too much work, move the formatting into:
 Only mark columns sortable when the sort field is valid for the underlying records source.
 
 ### 5. Always give tables stable IDs when multiple tables can appear on one page
-```
-php
+```php
 new UserTable('users')
 new AuditTable('audit')
 ```
@@ -903,8 +901,7 @@ This avoids query parameter collisions.
 ### Records not set
 
 Calling methods that depend on records before `setRecords()` will fail.
-```
-php
+```php
 $table->getRecords();
 ```
 Make sure records are attached during `build()`.

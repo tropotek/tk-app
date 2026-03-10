@@ -332,14 +332,14 @@ If those names change, the automatic clearing on login/logout will no longer mat
 
 The package includes a Blade component:
 
-```blade
+```bladehtml
 <x-tk-base::breadcrumbs />
 ```
 
 
 A typical layout usage:
 
-```blade
+```bladehtml
 <main class="pt-5">
     <x-tk-base::breadcrumbs />
 
@@ -482,7 +482,7 @@ public function show(int $id)
 
 ## Back button using breadcrumb history
 
-```blade
+```bladehtml
 <a href="{{ \Tk\Support\Facades\Breadcrumbs::lastUrl() }}" class="btn btn-secondary">
     Back
 </a>
@@ -491,7 +491,7 @@ public function show(int $id)
 
 ## Reset breadcrumb history when entering a new flow
 
-```blade
+```bladehtml
 <a href="{{ \Tk\Support\Facades\Breadcrumbs::getResetUrl(route('dashboard')) }}">
     Start over
 </a>
@@ -612,7 +612,7 @@ class IdeasController extends Controller
 
 ### Layout
 
-```blade
+```bladehtml
 <main class="pt-5">
     <x-tk-base::breadcrumbs />
 
@@ -653,7 +653,7 @@ Breadcrumbs::parseTitle(string $pageName);
 
 ### Blade
 
-```blade
+```bladehtml
 <x-tk-base::breadcrumbs />
 ```
 
