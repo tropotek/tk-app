@@ -124,7 +124,7 @@ class UserTable extends Table
 ```
 
 Optionally, you can create the table object directly within your controller.
-```
+```php
 class UserController extends Controller
 {
     public function index(Request $request)
