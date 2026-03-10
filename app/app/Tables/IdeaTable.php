@@ -13,8 +13,7 @@ class IdeaTable extends Table
 
     protected function build(): void
     {
-//        $this->addClass('testing');
-//        $this->addAttr(['data-test' => 'testing']);
+        // Init the table and cells
         $this->setLimit(10);
 
         $this->addRowAttrs(function (Idea $row, Table $table) {
@@ -59,6 +58,7 @@ class IdeaTable extends Table
                 return $row->updated_at->format('Y-m-d h:i');
             });
 
+        // Get the table rows
         $this->setRecords(new QueryRecords($this->buildQuery()));
     }
 

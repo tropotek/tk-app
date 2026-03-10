@@ -8,6 +8,7 @@ A package to hold useful objects and templates for in-house web applications.
 - [Form Templates](../resources/views/components/form/readme.md)
 - [Menu Builder](./Menu/readme.md)
 - [Breadcrumbs](./Breadcrumbs/readme.md)
+- [Tables](./Table/readme.md)
 
 
 ## VarDump Debug logger (/src/Debug/VarDump.php)

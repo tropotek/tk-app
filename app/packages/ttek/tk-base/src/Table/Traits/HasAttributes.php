@@ -23,6 +23,10 @@ trait HasAttributes
         return $this;
     }
 
+    /**
+     * @todo allow callables
+     * @callable function (mixed $row, Table $table):array { return ['class' => 'test']; }
+     */
     public function addAttr(array $attrs): static
     {
         $this->_attributes = $this->_attributes->merge($attrs);

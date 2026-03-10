@@ -24,13 +24,13 @@ class Table
     const string QUERY_PAGE     = 'tp_';
     const string QUERY_ORDER    = 'to_';
 
-    protected string     $id        = '';
-    protected int        $limit     = 50;
-    protected int        $page      = 1;
-    protected string     $orderBy   = '';
+    protected string     $id       = '';
+    protected int        $limit    = 50;
+    protected int        $page     = 1;
+    protected string     $orderBy  = '';
     protected Collection $cells;
     protected RecordsInterface $records;
-    protected mixed      $rowAttrs = null;   // ?callable
+    protected mixed      $rowAttrs = null;
 
 
     public function __construct(string $id = '')
@@ -211,9 +211,6 @@ class Table
         return $this;
     }
 
-    /**
-     * @callable function (mixed $row, Table $table):array { return ['class' => 'test']; }
-     */
     public function getRowAttrs(object|array|null $row = null): array
     {
         if (is_callable($this->rowAttrs) && !is_null($row)) {
@@ -222,6 +219,9 @@ class Table
         return $this->rowAttrs ?? [];
     }
 
+    /**
+     * @callable function (mixed $row, Table $table):array { return ['class' => 'test']; }
+     */
     public function addRowAttrs(callable|array|null $rowAttrs): static
     {
         $this->rowAttrs = $rowAttrs;

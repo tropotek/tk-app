@@ -147,6 +147,10 @@ class Cell
         return $this;
     }
 
+    /**
+     * @todo allow callables
+     * @callable function (mixed $row, Table $table):array { return ['class' => 'test']; }
+     */
     public function addHeaderAttr(array $attrs): static
     {
         $this->headerAttrs = $this->headerAttrs->merge($attrs);
