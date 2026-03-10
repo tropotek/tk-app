@@ -1,12 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Tables;
+namespace App\Http\Controllers\Examples\Tables;
 
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\URL;
-use Tk\Support\Facades\Breadcrumbs;
 use Tk\Table\Records\ArrayRecords;
 use Tk\Table\Table;
 
@@ -21,7 +19,7 @@ class ArrayTable extends Controller
         $table1 = $this->buildTable($request);
         $table2 = $this->buildTable($request);
 
-        return view('pages.tables.table-array', Compact('table1', 'table2'));
+        return view('pages.examples.tables.table-array', Compact('table1', 'table2'));
     }
 
     protected function buildTable(Request $request): Table

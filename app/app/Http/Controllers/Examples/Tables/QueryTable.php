@@ -1,14 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Tables;
+namespace App\Http\Controllers\Examples\Tables;
 
 
 use App\Http\Controllers\Controller;
 use App\Tables\IdeaTable;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\URL;
-use Tk\Support\Facades\Breadcrumbs;
-use Tk\Table\Table;
 
 class QueryTable extends Controller
 {
@@ -41,7 +38,7 @@ class QueryTable extends Controller
             return redirect(trim($url, '?'))->with('success', "Table Action Completed.");
         }
 
-        return view('pages.tables.table-query', Compact('table'));
+        return view('pages.examples.tables.table-query', Compact('table'));
     }
 
 }

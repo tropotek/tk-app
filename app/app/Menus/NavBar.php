@@ -12,32 +12,46 @@ final class NavBar extends MenuInterface
     public function build(): static
     {
         $this->addChildren([
-            MenuItem::make('Dashboard', route('dashboard')),
+            MenuItem::make('Home', route('home'))
+                ->setVisible(!auth()->check()),
+            MenuItem::make('Dashboard', route('dashboard'))
+                ->setVisible(auth()->check()),
 
-            MenuItem::make('Forms')->addChildren([
+            MenuItem::make('Examples')->addChildren([
                 MenuItem::make('One Column', '/formOne'),
                 MenuItem::make('Two Columns', '/formTwo'),
                 MenuItem::make('Three Columns', '/formThree'),
                 MenuItem::make('Fieldsets', '/formFieldset'),
-            ]),
-
-            MenuItem::make('Tables')->addChildren([
+                MenuItem::makeSeparator(),
                 MenuItem::make('Sql Query', '/tableQuery'),
                 MenuItem::make('Array Rows', '/tableArray'),
                 MenuItem::make('Csv File', '/tableCsv'),
+                MenuItem::makeSeparator(),
+                MenuItem::make('Ideas Example', '/ideas')
+                    ->setVisible(auth()->check()),
+                MenuItem::makeSeparator(),
+                MenuItem::make('Layout Example', '/examples'),
             ]),
 
-            MenuItem::make('Ideas Example', '/ideas')
-                ->setVisible(auth()->check()),
+            MenuItem::make('Admin')->addChildren([
+                MenuItem::make('Settings', '/')->setDisabled(),
+                MenuItem::make('Users', '/'),
+                MenuItem::make('Staff', '/'),
+                MenuItem::make('Students', '/'),
+            ])->setVisible(auth()->check()),
 
-            MenuItem::make('Layout Example', '/examples'),
+//            MenuItem::make('Test')->addChildren([
+//                MenuItem::make('Sql Query', '/tableQuery'),
+//                MenuItem::make('Array Rows', '/tableArray'),
+//                MenuItem::make('Csv File', '/tableCsv'),
+//            ])->setVisible(auth()->check()),
 
             MenuItem::make('Logout', '/logout')
                 ->setTitleVisible(false)
                 ->setIcon('fa-solid fa-right-from-bracket')
                 ->setVisible(auth()->check()),
 
-        ])->setVisible(auth()->check());
+        ]);
 
         // Reset breadcrumbs if menu item selected
         $this->appendQuery([Breadcrumbs::CRUMB_RESET => '1']);

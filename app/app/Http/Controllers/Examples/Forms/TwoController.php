@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Forms;
+namespace App\Http\Controllers\Examples\Forms;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class OneController extends Controller
+class TwoController extends Controller
 {
 
     protected array $values = [
@@ -25,8 +25,8 @@ class OneController extends Controller
 
     public function index(Request $request)
     {
-        $this->setPageName('form one|Form One View');
-        return view('pages.forms.one', [
+        $this->setPageName('Form Two View');
+        return view('pages.examples.forms.two', [
             'mode' => 'view',
             'values' => $this->values,
         ]);
@@ -34,8 +34,8 @@ class OneController extends Controller
 
     public function edit(Request $request)
     {
-        $this->setPageName('form one|Form One Edit');
-        return view('pages.forms.one', [
+        $this->setPageName('Form Two Edit');
+        return view('pages.examples.forms.two', [
             'mode' => 'edit',
             'values' => $this->values,
         ]);
@@ -43,8 +43,8 @@ class OneController extends Controller
 
     public function create(Request $request)
     {
-        $this->setPageName('form one|Form One Create');
-        return view('pages.forms.one', [
+        $this->setPageName('Form Two Create');
+        return view('pages.examples.forms.two', [
             'mode' => 'create'
         ]);
     }
@@ -62,7 +62,7 @@ class OneController extends Controller
 
         vd($request->all());
 
-        return redirect('/formOne')->with('success', 'Form submitted successfully!');
+        return redirect('/formTwo')->with('success', 'Form submitted successfully!');
     }
 
 }

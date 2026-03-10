@@ -9,12 +9,12 @@
             <div class="collapse navbar-collapse" id="navbarCollapse">
 
                 <ul class="navbar-nav me-auto mb-2 mb-sm-0">
-                    @auth
-                        @foreach (menu('NavBar')->getChildren() as $item)
-                            {{-- Pass initial classes to the component --}}
-                            <x-tk-base::navitem :item="$item" level="0" class="nav-item" submenu-class="dropdown-menu" link-class="nav-link" />
-                        @endforeach
+                    @foreach (menu('NavBar')->getChildren() as $item)
+                        {{-- Pass initial classes to the component --}}
+                        <x-tk-base::navitem :item="$item" level="0" class="nav-item" submenu-class="dropdown-menu" link-class="nav-link" />
+                    @endforeach
 
+                    @auth
                         <li class="nav-item dropdown d-block d-sm-none">
                             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                                 <span>{{ Auth::user()->name }}</span>
@@ -26,7 +26,7 @@
 
                 @auth
                     <form class="d-flex me-md-3" role="search" action="/search" method="POST">
-                        <input type="hidden" name="_csrf_token" value="21fffd6b83d2c79e4a77a853a2b8e016">
+                        @csrf
                         <div class="input-group input-group-sm">
                             <input class="form-control" type="search" name="s" placeholder="Search" aria-label="Search">
                             <button class="btn btn-outline-secondary border-light-subtle" type="submit" name="action"

@@ -1,13 +1,13 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ExamplesController;
-use App\Http\Controllers\Forms\FieldsetController;
-use App\Http\Controllers\Forms\OneController;
-use App\Http\Controllers\Forms\ThreeController;
-use App\Http\Controllers\Forms\TwoController;
+use App\Http\Controllers\Examples\ExamplesController;
+use App\Http\Controllers\Examples\Forms\FieldsetController;
+use App\Http\Controllers\Examples\Forms\OneController;
+use App\Http\Controllers\Examples\Forms\ThreeController;
+use App\Http\Controllers\Examples\Forms\TwoController;
+use App\Http\Controllers\Examples\Ideas\IdeaController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\Ideas\IdeaController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
@@ -61,7 +61,7 @@ Route::get('/formFieldset/create', [FieldsetController::class, 'create']);
 Route::post('/formFieldset/submit', [FieldsetController::class, 'submit']);
 
 // Table Test Examples
-Route::get('/tableQuery', [\App\Http\Controllers\Tables\QueryTable::class, 'index']);
-Route::get('/tableArray', [\App\Http\Controllers\Tables\ArrayTable::class, 'index']);
-Route::get('/tableCsv', [\App\Http\Controllers\Tables\CsvTable::class, 'index']);
+Route::get('/tableQuery', [\App\Http\Controllers\Examples\Tables\QueryTable::class, 'index']);
+Route::get('/tableArray', [\App\Http\Controllers\Examples\Tables\ArrayTable::class, 'index']);
+Route::get('/tableCsv', [\App\Http\Controllers\Examples\Tables\CsvTable::class, 'index']);
 

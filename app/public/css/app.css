@@ -19,6 +19,10 @@ html {
     font-size: 0.9rem;
 }
 
+.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+}
 
 /** Form Styles */
 .tk-form fieldset {

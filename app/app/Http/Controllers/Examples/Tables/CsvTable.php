@@ -1,12 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Tables;
+namespace App\Http\Controllers\Examples\Tables;
 
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\URL;
-use Tk\Support\Facades\Breadcrumbs;
 use Tk\Table\Records\CsvRecords;
 use Tk\Table\Table;
 
@@ -19,7 +17,7 @@ class CsvTable extends Controller
 
         $table = $this->buildCsvTable($request);
 
-        return view('pages.tables.table-csv', Compact('table'));
+        return view('pages.examples.tables.table-csv', Compact('table'));
     }
 
     protected function buildCsvTable(Request $request): Table

@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Forms;
+namespace App\Http\Controllers\Examples\Forms;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class ThreeController extends Controller
+class OneController extends Controller
 {
 
     protected array $values = [
-        'testId' => 22,
         'title' => 'mrs',
         'firstName' => 'John',
         'lastName' => 'Doe',
@@ -23,13 +22,11 @@ class ThreeController extends Controller
         'description' => 'This is a test description'
     ];
 
-    //protected string $view = 'forms.three';
-    protected string $view = 'pages.forms.threedetail';
 
     public function index(Request $request)
     {
-        $this->setPageName('form three|Form Three View');
-        return view($this->view, [
+        $this->setPageName('form one|Form One View');
+        return view('pages.examples.forms.one', [
             'mode' => 'view',
             'values' => $this->values,
         ]);
@@ -37,8 +34,8 @@ class ThreeController extends Controller
 
     public function edit(Request $request)
     {
-        $this->setPageName('form three|Form Three Edit');
-        return view($this->view, [
+        $this->setPageName('form one|Form One Edit');
+        return view('pages.examples.forms.one', [
             'mode' => 'edit',
             'values' => $this->values,
         ]);
@@ -46,8 +43,8 @@ class ThreeController extends Controller
 
     public function create(Request $request)
     {
-        $this->setPageName('form three|Form Three create');
-        return view($this->view, [
+        $this->setPageName('form one|Form One Create');
+        return view('pages.examples.forms.one', [
             'mode' => 'create'
         ]);
     }
@@ -57,15 +54,15 @@ class ThreeController extends Controller
         $request->validate([
             'firstName' => 'required|min:3|max:20',
             'lastName' => 'required|min:3|max:20',
-//            'email' => 'required|email',
-//            'gender' => 'required',
+            'email' => 'required|email',
+            'gender' => 'required',
 //            'address' => 'required',
 //            'image' => 'image|max:2048',
         ]);
 
         vd($request->all());
 
-        return redirect('/formThree')->with('success', 'Form submitted successfully!');
+        return redirect('/formOne')->with('success', 'Form submitted successfully!');
     }
 
 }

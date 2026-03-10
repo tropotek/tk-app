@@ -165,7 +165,7 @@ class MenuItem
         return $this->titleVisible;
     }
 
-    public function setDisabled(bool $disabled, bool $includeChildren = true): self
+    public function setDisabled(bool $disabled = true, bool $includeChildren = true): self
     {
         $this->disabled = $disabled;
         return $this;

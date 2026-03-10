@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Forms;
+namespace App\Http\Controllers\Examples\Forms;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Tk\Support\Facades\Breadcrumbs;
 
 class FieldsetController extends Controller
 {
@@ -28,7 +27,7 @@ class FieldsetController extends Controller
     {
         $this->setPageName('Fieldset View');
 
-        return view('pages.forms.fieldset', [
+        return view('pages.examples.forms.fieldset', [
             'mode' => 'view',
             'values' => $this->values,
         ]);
@@ -38,7 +37,7 @@ class FieldsetController extends Controller
     {
         $this->setPageName('Fieldset Edit');
 
-        return view('pages.forms.fieldset', [
+        return view('pages.examples.forms.fieldset', [
             'mode' => 'edit',
             'values' => $this->values,
         ]);
@@ -48,7 +47,7 @@ class FieldsetController extends Controller
     {
         $this->setPageName('Fieldset Create');
 
-        return view('pages.forms.fieldset', [
+        return view('pages.examples.forms.fieldset', [
             'mode' => 'create'
         ]);
     }

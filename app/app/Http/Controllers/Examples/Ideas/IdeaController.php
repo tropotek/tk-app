@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Ideas;
+namespace App\Http\Controllers\Examples\Ideas;
 
 use App\Http\Controllers\Controller;
 use App\Models\Idea;
@@ -33,7 +33,7 @@ class IdeaController extends Controller
             return redirect(trim($url, '?'))->with('success', "Table Action Completed.");
         }
 
-        return view('pages.ideas.index', [
+        return view('pages.examples.ideas.index', [
             'ideas' => auth()->user()->ideas,
             'table' => $table,
         ]);
@@ -41,7 +41,7 @@ class IdeaController extends Controller
     public function create()
     {
         $this->setPageName('idea|Idea Create');
-        return view('pages.ideas.create');
+        return view('pages.examples.ideas.create');
     }
 
     public function show(Idea $idea)
@@ -49,7 +49,7 @@ class IdeaController extends Controller
         $this->setPageName('idea|Idea View');
         //Gate::authorize('update', $idea);
 
-        return view('pages.ideas.edit',[
+        return view('pages.examples.ideas.edit',[
             'mode' => 'view',
             'idea' => $idea,
         ]);
@@ -60,7 +60,7 @@ class IdeaController extends Controller
         $this->setPageName('idea|Idea Edit');
         Gate::authorize('update', $idea);
 
-        return view('pages.ideas.edit',[
+        return view('pages.examples.ideas.edit',[
             'mode' => 'edit',
             'idea' => $idea,
         ]);

@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Examples;
 
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Tk\Table\Records\CsvRecords;
 use Tk\Table\Table;
@@ -16,7 +17,7 @@ class ExamplesController extends Controller
 
         $table = $this->buildTable($request);
 
-        return view('pages.examples', [
+        return view('pages.examples.examples', [
             'table' => $table
         ]);
     }
