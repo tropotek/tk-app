@@ -39,16 +39,16 @@ services:
     networks:
       - network
 
-  queue:
-    build:
-      context: .
-    volumes:
-      - ./app:/app
-    entrypoint: ["php"]
-    command: ["/app/artisan", "queue:work", "--verbose", "--tries=5", "--timeout=90", "--sleep=3"]
-    restart: unless-stopped
-    networks:
-      - network
+#  queue:
+#    build:
+#      context: .
+#    volumes:
+#      - ./app:/app
+#    entrypoint: ["php"]
+#    command: ["/app/artisan", "queue:work", "--verbose", "--tries=5", "--timeout=90", "--sleep=3"]
+#    restart: unless-stopped
+#    networks:
+#      - network
 
 
 # Networks

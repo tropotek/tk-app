@@ -15,7 +15,7 @@
 
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/jquery.min.js') }}"></script>
-{{--    <script src="{{ asset('js/htmx.min.js') }}"></script>--}}
+    <script src="{{ asset('js/htmx.min.js') }}"></script>
     <script src="{{ asset('js/app.js') }}"></script>
 </head>
 <body class="d-flex flex-column h-100 bg-white">
