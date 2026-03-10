@@ -308,7 +308,7 @@ class Table
     }
 
     /**
-     * Create a table specific key using the table id
+     * Create a table-specific key using the table id
      * returns: `{$tableId}_{$key}`
      */
     public static function makeKey(string $tableId, string $key): string
