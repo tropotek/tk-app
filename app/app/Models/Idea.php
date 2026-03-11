@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Enum\IdeaStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Idea extends Model
@@ -25,11 +24,6 @@ class Idea extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function steps(): HasMany
-    {
-        return $this->hasMany(Step::class);
     }
 
 }
