@@ -16,7 +16,7 @@
 
                 <x-slot name="actions">
                     <div class="p-2 ps-0">
-                        <a class="btn btn-sm btn-outline-secondary" href="/user/create">
+                        <a class="btn btn-sm btn-outline-secondary" href="{{ $create }}">
                             <i class="fa fa-plus-circle"></i> Create
                         </a>
                     </div>

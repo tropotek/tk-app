@@ -36,7 +36,7 @@ final class NavBar extends MenuInterface
             MenuItem::make('Admin')->addChildren([
                 MenuItem::make('Settings', '/')->setDisabled(),
                 MenuItem::make('Users', '/users'),
-                MenuItem::make('Staff', '/'),
+                MenuItem::make('Staff', '/staff'),
                 MenuItem::make('Students', '/'),
             ])->setVisible(auth()->check()),
 

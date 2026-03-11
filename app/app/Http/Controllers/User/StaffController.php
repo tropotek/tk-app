@@ -3,43 +3,45 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Staff;
 use App\Models\User;
+use App\Tables\StaffTable;
 use App\Tables\UserTable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class UserController extends Controller
+class StaffController extends Controller
 {
 
     public function index(Request $request)
     {
-        $this->setPageName('User Manager');
+        $this->setPageName('Staff Manager');
 
-        $table = new UserTable();
+        $table = new StaffTable();
 
         return view('pages.users.index', [
             'table' => $table,
-            'create' => '/user/create',
+            'create' => '/staff/create',
         ]);
     }
 
     public function create()
     {
-        $this->setPageName('user.edit|User Create');
+        $this->setPageName('staff.edit|Staff Create');
 
-        $user = new User();
+        $user = new Staff();
 
         return view('pages.users.edit', [
             'mode' => 'create',
             'method' => 'post',
-            'action' => '/user',
+            'action' => '/staff',
             'user' => $user,
         ]);
     }
 
-    public function show(User $user)
+    public function show(Staff $user)
     {
-        $this->setPageName('user.edit|User View');
+        $this->setPageName('staff.edit|Staff View');
         //Gate::authorize('update', $idea);
 
         return view('pages.users.edit',[
@@ -48,20 +50,20 @@ class UserController extends Controller
         ]);
     }
 
-    public function edit(User $user)
+    public function edit(Staff $user)
     {
-        $this->setPageName('user.edit|User Edit');
+        $this->setPageName('staff.edit|Staff Edit');
         //Gate::authorize('update', $idea);
 
         return view('pages.users.edit', [
             'mode' => 'edit',
             'method' => 'patch',
-            'action' => '/user/' . $user->id,
+            'action' => '/staff/' . $user->id,
             'user' => $user,
         ]);
     }
 
-    public function update(User $user, Request $request)
+    public function update(Staff $user, Request $request)
     {
 
         $vals = $request->validate([
@@ -74,7 +76,7 @@ class UserController extends Controller
             'email' => $vals['email'],
         ]);
 
-        return redirect('/user/' . $user->id);
+        return redirect('/staff/' . $user->id);
     }
 
     public function store(Request $request)
@@ -85,8 +87,8 @@ class UserController extends Controller
             'password' => 'required|min:4|max:64',
         ]);
 
-        Auth::user()->create($vals);
+        Staff::create($vals);
 
-        return redirect('/users');
+        return redirect('/staff');
     }
 }

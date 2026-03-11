@@ -15,12 +15,6 @@ class DashboardController extends Controller
     {
         $this->setPageName('Dashboard');
 
-//        $attr = new \Illuminate\View\ComponentAttributeBag();
-//        $attr = $attr->class('test test2');
-//        $attr = $attr->class('test test3');
-
-//        $user = Staff::where('email', 'dahlia.harber@example.net')->get();
-//        vd($user);
 
         if ($request->has('alert')) {
             $type = $request->input('alert');
