@@ -50,8 +50,10 @@ class Member extends User
     protected static function booted(): void
     {
         static::addGlobalScope('member_role', function (Builder $query) {
-            $query->role('Member');
-            $query->whereNotNull('member_data');
+            $query->where(function (Builder $q) {
+                $q->role('Member');
+                $q->orWhereNotNull('member_data');
+            });
         });
 
         static::created(function (User $user) {

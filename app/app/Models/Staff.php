@@ -49,8 +49,10 @@ class Staff extends User
     protected static function booted(): void
     {
         static::addGlobalScope('staff_role', function (Builder $query) {
-            $query->role('Staff');
-            $query->whereNotNull('staff_data');
+            $query->where(function (Builder $q) {
+                $q->role('Staff');
+                $q->orWhereNotNull('staff_data');
+            });
         });
 
         static::created(function (User $user) {
