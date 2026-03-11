@@ -37,6 +37,11 @@ class Member extends User
         $this->member_data = $data;
     }
 
+    public function isActive(): bool
+    {
+        return $this->hasRole('Member');
+    }
+
     public function getMorphClass(): string
     {
         return User::class;
@@ -46,6 +51,7 @@ class Member extends User
     {
         static::addGlobalScope('member_role', function (Builder $query) {
             $query->role('Member');
+            $query->whereNotNull('member_data');
         });
 
         static::created(function (User $user) {

@@ -36,6 +36,11 @@ class Staff extends User
         $this->staff_data = $data;
     }
 
+    public function isActive(): bool
+    {
+        return $this->hasRole('Staff');
+    }
+
     public function getMorphClass(): string
     {
         return User::class;
@@ -45,6 +50,7 @@ class Staff extends User
     {
         static::addGlobalScope('staff_role', function (Builder $query) {
             $query->role('Staff');
+            $query->whereNotNull('staff_data');
         });
 
         static::created(function (User $user) {
