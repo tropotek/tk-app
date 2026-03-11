@@ -1,6 +1,8 @@
 @props([
     'mode'   => 'view',       // ['view', 'edit', 'create']
     'action' => '',
+    'cancelRoute' => '',
+    'editRoute' => '',
     'method' => 'post'
 ])
 
@@ -11,8 +13,8 @@
         <x-slot:btnrow>
 
             <x-tk-base::form.buttons.default-btns
-                editRoute="/user/{{ $user->id }}/edit"
-                cancelRoute="/users"
+                :$editRoute
+                :$cancelRoute
                 form="theform"
             />
 

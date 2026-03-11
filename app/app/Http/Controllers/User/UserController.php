@@ -33,6 +33,7 @@ class UserController extends Controller
             'mode' => 'create',
             'method' => 'post',
             'action' => '/user',
+            'cancelRoute' => '/users',
             'user' => $user,
         ]);
     }
@@ -44,6 +45,8 @@ class UserController extends Controller
 
         return view('pages.users.edit',[
             'mode' => 'view',
+            'cancelRoute' => '/users',
+            'editRoute' => "/user/{$user->id}/edit",
             'user' => $user,
         ]);
     }
@@ -57,13 +60,13 @@ class UserController extends Controller
             'mode' => 'edit',
             'method' => 'patch',
             'action' => '/user/' . $user->id,
+            'cancelRoute' => '/users',
             'user' => $user,
         ]);
     }
 
     public function update(User $user, Request $request)
     {
-
         $vals = $request->validate([
             'name' => ['required', 'min:3'],
             'email' => 'email',

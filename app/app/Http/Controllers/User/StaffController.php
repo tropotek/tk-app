@@ -4,11 +4,8 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Staff;
-use App\Models\User;
 use App\Tables\StaffTable;
-use App\Tables\UserTable;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class StaffController extends Controller
 {
@@ -35,22 +32,25 @@ class StaffController extends Controller
             'mode' => 'create',
             'method' => 'post',
             'action' => '/staff',
+            'cancelRoute' => '/staff',
             'user' => $user,
         ]);
     }
 
-    public function show(Staff $user)
+    public function show(Staff $staff)
     {
         $this->setPageName('staff.edit|Staff View');
         //Gate::authorize('update', $idea);
 
         return view('pages.users.edit',[
             'mode' => 'view',
-            'user' => $user,
+            'cancelRoute' => '/staff',
+            'editRoute' => "/staff/{$staff->id}/edit",
+            'user' => $staff,
         ]);
     }
 
-    public function edit(Staff $user)
+    public function edit(Staff $staff)
     {
         $this->setPageName('staff.edit|Staff Edit');
         //Gate::authorize('update', $idea);
@@ -58,25 +58,25 @@ class StaffController extends Controller
         return view('pages.users.edit', [
             'mode' => 'edit',
             'method' => 'patch',
-            'action' => '/staff/' . $user->id,
-            'user' => $user,
+            'action' => '/staff/' . $staff->id,
+            'cancelRoute' => '/staff',
+            'user' => $staff,
         ]);
     }
 
-    public function update(Staff $user, Request $request)
+    public function update(Staff $staff, Request $request)
     {
-
         $vals = $request->validate([
             'name' => ['required', 'min:3'],
             'email' => 'email',
         ]);
 
-        $user->update([
+        $staff->update([
             'name' => $vals['name'],
             'email' => $vals['email'],
         ]);
 
-        return redirect('/staff/' . $user->id);
+        return redirect('/staff/' . $staff->id);
     }
 
     public function store(Request $request)

@@ -24,7 +24,7 @@ class StaffTable extends Table
         $this->appendCell('name')
             ->setSortable()
             ->setHtml(function (Staff $row , Cell $cell) {
-                return "<a href='/user/{$row->id}'>{$cell->getValue($row)}</a>";
+                return "<a href='/staff/{$row->id}'>{$cell->getValue($row)}</a>";
             });
 
         $this->appendCell('email')
