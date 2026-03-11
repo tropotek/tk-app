@@ -1,5 +1,2 @@
 #!/bin/bash
-# docker compose -f docker-compose.yml -p tk-app --profile "*" down --remove-orphans
-# up
-# docker compose -f docker-compose.yml -p tk-app --profile local up --force-recreate -d --build
-docker compose --env-file ./app/.env -f compose-dev.yml up --build -d
+docker compose --env-file ./app/.env -f compose.yml up --build -d
