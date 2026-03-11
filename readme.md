@@ -19,17 +19,18 @@ This is an experimental app working with Docker and Laravel.
 ## Docker Installation
 
 ```
-copy the .env example file and update as required
+## copy the .env example file and update as required
 $ cd /tk-app        # project path
 $ cp .env.example .env
-$ cd app
-$ cp .env.example .env
 
-# Start dev docker container
-$ cd /tk-app
-$ docker compose up --build -d
+## Start dev docker container
+# development container
+$ docker compose --env-file .env -f compose.yml up --build -d
 
-# Open docker terminal in the tk-app container
+# Production container
+$ docker compose --env-file .env.production -f compose-prod.yml up --build -d
+
+## Open docker terminal in the tk-app container
 $ docker exec -it tk-app /bin/bash
 
 ```
@@ -39,7 +40,7 @@ You can login to the site using U: admin@example.com P: password
 
 Shutdown the container:
 ```
-$ docker compose down
+$ docker compose --profile "*" down --remove-orphans
 ```
 
 Tail the container log:
@@ -49,7 +50,7 @@ $ docker logs -f tk-app
 
 Tail the laravel log:
 ```
-$ tail -f app/storage/logs/laravel.log
+$ tail -f storage/logs/laravel.log
 ```
 
 
@@ -57,7 +58,6 @@ $ tail -f app/storage/logs/laravel.log
 
 If you experience permission issues, run the following in your PC terminal:
 ```
-$ cd tk-app
-$ sudo chown -R $USER:$USER .
+$ sudo chown $USER:$USER ./ -R
 ```
 
