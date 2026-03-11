@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasPermissions;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -18,6 +19,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
     use HasRoles, HasPermissions, HasFactory, Notifiable;
+
 
     /**
      * The attributes that are mass-assignable.
@@ -38,6 +40,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'staff_data',
+        'member_data',
     ];
 
     /**
@@ -52,6 +56,7 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
 
     public function ideas(): HasMany
     {

@@ -29,6 +29,12 @@ class UserTable extends Table
         $this->appendCell('email')
             ->setSortable();
 
+        $this->appendCell('role')
+            ->setSortable()
+            ->setValue(function (User $row , Cell $cell) {
+                return $row->roles->implode('name', ', ');
+            });
+
         $this->appendCell('created_at')
             ->setHeader('Created')
             ->addClass('text-nowrap')
