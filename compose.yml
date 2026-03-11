@@ -1,26 +1,21 @@
 # Development
-name: tk-app-dev
+name: tk-app
 
 services:
   app:
     build:
       context: .
-    restart: unless-stopped
-    tty: true
     ports:
       - "${HTTP_PORT:-80}:80"
     volumes:
-      - ./app:/app
-      - ./app/docker/php.ini:/usr/local/etc/php/conf.d/overrides.ini
+      - .:/app
+      - ./docker/php.ini:/usr/local/etc/php/conf.d/overrides.ini
+    restart: unless-stopped
+    tty: true
     networks:
       - network
     environment:
       SERVER_NAME: ":80"
-      APP_ENV: local
-      APP_DEBUG: true
-      MAIL_HOST: mailpit
-      MAIL_MAILER: smtp
-      MAIL_PORT: 1025
 
   mailpit:
     image: axllent/mailpit
@@ -39,16 +34,16 @@ services:
     networks:
       - network
 
-  queue:
-    build:
-      context: .
-    volumes:
-      - ./app:/app
-    entrypoint: ["php"]
-    command: ["/app/artisan", "queue:work", "--verbose", "--tries=5", "--timeout=90", "--sleep=3"]
-    restart: unless-stopped
-    networks:
-      - network
+#  queue:
+#    build:
+#      context: .
+#    volumes:
+#      - ./app:/app
+#    entrypoint: ["php"]
+#    command: ["/app/artisan", "queue:work", "--verbose", "--tries=5", "--timeout=90", "--sleep=3"]
+#    restart: unless-stopped
+#    networks:
+#      - network
 
 
 # Networks
