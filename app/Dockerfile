@@ -46,5 +46,5 @@ RUN mkdir -p storage/framework/{sessions,views,cache} \
    && mkdir -p storage/logs \
    && mkdir -p bootstrap/cache
 
-COPY app .
+COPY . .
 

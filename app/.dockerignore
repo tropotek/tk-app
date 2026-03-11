@@ -1,6 +1,6 @@
 # User-specific stuff
-#app/.env
-#.env.*
+.env
+.env.*
 .git
 .idea/
 .vscode/
