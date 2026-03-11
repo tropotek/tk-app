@@ -10,7 +10,7 @@
     <p>Use a detail template with side columns</p>
 
     <x-layouts.double-col :$mode>
-        <x-slot:title>Side Cols Template Example</x-slot:title>
+        <x-slot:pageTitle>Side Cols Template Example</x-slot:pageTitle>
 
         {{-- Buttons outside the form require the `form=""` attribute to submit the correct form --}}
         <x-slot:btnrow>

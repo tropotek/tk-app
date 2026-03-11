@@ -23,7 +23,7 @@ class UserTable extends Table
         $this->appendCell('name')
             ->setSortable()
             ->setHtml(function (User $row , Cell $cell) {
-                return "<a href='/user/{$row->id}/edit'>{$cell->getValue($row)}</a>";
+                return "<a href='/user/{$row->id}'>{$cell->getValue($row)}</a>";
             });
 
         $this->appendCell('email')

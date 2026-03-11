@@ -16,6 +16,13 @@
 
 @switch ($mode)
     @case ('view')
+        @if($cancelRoute)
+            <x-tk-base::form.buttons.link
+                :label="$cancelLabel"
+                :href="$cancelRoute"
+                class="{{ $cancelCss }}"
+            />
+        @endif
         @if($editRoute)
             <x-tk-base::form.buttons.link
                 :label="$viewLabel"
@@ -26,7 +33,7 @@
     @break;
 
     @case ('edit')
-        @if($editRoute)
+        @if($cancelRoute)
             <x-tk-base::form.buttons.link
                 :label="$cancelLabel"
                 :href="$cancelRoute"
@@ -41,7 +48,7 @@
     @break;
 
     @case ('create')
-        @if($editRoute)
+        @if($cancelRoute)
             <x-tk-base::form.buttons.link
                 :label="$cancelLabel"
                 :href="$cancelRoute"
