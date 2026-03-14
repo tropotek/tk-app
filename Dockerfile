@@ -32,9 +32,6 @@ RUN install-php-extensions \
     sockets \
     zip
 
-# Setup .bashrc
-RUN echo 'alias l="ls -lah --color=auto"' >> ~/.bashrc
-
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
@@ -46,5 +43,16 @@ RUN mkdir -p storage/framework/{sessions,views,cache} \
    && mkdir -p storage/logs \
    && mkdir -p bootstrap/cache
 
-COPY . .
 
+# Running as a Non-Root User
+ARG USER=appuser
+RUN \
+    useradd -m ${USER}; \
+    setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/frankenphp; \
+    chown -R ${USER}:${USER} /config/caddy /data/caddy
+USER ${USER}
+
+# Setup .bashrc
+RUN echo 'alias l="ls -lah --color=auto"' >> ~/.bashrc
+
+COPY . .
