@@ -16,7 +16,18 @@ RUN apt-get update && \
     unzip \
     vim-nox \
     git \
-    openssh-client
+    openssh-client \
+    curl \
+    gnupg \
+    ca-certificates
+
+# Install dependencies for adding new repositories and for Node.js build tools
+RUN curl -fsSL https://deb.nodesource.com
+RUN apt-get install -y nodejs npm
+
+# Verify installation
+RUN node -v
+RUN npm -v
 
 # Install required PHP extensions for Moodle
 RUN install-php-extensions \
