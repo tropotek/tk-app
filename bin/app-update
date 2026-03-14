@@ -2,14 +2,13 @@
 
 # restrict to the app path
 SCRIPT=$(realpath "$0")
-APP_PATH=$(dirname "$SCRIPT")
+APP_PATH=$(dirname "$(dirname "$SCRIPT")")
 cd "$APP_PATH" || exit 1
 
 # get latest code from repo
 #git pull
 #git config --global --add safe.directory .
 
-cd app
 # install composer dependencies
 #composer install
 
@@ -32,8 +31,7 @@ if [[ ! -f database/storage/database.sqlite ]]; then
   php artisan storage:link
 fi
 
-cd ..
-chown -r 1000:1000 ./
+chown -R 1000:1000 ./
 
 
 # up
