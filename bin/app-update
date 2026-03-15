@@ -31,9 +31,6 @@ if [[ ! -f database/storage/database.sqlite ]]; then
   php artisan storage:link
 fi
 
-chown -R 1000:1000 ./
-
-
 # up
 # docker compose -f compose.yml -p tk-app --profile local up --force-recreate -d --build
 # down
