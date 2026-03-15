@@ -5,11 +5,7 @@ SCRIPT=$(realpath "$0")
 APP_PATH=$(dirname "$(dirname "$SCRIPT")")
 cd "$APP_PATH" || exit 1
 
-# get latest code from repo
-#git pull
-#git config --global --add safe.directory .
-
-# install composer dependencies
+# install composer dependencies (should be run for first install...)
 #composer install
 
 # copy assets to public folder
@@ -30,8 +26,3 @@ if [[ ! -f database/storage/database.sqlite ]]; then
 
   php artisan storage:link
 fi
-
-# up
-# docker compose -f compose.yml -p tk-app --profile local up --force-recreate -d --build
-# down
-#docker compose -f compose.yml -p tk-app --profile "*" down --remove-orphans
