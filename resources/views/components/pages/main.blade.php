@@ -7,16 +7,8 @@
 
     <title>{{ $pageName }} {{ config('app.name', 'Example App') }}</title>
 
-    <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}" />
-    <link rel="stylesheet" href="{{ asset('css/fontawesome/css/fontawesome.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/fontawesome/css/solid.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/fontawesome/css/regular.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}" />
+    @vite(['resources/scss/app.scss', 'resources/js/app.js'])
 
-    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('js/jquery.min.js') }}"></script>
-    <script src="{{ asset('js/htmx.min.js') }}"></script>
-    <script src="{{ asset('js/app.js') }}"></script>
 </head>
 <body class="d-flex flex-column h-100 bg-white">
 

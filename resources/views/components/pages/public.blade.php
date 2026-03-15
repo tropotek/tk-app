@@ -7,11 +7,8 @@
 
     <title>{{ $pageName }} {{ config('app.name', 'Example App') }}</title>
 
-    <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}" />
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}" />
+    @vite(['resources/scss/app.scss', 'resources/js/app.js'])
 
-    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('js/jquery.min.js') }}"></script>
 </head>
 <body class="bg-light h-100">
 

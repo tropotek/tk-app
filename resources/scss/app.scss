@@ -1,0 +1,36 @@
+
+@use 'bootstrap/scss/bootstrap';
+
+// Note: you can import .scss files if you manually copy font files to /public
+@use "@fortawesome/fontawesome-free/css/all";
+
+@use '@tk-base/scss/form.scss';
+@use '@tk-base/scss/table.scss';
+
+
+html {
+    font-size: 0.9rem;
+}
+
+.container-fluid {
+    --bs-gutter-x: 3rem;
+    --bs-gutter-y: 0;
+}
+
+/* collapsable card example */
+.card-header .fa {
+    transition: .3s transform ease-in-out;
+}
+.card-header .collapsed .fa {
+    transform: rotate(90deg);
+}
+
+.breadcrumb-item {
+    font-size: 0.9rem;
+}
+
+.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
