@@ -30,16 +30,16 @@ if [[ "$FORCE" == "y" ]] || [[ ! -f "$APP_PATH/database/storage/database.sqlite"
 
     if [[ "$APP_ENV" == "local" ]]; then
         composer install --no-interaction --prefer-dist
+
+        # generate APP_KEY if none exists
+        # test if .env exists, if not skip (for prod)
+        if ! grep -q '^APP_KEY=base64:' "$APP_PATH/.env"; then
+            echo "Generating APP_KEY..."
+            php artisan key:generate --force
+            warn "WARNING: New APP_KEY generated."
+        fi
     else
         composer install --no-dev --no-interaction --prefer-dist
-    fi
-
-    # generate APP_KEY if none exists
-    # test if .env exists, if not skip (for prod)
-    if ! grep -q '^APP_KEY=base64:' "$APP_PATH/.env"; then
-        echo "Generating APP_KEY..."
-        php artisan key:generate --force
-        warn "WARNING: New APP_KEY generated."
     fi
 
     echo "  Creating Database"
@@ -48,9 +48,10 @@ if [[ "$FORCE" == "y" ]] || [[ ! -f "$APP_PATH/database/storage/database.sqlite"
     echo "  Migrating Database"
     php artisan migrate:fresh --seed
 
-    php artisan storage:link
-
-    npm install
 fi
 
-npm run build
+#if [[ "$APP_ENV" == "local" ]]; then
+    npm install
+    npm run build
+    rm -f "$APP_PATH/public/hot"
+#fi

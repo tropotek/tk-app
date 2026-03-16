@@ -66,4 +66,5 @@ USER ${USER}
 # Setup .bashrc
 RUN echo 'alias l="ls -lah --color=auto"' >> ~/.bashrc
 
-COPY . .
+# only needed if publishing (pushing) the image to a repos
+# COPY . .

@@ -86,4 +86,3 @@ volumes:
 
 networks:
   network:
-    driver: bridge
