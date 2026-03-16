@@ -21,14 +21,6 @@ RUN apt-get update && \
     gnupg \
     ca-certificates
 
-# Install dependencies for adding new repositories and for Node.js build tools
-RUN curl -fsSL https://deb.nodesource.com
-RUN apt-get install -y nodejs npm
-
-# Verify installation
-RUN node -v
-RUN npm -v
-
 # Install required PHP extensions for Moodle
 RUN install-php-extensions \
     curl \
@@ -61,13 +53,24 @@ RUN \
     useradd -m ${USER}; \
     setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/frankenphp; \
     chown -R ${USER}:${USER} /config/caddy /data/caddy
+
+COPY . /app
+RUN chown -R ${USER}:${USER} /app
+
 USER ${USER}
 
 # Setup .bashrc
 RUN echo 'alias l="ls -lah --color=auto"' >> ~/.bashrc
 
+RUN composer install --no-dev --no-interaction --prefer-dist
+
+
+# TODO: look for other ways to optimize the image size
+# - remove composer
+# - uninstall (purge) git, vim, openssh-client, etc
+
 # Set the entrypoint
-#ENTRYPOINT ["./bin/deploy.sh"]
+ENTRYPOINT ["./bin/deploy.sh"]
 
 # Default command to run if none is provided
-#CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]
+CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]

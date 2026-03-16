@@ -1,6 +1,4 @@
-#!/bin/bash
-#
-#
+#!/usr/bin/env bash
 
 # restrict to the app path
 SCRIPT=$(realpath "$0")
@@ -25,33 +23,39 @@ done
 shift $((OPTIND-1))
 #PROFILE="${1:-example}"
 
-# database setup
-if [[ "$FORCE" == "y" ]] || [[ ! -f "$APP_PATH/database/storage/database.sqlite" ]]; then
 
-    if [[ "$APP_ENV" == "local" ]]; then
-        composer install --no-interaction --prefer-dist
+touch "$APP_PATH/database/storage/database.sqlite"
 
-        # generate APP_KEY if none exists
-        # test if .env exists, if not skip (for prod)
-        if ! grep -q '^APP_KEY=base64:' "$APP_PATH/.env"; then
-            echo "Generating APP_KEY..."
-            php artisan key:generate --force
-            warn "WARNING: New APP_KEY generated."
-        fi
-    else
-        composer install --no-dev --no-interaction --prefer-dist
-    fi
-
-    echo "  Creating Database"
-    touch "$APP_PATH/database/storage/database.sqlite"
-
-    echo "  Migrating Database"
-    php artisan migrate:fresh --seed
-
+# generate APP_KEY if none exists (local only)
+if [[ "$APP_ENV" == "local" ]] && ! grep -q '^APP_KEY=base64:' "$APP_PATH/.env"; then
+    php artisan key:generate --force
 fi
 
-#if [[ "$APP_ENV" == "local" ]]; then
+# database setup
+if [[ "$FORCE" == "y" ]] || [[ ! -f "$APP_PATH/database/storage/database.sqlite" ]]; then
+    if [[ "$APP_ENV" == "local" ]]; then
+        php artisan migrate:fresh --seed --force
+        #php artisan db:seed
+    fi
+fi
+
+php artisan cache:clear
+php artisan view:clear
+php artisan config:clear
+php artisan optimize:clear
+
+php artisan optimize
+
+php artisan migrate --force
+
+if [[ "$APP_ENV" == "local" ]]; then
     npm install
     npm run build
+else
     rm -f "$APP_PATH/public/hot"
-#fi
+    php artisan config:cache
+    php artisan event:cache
+fi
+
+# start container
+exec "$@"

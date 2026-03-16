@@ -5,6 +5,9 @@
 .idea/
 .vscode/
 .phpunit.result.cache
+Dockerfile
+docker-compose.yml
+compose.yml
 
 # Other data
 vendor/
@@ -15,3 +18,5 @@ storage/framework/sessions/*
 storage/framework/views/*
 public/hot
 tests/
+docker/
+_*/

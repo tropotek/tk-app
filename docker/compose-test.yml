@@ -1,0 +1,45 @@
+# Production (test the image)
+name: tk-app-prod-test
+
+x-shared: &app_shared
+  #image: tk-app:latest
+  build:
+    context: ..
+    dockerfile: ./docker/Dockerfile
+  volumes:
+    - storage:/app/storage
+    - db:/app/database/storage
+  user: 1000:1000
+  env_file:
+    - ../.env
+
+services:
+  app:
+    <<: *app_shared
+    ports:
+      - "${HTTP_PORT:-9090}:80"
+      - "${HTTPS_PORT:-452}:443"
+      - "${HTTPS_PORT:-452}:443/udp"
+    restart: unless-stopped
+    tty: true
+    environment:
+    #  SERVER_NAME: "${SERVER_NAME:-localhost}"
+    # Disable ssl
+      SERVER_NAME: ":80"
+    networks:
+      - LAN
+
+  queue:
+    <<: *app_shared
+    entrypoint: ["php"]
+    command: ["/app/artisan", "queue:work", "--verbose", "--tries=5", "--timeout=90", "--sleep=3"]
+    restart: unless-stopped
+    networks:
+      - LAN
+
+volumes:
+  db:
+  storage:
+
+networks:
+  LAN:

@@ -1,0 +1,63 @@
+# Production
+name: tk-app
+
+x-shared: &app_shared
+  image: tk-app:latest
+  user: 1000:1000
+  volumes:
+    - storage:/app/storage
+    - db:/app/database/storage
+  environment:
+    # Disable ssl
+    SERVER_NAME: ":80"
+    APP_NAME: tk-app
+    # TODO: Set this on the server
+    # APP_KEY: ""
+    APP_DEBUG: true
+    DB_CONNECTION: sqlite
+    DB_DATABASE: "database/storage/database.sqlite"
+
+
+services:
+  app:
+    <<: *app_shared
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+      - "${HTTPS_PORT:-443}:443/udp"
+    restart: unless-stopped
+    tty: true
+    healthcheck:
+      test: ["CMD", "/app/artisan", "about"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      LAN:
+        ipv4_address: 192.168.0.225
+
+  queue:
+    <<: *app_shared
+    entrypoint: ["php"]
+    command: ["/app/artisan", "queue:work", "--verbose", "--tries=5", "--timeout=90", "--sleep=3"]
+    restart: unless-stopped
+    depends_on:
+      - app
+    healthcheck:
+      test: ["CMD", "/app/artisan", "about"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      LAN:
+        ipv4_address: 192.168.0.226
+
+volumes:
+  db:
+  storage:
+
+networks:
+  LAN:
+    external: true
