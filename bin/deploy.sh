@@ -1,6 +1,7 @@
 #!/bin/bash
 #
 #
+
 # restrict to the app path
 SCRIPT=$(realpath "$0")
 APP_PATH=$(dirname "$(dirname "$SCRIPT")")
@@ -22,18 +23,19 @@ done
 
 # parameters
 shift $((OPTIND-1))
-
 #PROFILE="${1:-example}"
 
-# todo add a flag to force refresh for devs and creating prod image
 # database setup
 if [[ "$FORCE" == "y" ]] || [[ ! -f "$APP_PATH/database/storage/database.sqlite" ]]; then
-    composer install --no-interaction --prefer-dist
 
-    echo "  Generating APP_KEY"
-    php artisan key:generate --force
+    if [[ "$APP_ENV" == "local" ]]; then
+        composer install --no-interaction --prefer-dist
+    else
+        composer install --no-dev --no-interaction --prefer-dist
+    fi
 
     # generate APP_KEY if none exists
+    # test if .env exists, if not skip (for prod)
     if ! grep -q '^APP_KEY=base64:' "$APP_PATH/.env"; then
         echo "Generating APP_KEY..."
         php artisan key:generate --force
@@ -50,11 +52,5 @@ if [[ "$FORCE" == "y" ]] || [[ ! -f "$APP_PATH/database/storage/database.sqlite"
 
     npm install
 fi
-
-
-# copy assets to public folder
-cp -f vendor/htmx/htmx/htmx.min.js public/js/
-cp -f vendor/jquery/jquery/jquery-3.7.1.min.js public/js/jquery.min.js
-
 
 npm run build

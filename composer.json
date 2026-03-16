@@ -1,25 +1,15 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "tropotek/tk-app",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Tropotek base application framework.",
     "keywords": [
-        "laravel",
-        "framework"
+        "laravel",,
+        "framework",
+        "tropotek"
     ],
     "license": "MIT",
     "repositories": [
-        {
-            "type": "package",
-            "package": {
-                "name": "htmx/htmx",
-                "version": "2.0.7",
-                "dist": {
-                    "url": "https://unpkg.com/htmx.org/dist/htmx.min.js",
-                    "type": "file"
-                }
-            }
-        },
         {
             "type": "path",
             "url": "packages/ttek/tk-base"
@@ -27,13 +17,11 @@
     ],
     "require": {
         "php": "^8.4|^8.5",
-        "htmx/htmx": "2.0.7",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "mauricius/laravel-htmx": "^0.9.0",
         "spatie/laravel-permission": "^7.2",
-        "ttek/tk-base": "@dev",
-        "twbs/bootstrap": "~5.3.0"
+        "ttek/tk-base": "@dev"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -50,10 +38,7 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        },
-        "files": [
-            "app/Helpers/helpers.php"
-        ]
+        }
     },
     "autoload-dev": {
         "psr-4": {
