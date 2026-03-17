@@ -6,10 +6,10 @@
                 <div class="mt-2">
                     <h2>{{ $pageName }}</h2>
 
-                    <x-tk-base::table.filter-table :$table>
+                    <x-tkl-ui::table.filter-table :$table>
 
                         <x-slot name="filters">
-                            <x-tk-base::table.filters.select
+                            <x-tkl-ui::table.filters.select
                                     :name="$table->key('status')"
                                     :options="['' => '- Status -', 'pending' => 'Pending', 'in_progress' => 'In Progress', 'completed' => 'Completed', 'cancelled' => 'Cancelled']"
                                     value="{{ $table->getParam('status') }}"
@@ -25,7 +25,7 @@
                             </div>
                         </x-slot>
 
-                    </x-tk-base::table.filter-table>
+                    </x-tkl-ui::table.filter-table>
                 </div>
             @endif
 

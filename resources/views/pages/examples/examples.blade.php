@@ -21,7 +21,7 @@
                             <p>&nbsp;</p>
                             <p>&nbsp;</p>
                                 <h4>My Ideas</h4>
-                                <x-tk-base::table :$table />
+                                <x-tkl-ui::table :$table />
                             <p>&nbsp;</p>
                             <p>&nbsp;</p>
                         </div>

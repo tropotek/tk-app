@@ -5,7 +5,7 @@
 
     <div class="card mb-3">
         <div class="card-body">
-            <x-tk-base::table.filter-table :$table />
+            <x-tkl-ui::table.filter-table :$table />
         </div>
     </div>
 

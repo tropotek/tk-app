@@ -1,0 +1,23 @@
+{
+    "name": "ttek/tkl-ui",
+    "description": "Tropotek Laravel Project Base Libs",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "\\Tk\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "require": {
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Tk\\TkBaseServiceProvider"
+            ]
+        }
+    }
+}

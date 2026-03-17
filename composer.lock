@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "db1d19fad0ae3d6bd4bb1f5e8ae929ad",
+    "content-hash": "f530fa482ef77d20bc956f64cdc55495",
     "packages": [
         {
             "name": "brick/math",
@@ -6132,12 +6132,12 @@
             "time": "2025-12-02T11:56:42+00:00"
         },
         {
-            "name": "ttek/tk-base",
+            "name": "ttek/tkl-ui",
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "packages/ttek/tk-base",
-                "reference": "bd1faf1ecb44395822070135039262d04b1ac680"
+                "url": "packages/ttek/tkl-ui",
+                "reference": "b0189294c87a85420e090c921353a6e48a2a45bc"
             },
             "type": "library",
             "extra": {
@@ -6158,7 +6158,7 @@
             "license": [
                 "MIT"
             ],
-            "description": "Tropotek Project Base Libs",
+            "description": "Tropotek Laravel Project Base Libs",
             "transport-options": {
                 "relative": true
             }
@@ -8765,7 +8765,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "ttek/tk-base": 20
+        "ttek/tkl-ui": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

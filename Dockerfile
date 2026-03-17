@@ -35,6 +35,15 @@ RUN install-php-extensions \
     sockets \
     zip
 
+# Install dependencies for adding new repositories and for Node.js build tools
+RUN curl -fsSL https://deb.nodesource.com
+RUN apt-get update
+RUN apt-get install -y nodejs npm
+
+# Verify installation
+RUN node -v
+RUN npm -v
+
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
@@ -45,7 +54,6 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN mkdir -p storage/framework/{sessions,views,cache} \
    && mkdir -p storage/logs \
    && mkdir -p bootstrap/cache
-
 
 # Running as a Non-Root User
 ARG USER=appuser
@@ -67,7 +75,7 @@ RUN composer install --no-dev --no-interaction --prefer-dist
 
 # TODO: optimize the image size
 # - remove composer
-# - uninstall (purge) git, vim, openssh-client, etc
+# - uninstall (purge) git, vim, openssh-client, nodejs, etc
 
 # Set the entrypoint
 ENTRYPOINT ["./bin/deploy.sh"]

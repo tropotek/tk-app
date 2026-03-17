@@ -8,10 +8,10 @@ window.htmx = htmx;
 
 import * as bootstrap from 'bootstrap';
 
-import '@tk-base/js/functions.js';
+import '@tkl-ui/js/functions.js';
 
-import '@tk-base/js/form.js';
-import '@tk-base/js/table.js';
+import '@tkl-ui/js/form.js';
+import '@tkl-ui/js/table.js';
 
 // global JS config object
 window.appConfig = {

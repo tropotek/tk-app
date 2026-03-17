@@ -5,10 +5,10 @@
 
     <div class="card mb-3">
         <div class="card-body">
-            <x-tk-base::table.filter-table :$table>
+            <x-tkl-ui::table.filter-table :$table>
 
                 <x-slot name="filters">
-                    <x-tk-base::table.filters.select
+                    <x-tkl-ui::table.filters.select
                         :name="$table->key('status')"
                         :options="[ '' => '- Status -', 'pending' => 'Pending', 'in_progress' => 'In Progress', 'completed' => 'Completed', 'cancelled' => 'Cancelled']"
                         value="{{ $table->getParam('status') }}"
@@ -29,7 +29,7 @@
                     </div>
                 </x-slot>
 
-            </x-tk-base::table.filter-table>
+            </x-tkl-ui::table.filter-table>
         </div>
     </div>
 

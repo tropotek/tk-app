@@ -2,11 +2,11 @@
 
 ## Documentation Links
 - [Templating Standards](resources/views/readme.md)
-- [tk-base Package](packages/ttek/tk-base/src/readme.md)
-  - [Breadcrumbs](packages/ttek/tk-base/src/Breadcrumbs/readme.md)
-  - [Form Templates](packages/ttek/tk-base/resources/views/components/form/readme.md)
-  - [Menu Builder](packages/ttek/tk-base/src/Menu/readme.md)
-  - [Table Builder](packages/ttek/tk-base/src/Table/readme.md)
+- [tkl-ui Package](packages/ttek/tkl-ui/src/readme.md)
+  - [Breadcrumbs](packages/ttek/tkl-ui/src/Breadcrumbs/readme.md)
+  - [Form Templates](packages/ttek/tkl-ui/resources/views/components/form/readme.md)
+  - [Menu Builder](packages/ttek/tkl-ui/src/Menu/readme.md)
+  - [Table Builder](packages/ttek/tkl-ui/src/Table/readme.md)
 
 
 ## Overview
@@ -29,7 +29,7 @@ This is an experimental Laravel application built with Docker, focusing on moder
 
 ## Project Structure
 - `app/`: Core Laravel application logic.
-- `app/packages/ttek/tk-base/`: Custom internal base package.
+- `app/packages/ttek/tkl-ui/`: Tropotek UI package.
 - `bin/`: Helper scripts for environment management.
 - `docker/`: Docker-specific configuration files.
 - `resources/`: Frontend assets (views, CSS, JS).

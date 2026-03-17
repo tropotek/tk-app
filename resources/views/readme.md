@@ -1,7 +1,7 @@
 
 # Form Components Developer Guide
 
-This project includes reusable Blade form components provided by the `tk-base` package.
+This project includes reusable Blade form components provided by the `tkl-ui` package.
 
 These components are intended to standardize:
 
@@ -16,28 +16,28 @@ These components are intended to standardize:
 
 ### Form wrapper
 
-- `x-tk-base::form`
+- `x-tkl-ui::form`
 
 ### Buttons
 
-- `x-tk-base::form.buttons.default-btns`
-- `x-tk-base::form.buttons.link`
-- `x-tk-base::form.buttons.submit`
+- `x-tkl-ui::form.buttons.default-btns`
+- `x-tkl-ui::form.buttons.link`
+- `x-tkl-ui::form.buttons.submit`
 
 ### Fields
 
-- `x-tk-base::form.fields.hidden`
-- `x-tk-base::form.fields.input`
-- `x-tk-base::form.fields.select`
-- `x-tk-base::form.fields.checkbox`
-- `x-tk-base::form.fields.radio`
-- `x-tk-base::form.fields.file`
-- `x-tk-base::form.fields.textarea`
+- `x-tkl-ui::form.fields.hidden`
+- `x-tkl-ui::form.fields.input`
+- `x-tkl-ui::form.fields.select`
+- `x-tkl-ui::form.fields.checkbox`
+- `x-tkl-ui::form.fields.radio`
+- `x-tkl-ui::form.fields.file`
+- `x-tkl-ui::form.fields.textarea`
 
 ### Form UI wrappers
 
-- `x-tk-base::form.ui.fieldgroup`
-- `x-tk-base::form.ui.fieldset`
+- `x-tkl-ui::form.ui.fieldgroup`
+- `x-tkl-ui::form.ui.fieldset`
 
 ---
 
@@ -57,13 +57,13 @@ These modes affect how fields render:
 
 Example:
 ```bladehtml
-<x-tk-base::form
+<x-tkl-ui::form
 method="post"
 action="{{ route('users.store') }}"
 mode="create"
 >
     ...
-</x-tk-base::form>
+</x-tkl-ui::form>
 ```
 ## Basic usage
 
@@ -139,26 +139,26 @@ class UserController extends Controller
 ])
 
 <x-layouts.main>
-    <x-tk-base::form
+    <x-tkl-ui::form
         :method="$method"
         :action="$action"
         :mode="$mode"
     >
         <x-slot:buttons>
-            <x-tk-base::form.buttons.default-btns
+            <x-tkl-ui::form.buttons.default-btns
                 editRoute="{{ route('users.edit', 1) }}"
                 cancelRoute="{{ route('users.show', 1) }}"
             />
         </x-slot:buttons>
 
         <x-slot:fields>
-            <x-tk-base::form.fields.hidden
+            <x-tkl-ui::form.fields.hidden
                 name="id"
                 :value="$values['id'] ?? ''"
             />
 
-            <x-tk-base::form.ui.fieldgroup class="col">
-                <x-tk-base::form.fields.select
+            <x-tkl-ui::form.ui.fieldgroup class="col">
+                <x-tkl-ui::form.fields.select
                     name="title"
                     :options="[
                         '' => '-- Select --',
@@ -170,41 +170,41 @@ class UserController extends Controller
                     :value="$values['title'] ?? ''"
                 />
 
-                <x-tk-base::form.fields.input
+                <x-tkl-ui::form.fields.input
                     name="firstName"
                     fieldCss="col-sm-4"
                     required=""
                     :value="$values['firstName'] ?? ''"
                 />
 
-                <x-tk-base::form.fields.input
+                <x-tkl-ui::form.fields.input
                     name="lastName"
                     fieldCss="col-sm-5"
                     :value="$values['lastName'] ?? ''"
                 />
-            </x-tk-base::form.ui.fieldgroup>
+            </x-tkl-ui::form.ui.fieldgroup>
 
-            <x-tk-base::form.ui.fieldset legend="Contact details" class="col">
-                <x-tk-base::form.fields.input
+            <x-tkl-ui::form.ui.fieldset legend="Contact details" class="col">
+                <x-tkl-ui::form.fields.input
                     name="email"
                     type="email"
                     :value="$values['email'] ?? ''"
                 />
 
-                <x-tk-base::form.fields.textarea
+                <x-tkl-ui::form.fields.textarea
                     name="notes"
                     :value="$values['notes'] ?? ''"
                 />
-            </x-tk-base::form.ui.fieldset>
+            </x-tkl-ui::form.ui.fieldset>
         </x-slot:fields>
-    </x-tk-base::form>
+    </x-tkl-ui::form>
 </x-layouts.main>
 ```
 ---
 
 ## Form wrapper
 
-Use `x-tk-base::form` as the root form component.
+Use `x-tkl-ui::form` as the root form component.
 
 ### Important behavior
 
@@ -225,7 +225,7 @@ Use `x-tk-base::form` as the root form component.
 
 Example:
 ```bladehtml
-<x-tk-base::form
+<x-tkl-ui::form
     method="put"
     action="{{ route('users.update', $userId) }}"
     mode="edit"
@@ -237,7 +237,7 @@ Example:
     <x-slot:fields>
         ...
     </x-slot:fields>
-</x-tk-base::form>
+</x-tkl-ui::form>
 ```
 ---
 
@@ -245,7 +245,7 @@ Example:
 
 ## Default button set
 
-`x-tk-base::form.buttons.default-btns` renders standard actions based on the current mode.
+`x-tkl-ui::form.buttons.default-btns` renders standard actions based on the current mode.
 
 ### Behavior by mode
 
@@ -267,7 +267,7 @@ Example:
 
 Example:
 ```bladehtml
-<x-tk-base::form.buttons.default-btns
+<x-tkl-ui::form.buttons.default-btns
     editRoute="{{ route('users.edit', $userId) }}"
     cancelRoute="{{ route('users.show', $userId) }}"
 />
@@ -278,40 +278,40 @@ Example:
 
 ## Field group
 
-Use `x-tk-base::form.ui.fieldgroup` to group related fields in a Bootstrap row.
+Use `x-tkl-ui::form.ui.fieldgroup` to group related fields in a Bootstrap row.
 ```bladehtml
-<x-tk-base::form.ui.fieldgroup class="col">
-    <x-tk-base::form.fields.input
+<x-tkl-ui::form.ui.fieldgroup class="col">
+    <x-tkl-ui::form.fields.input
         name="firstName"
         fieldCss="col-sm-6"
         :value="$values['firstName'] ?? ''"
     />
 
-    <x-tk-base::form.fields.input
+    <x-tkl-ui::form.fields.input
         name="lastName"
         fieldCss="col-sm-6"
         :value="$values['lastName'] ?? ''"
     />
-</x-tk-base::form.ui.fieldgroup>
+</x-tkl-ui::form.ui.fieldgroup>
 ```
 Use this when you want related fields displayed together without a visual legend.
 
 ## Fieldset
 
-Use `x-tk-base::form.ui.fieldset` when the group needs a title or stronger visual separation.
+Use `x-tkl-ui::form.ui.fieldset` when the group needs a title or stronger visual separation.
 ```bladehtml
-<x-tk-base::form.ui.fieldset legend="Contact details" class="col">
-    <x-tk-base::form.fields.input
+<x-tkl-ui::form.ui.fieldset legend="Contact details" class="col">
+    <x-tkl-ui::form.fields.input
         name="email"
         type="email"
         :value="$values['email'] ?? ''"
     />
 
-    <x-tk-base::form.fields.input
+    <x-tkl-ui::form.fields.input
         name="phone"
         :value="$values['phone'] ?? ''"
     />
-</x-tk-base::form.ui.fieldset>
+</x-tkl-ui::form.ui.fieldset>
 ```
 Use a fieldset when the grouped fields belong to a named section.
 
@@ -334,7 +334,7 @@ The components also use Laravel `old()` values automatically, so validation fail
 
 ## Hidden field
 ```bladehtml
-<x-tk-base::form.fields.hidden
+<x-tkl-ui::form.fields.hidden
     name="id"
     :value="$values['id'] ?? ''"
 />
@@ -343,7 +343,7 @@ Use for IDs, tokens, or additional request metadata.
 
 ## Input field
 ```bladehtml
-<x-tk-base::form.fields.input
+<x-tkl-ui::form.fields.input
     name="firstName"
     label="First name"
     fieldCss="col-sm-6"
@@ -355,7 +355,7 @@ Useful for text, email, number, date, and similar input types.
 
 You can also set `type` explicitly:
 ```bladehtml
-<x-tk-base::form.fields.input
+<x-tkl-ui::form.fields.input
     name="dob"
     label="Date of birth"
     type="date"
@@ -365,7 +365,7 @@ You can also set `type` explicitly:
 ```
 ## Select field
 ```bladehtml
-<x-tk-base::form.fields.select
+<x-tkl-ui::form.fields.select
     name="title"
     :options="[
         '' => '-- Select --',
@@ -385,7 +385,7 @@ You can also set `type` explicitly:
 
 Optgroup example:
 ```bladehtml
-<x-tk-base::form.fields.select
+<x-tkl-ui::form.fields.select
     name="department"
     :options="[
         'Technical' => [
@@ -402,7 +402,7 @@ Optgroup example:
 ```
 ## Checkbox field
 ```bladehtml
-<x-tk-base::form.fields.checkbox
+<x-tkl-ui::form.fields.checkbox
     name="options[]"
     :options="[
         'option1' => 'Option 1',
@@ -414,7 +414,7 @@ Optgroup example:
 ```
 For a switch-style checkbox:
 ```bladehtml
-<x-tk-base::form.fields.checkbox
+<x-tkl-ui::form.fields.checkbox
     name="best"
     label="Best option"
     :options="['1' => 'Yes']"
@@ -430,7 +430,7 @@ For a switch-style checkbox:
 
 ## Radio field
 ```bladehtml
-<x-tk-base::form.fields.radio
+<x-tkl-ui::form.fields.radio
     name="status"
     :options="[
         'draft' => 'Draft',
@@ -444,7 +444,7 @@ Use when exactly one option should be selected.
 
 ## File field
 ```bladehtml
-<x-tk-base::form.fields.file
+<x-tkl-ui::form.fields.file
     name="avatar"
     label="Profile image"
     help="Upload an image file"
@@ -459,7 +459,7 @@ Use when exactly one option should be selected.
 
 ## Textarea field
 ```bladehtml
-<x-tk-base::form.fields.textarea
+<x-tkl-ui::form.fields.textarea
     name="description"
     label="Description"
     :value="$values['description'] ?? ''"
@@ -529,26 +529,26 @@ For consistency across the project:
 ])
 
 <x-layouts.main>
-    <x-tk-base::form
+    <x-tkl-ui::form
         :method="$method"
         :action="$action"
         :mode="$mode"
     >
         <x-slot:buttons>
-            <x-tk-base::form.buttons.default-btns
+            <x-tkl-ui::form.buttons.default-btns
                 editRoute="{{ route('users.edit', $values['id'] ?? 0) }}"
                 cancelRoute="{{ route('users.index') }}"
             />
         </x-slot:buttons>
 
         <x-slot:fields>
-            <x-tk-base::form.fields.hidden
+            <x-tkl-ui::form.fields.hidden
                 name="id"
                 :value="$values['id'] ?? ''"
             />
 
-            <x-tk-base::form.ui.fieldgroup class="col">
-                <x-tk-base::form.fields.select
+            <x-tkl-ui::form.ui.fieldgroup class="col">
+                <x-tkl-ui::form.fields.select
                     name="title"
                     :options="[
                         '' => '-- Select --',
@@ -560,28 +560,28 @@ For consistency across the project:
                     :value="$values['title'] ?? ''"
                 />
 
-                <x-tk-base::form.fields.input
+                <x-tkl-ui::form.fields.input
                     name="firstName"
                     fieldCss="col-sm-4"
                     required=""
                     :value="$values['firstName'] ?? ''"
                 />
 
-                <x-tk-base::form.fields.input
+                <x-tkl-ui::form.fields.input
                     name="lastName"
                     fieldCss="col-sm-5"
                     :value="$values['lastName'] ?? ''"
                 />
-            </x-tk-base::form.ui.fieldgroup>
+            </x-tkl-ui::form.ui.fieldgroup>
 
-            <x-tk-base::form.ui.fieldset legend="Profile" class="col">
-                <x-tk-base::form.fields.input
+            <x-tkl-ui::form.ui.fieldset legend="Profile" class="col">
+                <x-tkl-ui::form.fields.input
                     name="email"
                     type="email"
                     :value="$values['email'] ?? ''"
                 />
 
-                <x-tk-base::form.fields.checkbox
+                <x-tkl-ui::form.fields.checkbox
                     name="interests[]"
                     :options="[
                         'music' => 'Music',
@@ -591,7 +591,7 @@ For consistency across the project:
                     :value="$values['interests'] ?? []"
                 />
 
-                <x-tk-base::form.fields.radio
+                <x-tkl-ui::form.fields.radio
                     name="status"
                     :options="[
                         'active' => 'Active',
@@ -600,20 +600,20 @@ For consistency across the project:
                     :value="$values['status'] ?? ''"
                 />
 
-                <x-tk-base::form.fields.file
+                <x-tkl-ui::form.fields.file
                     name="avatar"
                     label="Avatar"
                     help="Upload a profile image"
                     value="<a href='/storage/avatar.jpg' target='_blank'>Current avatar</a>"
                 />
 
-                <x-tk-base::form.fields.textarea
+                <x-tkl-ui::form.fields.textarea
                     name="description"
                     :value="$values['description'] ?? ''"
                 />
-            </x-tk-base::form.ui.fieldset>
+            </x-tkl-ui::form.ui.fieldset>
         </x-slot:fields>
-    </x-tk-base::form>
+    </x-tkl-ui::form>
 </x-layouts.main>
 ```
 ---
@@ -624,7 +624,7 @@ Use the form component system when building CRUD-style pages to keep templates p
 
 ### In short
 
-- wrap everything in `x-tk-base::form`
+- wrap everything in `x-tkl-ui::form`
 - pass `mode`, `method`, and `action`
 - put buttons in the `buttons` slot
 - put fields in the `fields` slot

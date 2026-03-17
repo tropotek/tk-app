@@ -18,7 +18,7 @@
 
         <div class="{{ config('app.resources.layout', 'container') }}">
 
-            <x-tk-base::breadcrumbs />
+            <x-tkl-ui::breadcrumbs />
             <x-ui.alerts />
 
             <div class="mb-5 clearfix">

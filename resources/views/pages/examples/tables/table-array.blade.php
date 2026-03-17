@@ -6,13 +6,13 @@
 
     <div class="card mb-3">
         <div class="card-body">
-            <x-tk-base::table :table="$table1" />
+            <x-tkl-ui::table :table="$table1" />
         </div>
     </div>
 
     <div class="card mb-3">
         <div class="card-body">
-            <x-tk-base::table :table="$table2" />
+            <x-tkl-ui::table :table="$table2" />
         </div>
     </div>
 

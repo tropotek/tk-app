@@ -6,34 +6,34 @@
 <x-pages.main>
     <h3>{{ $pageName }}</h3>
 
-    <x-tk-base::form :$method :$action :$mode>
+    <x-tkl-ui::form :$method :$action :$mode>
 
         <x-slot:buttons>
-            <x-tk-base::form.buttons.default-btns
+            <x-tkl-ui::form.buttons.default-btns
                 editRoute="/ideas/edit"
                 cancelRoute="/ideas" />
         </x-slot:buttons>
 
 
         <x-slot:fields>
-            <x-tk-base::form.fields.input
+            <x-tkl-ui::form.fields.input
                 name="title"
                 required=""
             />
 
-            <x-tk-base::form.fields.select
+            <x-tkl-ui::form.fields.select
                 name="status"
                 :options="['' => '-- Select --']+\App\Enum\IdeaStatus::getLabels()"
                 required=""
                 :value="\App\Enum\IdeaStatus::PENDING->value"
             />
 
-            <x-tk-base::form.fields.textarea
+            <x-tkl-ui::form.fields.textarea
                 name="description"
                 required=""
             />
         </x-slot:fields>
 
-    </x-tk-base::form>
+    </x-tkl-ui::form>
 
 </x-pages.main>

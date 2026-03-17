@@ -5,16 +5,16 @@
 
     <div class="card mb-3">
         <div class="card-body">
-            <x-tk-base::table.filter-table :$table>
+            <x-tkl-ui::table.filter-table :$table>
 
                 <x-slot name="filters">
-                    <x-tk-base::table.filters.select
+                    <x-tkl-ui::table.filters.select
                         :name="$table->key('status')"
                         :options="[ '' => '- Status -', 'Pending' => 'Pending', 'In Pprogress' => 'In Progress', 'Cancelled' => 'Cancelled']"
                         value="{{ $table->getParam('status') }}"
                     />
 
-                    <x-tk-base::table.filters.select
+                    <x-tkl-ui::table.filters.select
                         :name="$table->key('type')"
                         :options="[ '' => '- Type -', 'Biopsy' => 'Biopsy', 'Necropsy' => 'Necropsy']"
                         value="{{ $table->getParam('type') }}"
@@ -30,7 +30,7 @@
                     </div>
                 </x-slot>
 
-            </x-tk-base::table.filter-table>
+            </x-tkl-ui::table.filter-table>
         </div>
     </div>
 

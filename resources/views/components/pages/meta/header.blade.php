@@ -11,7 +11,7 @@
                 <ul class="navbar-nav me-auto mb-2 mb-sm-0">
                     @foreach (menu('NavBar')->getChildren() as $item)
                         {{-- Pass initial classes to the component --}}
-                        <x-tk-base::navitem :item="$item" level="0" class="nav-item" submenu-class="dropdown-menu" link-class="nav-link" />
+                        <x-tkl-ui::navitem :item="$item" level="0" class="nav-item" submenu-class="dropdown-menu" link-class="nav-link" />
                     @endforeach
 
                     @auth

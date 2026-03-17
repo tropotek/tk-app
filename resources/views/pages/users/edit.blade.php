@@ -12,7 +12,7 @@
 
         <x-slot:btnrow>
 
-            <x-tk-base::form.buttons.default-btns
+            <x-tkl-ui::form.buttons.default-btns
                 :$editRoute
                 :$cancelRoute
                 form="theform"
@@ -22,17 +22,17 @@
 
         <x-slot:col1>
 
-            <x-tk-base::form :$method :$action :$mode>
+            <x-tkl-ui::form :$method :$action :$mode>
 
                 <x-slot:fields>
 
-                    <x-tk-base::form.fields.input
+                    <x-tkl-ui::form.fields.input
                         name="name"
                         required=""
                         :value="$user->name"
                     />
 
-                    <x-tk-base::form.fields.input
+                    <x-tkl-ui::form.fields.input
                         name="email"
                         type="email"
                         required=""
@@ -40,7 +40,7 @@
                     />
 
                     @if ($mode == 'create')
-                        <x-tk-base::form.fields.input
+                        <x-tkl-ui::form.fields.input
                             name="password"
                             required=""
                             type="password"
@@ -49,7 +49,7 @@
 
                 </x-slot:fields>
 
-            </x-tk-base::form>
+            </x-tkl-ui::form>
 
         </x-slot:col1>
 
