@@ -2,10 +2,9 @@
 name: tk-app-prod-test
 
 x-shared: &app_shared
-  #image: tk-app:latest
-  build:
-    context: ..
-    dockerfile: ./docker/Dockerfile
+  image: tropotek/tk-app:latest
+#  build:
+#    context: ..
   volumes:
     - storage:/app/storage
     - db:/app/database/storage
@@ -26,6 +25,12 @@ services:
     #  SERVER_NAME: "${SERVER_NAME:-localhost}"
     # Disable ssl
       SERVER_NAME: ":80"
+    healthcheck:
+      test: ["CMD", "/app/artisan", "about"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     networks:
       - LAN
 
@@ -34,6 +39,14 @@ services:
     entrypoint: ["php"]
     command: ["/app/artisan", "queue:work", "--verbose", "--tries=5", "--timeout=90", "--sleep=3"]
     restart: unless-stopped
+    depends_on:
+      - app
+    healthcheck:
+      test: ["CMD", "/app/artisan", "about"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     networks:
       - LAN
 

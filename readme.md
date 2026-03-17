@@ -61,8 +61,6 @@ Start the development environment:
 # OR manually
 docker compose --env-file .env -f compose.yml up --build -d
 
-# Production container
-docker compose --env-file .env.production -f compose-prod.yml up --build
 ```
 The application will be accessible at: `http://localhost:8085` (default, configurable via `HTTP_PORT`).
 
@@ -107,22 +105,23 @@ Key variables in `.env`:
 ---
 
 ## Running Tests
+
 ### PHPUnit (Backend)
+
 ```bash
 # Inside the container
 composer test
 # OR
 php artisan test
 ```
+
+
 ---
 
 ## Troubleshooting
 
 ### Common Issues
-- **Permissions:** If you experience permission issues on your host machine, run:
-  ```bash
-  sudo chown $USER:$USER ./ -R
-  ```
+
 - **Logs:** 
   - Tail Docker logs: `docker logs -f tk-app`
   - Tail Laravel logs: `tail -f storage/logs/laravel.log`
