@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+#
+# Use this as the app entrypoint to bootstrap the code
+# in a docker container for startup
+#
+
 
 # restrict to the app path
 SCRIPT=$(realpath "$0")

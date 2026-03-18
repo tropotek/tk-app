@@ -3,6 +3,13 @@ FROM dunglas/frankenphp:latest
 # Set the working directory inside the container
 WORKDIR /app
 
+# Expose port 80 (or 443 if using HTTPS)
+# The EXPOSE instruction only serves as documentation.
+# dev
+EXPOSE 80
+# prod
+EXPOSE 443
+
 # Install requred apt packages
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -72,10 +79,6 @@ RUN echo 'alias l="ls -lah --color=auto"' >> ~/.bashrc
 
 # run composer install for non local env
 RUN composer install --no-dev --no-interaction --prefer-dist
-
-# TODO: optimize the image size
-# - remove composer
-# - uninstall (purge) git, vim, openssh-client, nodejs, etc
 
 # Set the entrypoint
 ENTRYPOINT ["./bin/deploy.sh"]

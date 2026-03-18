@@ -1,4 +1,6 @@
 #!/bin/bash -e
+# Build a docker images and save it as a tar file
+
 
 SCRIPT=$(realpath "$0")
 APP_PATH=$(dirname "$(dirname "$SCRIPT")")
