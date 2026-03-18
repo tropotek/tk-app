@@ -30,28 +30,7 @@
                 </div>
                 <div class="col-md-4">
 
-                    <div class="card mb-3 border-info">
-                        <div class="card-header text-bg-info">
-                            <h6 class="mb-0">
-                                <a href="#collapse-example" id="heading-example" role="button" class="d-block text-decoration-none text-white" data-bs-toggle="collapse">
-                                    <i class="fa fa-chevron-down text-white-50 float-end"></i>
-                                    Collapsible Group Item #1
-                                </a>
-                            </h6>
-                        </div>
-                        <div id="collapse-example" class="collapse show">
-                            <div class="card-body">
-                                <p class="card-text">
-                                    Some quick example text to build on the card title and
-                                    make up the bulk of the card’s content.
-                                </p>
-                                <p class="card-text">
-                                    Some quick example text to build on the card title and
-                                    make up the bulk of the card’s content.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+                    <livewire:side-panel />
 
                 </div>
             </div>
