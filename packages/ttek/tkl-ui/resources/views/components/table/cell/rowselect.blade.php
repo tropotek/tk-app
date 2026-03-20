@@ -9,7 +9,7 @@
 @php
     $cell->addClass('text-center');
 @endphp
-<td {{ $attributes->merge($cell->getAttributes()->toArray()) }}>
+<td {{ $attributes->merge($cell->getAttrs()->toArray()) }}>
     <input type="checkbox"
            name="{{ $cell->getName() }}[]"
            value="{{ $cell->getValue($row) }}"

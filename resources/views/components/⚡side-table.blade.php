@@ -20,9 +20,9 @@ new class extends Component {
     <div id="collapse-example2" class="collapse show">
         <div class="card-body">
 
-            <div class="table-responsive">
+            <div>
+                <p>TODO: </p>
 
-                <livewire:tables.user-table />
 
             </div>
 
