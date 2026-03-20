@@ -6,7 +6,10 @@ use App\Http\Controllers\Examples\Forms\OneController;
 use App\Http\Controllers\Examples\Forms\ThreeController;
 use App\Http\Controllers\Examples\Forms\TwoController;
 use App\Http\Controllers\Examples\Ideas\IdeaController;
-
+use App\Http\Controllers\Examples\Tables\ArrayTable;
+use App\Http\Controllers\Examples\Tables\CsvTable;
+use App\Http\Controllers\Examples\Tables\LivewireTable;
+use App\Http\Controllers\Examples\Tables\QueryTable;
 
 
 // Example pages
@@ -46,7 +49,8 @@ Route::get('/formFieldset/create', [FieldsetController::class, 'create']);
 Route::post('/formFieldset/submit', [FieldsetController::class, 'submit']);
 
 // Table Test Examples
-Route::get('/tableQuery', [\App\Http\Controllers\Examples\Tables\QueryTable::class, 'index']);
-Route::get('/tableArray', [\App\Http\Controllers\Examples\Tables\ArrayTable::class, 'index']);
-Route::get('/tableCsv', [\App\Http\Controllers\Examples\Tables\CsvTable::class, 'index']);
+Route::get('/tableLivewire', [LivewireTable::class, 'index']);
+Route::get('/tableQuery', [QueryTable::class, 'index']);
+Route::get('/tableArray', [ArrayTable::class, 'index']);
+Route::get('/tableCsv', [CsvTable::class, 'index']);
 

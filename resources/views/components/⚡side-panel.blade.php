@@ -50,7 +50,7 @@ new class extends Component {
             <a href="#collapse-example" id="heading-example" role="button"
                 class="d-block text-decoration-none text-white" data-bs-toggle="collapse">
                 <i class="fa fa-chevron-down text-white-50 float-end"></i>
-                Collapsible Group Item #1
+                Livewire Examples
             </a>
         </h6>
     </div>

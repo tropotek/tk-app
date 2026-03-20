@@ -3,12 +3,12 @@
 namespace Tk;
 
 use Illuminate\Foundation\AliasLoader;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Tk\Support\Facades\Breadcrumbs;
 use Tk\Support\Facades\Menu;
 use Tk\View\Composers\DefaultPageName;
+use Illuminate\Pagination\Paginator;
 
 class TkBaseServiceProvider extends ServiceProvider
 {

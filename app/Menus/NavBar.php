@@ -23,6 +23,7 @@ final class NavBar extends MenuInterface
                 MenuItem::make('Three Columns', '/formThree'),
                 MenuItem::make('Fieldsets', '/formFieldset'),
                 MenuItem::makeSeparator(),
+                MenuItem::make('Livewire', '/tableLivewire'),
                 MenuItem::make('Sql Query', '/tableQuery'),
                 MenuItem::make('Array Rows', '/tableArray'),
                 MenuItem::make('Csv File', '/tableCsv'),

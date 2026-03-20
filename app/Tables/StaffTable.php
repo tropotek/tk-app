@@ -2,9 +2,7 @@
 
 namespace App\Tables;
 
-use App\Models\Idea;
 use App\Models\Staff;
-use App\Models\User;
 use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
 use Tk\Table\Cell;
 use Tk\Table\Records\QueryRecords;

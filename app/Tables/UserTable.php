@@ -2,7 +2,6 @@
 
 namespace App\Tables;
 
-use App\Models\Idea;
 use App\Models\User;
 use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
 use Tk\Table\Cell;

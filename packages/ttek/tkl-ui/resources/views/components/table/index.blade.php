@@ -8,7 +8,7 @@
     'showPaginator' => true,
 ])
 @php
-    $attributes = $attributes->merge($table->getAttributes()->all());
+    $attributes = $attributes->merge($table->getAttrs()->all());
 @endphp
 
 <div class="tk-table-wrap table-responsive p-1">
@@ -42,7 +42,7 @@
 
     @if ($table->getLimit() > 0 && $table->getPaginator() && $showPaginator)
         <div class="mt-2">
-            {{ $table->getPaginator()->links('vendor.pagination.small') }}
+            {!! str_replace ('class="pagination"', 'class="pagination pagination-sm"', $table->getPaginator()->links()) !!}
         </div>
    @endif
 

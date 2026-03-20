@@ -77,15 +77,13 @@ Concrete implementations include:
 ## 1. Create a table class
 
 Typically, you subclass `Table` and define columns and records in `build()`.
+
 ```php
 <?php
 
 namespace App\Tables;
 
-use App\Models\User;
-use Tk\Table\Cell;
-use Tk\Table\Table;
-use Tk\Table\Records\QueryRecords;
+use App\Models\User;use Tk\Table\Cell;use Tk\Table\Records\QueryRecords;use Tk\Table\Table;
 
 class UserTable extends Table
 {
@@ -570,6 +568,7 @@ The filter callback receives:
 ---
 
 ### Filtering `ArrayRecords`
+
 ```php
 use Tk\Table\Records\ArrayRecords;
 
@@ -587,9 +586,9 @@ $this->setRecords(new ArrayRecords($rows))
 ---
 
 ### Filtering `QueryRecords`
+
 ```php
-use App\Models\User;
-use Tk\Table\Records\QueryRecords;
+use App\Models\User;use Tk\Table\Records\QueryRecords;
 
 $this->setRecords(new QueryRecords(User::query()))
     ->filter(function (array $filters, $query) {
@@ -611,6 +610,7 @@ The callback should return the modified query.
 ## Working with `ArrayRecords`
 
 Use `ArrayRecords` when your data is already available as an array.
+
 ```php
 use Tk\Table\Records\ArrayRecords;
 
@@ -639,6 +639,7 @@ Cell values are read by matching the cell name against the row key/property.
 ## Working with `CsvRecords`
 
 Use `CsvRecords` to build a table from a CSV file.
+
 ```php
 use Tk\Table\Records\CsvRecords;
 
@@ -665,9 +666,9 @@ Use this for modestly sized CSV files. For large files, create your own `QueryRe
 ## Working with `QueryRecords`
 
 Use `QueryRecords` for Eloquent-backed tables.
+
 ```php
-use App\Models\User;
-use Tk\Table\Records\QueryRecords;
+use App\Models\User;use Tk\Table\Records\QueryRecords;
 
 $this->setRecords(
     new QueryRecords(User::query())
@@ -759,15 +760,13 @@ table.action-head
 ---
 
 ## Example: complete table using `QueryRecords`
+
 ```php
 <?php
 
 namespace App\Tables;
 
-use App\Models\User;
-use Tk\Table\Cell;
-use Tk\Table\Table;
-use Tk\Table\Records\QueryRecords;
+use App\Models\User;use Tk\Table\Cell;use Tk\Table\Records\QueryRecords;use Tk\Table\Table;
 
 class UserTable extends Table
 {
@@ -820,14 +819,13 @@ class UserTable extends Table
 ---
 
 ## Example: complete table using `ArrayRecords`
+
 ```php
 <?php
 
 namespace App\Tables;
 
-use Tk\Table\Cell;
-use Tk\Table\Table;
-use Tk\Table\Records\ArrayRecords;
+use Tk\Table\Cell;use Tk\Table\Records\ArrayRecords;use Tk\Table\Table;
 
 class ReportTable extends Table
 {

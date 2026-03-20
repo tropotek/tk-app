@@ -1,16 +1,23 @@
 <?php
 
-namespace Tk\Table\Traits;
+namespace Tk\Traits;
+
 
 use Illuminate\View\ComponentAttributeBag;
 
+/**
+ * @todo: rename this as to not confuse it with Model attributes
+ */
 trait HasAttributes
 {
     protected ComponentAttributeBag $_attributes;
 
 
-    public function getAttributes(): ComponentAttributeBag
+    public function getAttrs(): ComponentAttributeBag
     {
+        if (empty($this->_attributes)) {
+            $this->_attributes = new ComponentAttributeBag();
+        }
         return $this->_attributes;
     }
 

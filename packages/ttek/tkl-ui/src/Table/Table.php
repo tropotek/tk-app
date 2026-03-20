@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\ComponentAttributeBag;
 use Tk\Table\Records\RecordsInterface;
-use Tk\Table\Traits\HasAttributes;
+use Tk\Traits\HasAttributes;
 
 class Table
 {
@@ -29,6 +29,8 @@ class Table
     protected int        $page     = 1;
     protected string     $orderBy  = '';
     protected Collection $cells;
+
+    // set for rendering
     protected RecordsInterface $records;
     protected mixed      $rowAttrs = null;
 

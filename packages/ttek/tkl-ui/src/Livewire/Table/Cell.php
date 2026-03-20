@@ -1,6 +1,6 @@
 <?php
 
-namespace Tk\Table;
+namespace Tk\Livewire\Table;
 
 use Illuminate\View\ComponentAttributeBag;
 use Tk\Traits\HasAttributes;
@@ -9,12 +9,12 @@ class Cell
 {
     use HasAttributes;
 
-    // Custom table components
-    const string COMP_ROW_SELECT = 'tkl-ui::table.cell.rowselect';
+    // Custom Cell views
+    const string COMP_ROW_SELECT = 'tkl-ui::table.livewire.cell.rowselect';
 
     protected string     $name      = '';
     protected string     $header    = '';
-    protected string     $orderBy   = '';
+    protected string     $sort   = '';
     protected string     $component = '';
     protected bool       $sortable  = false;
     protected mixed      $value     = null;  // null|string|callable
@@ -29,7 +29,7 @@ class Cell
     public function __construct(string $name)
     {
         $this->name = $name;
-        $this->orderBy = $name;
+        $this->sort = $name;
         $this->_attributes = new ComponentAttributeBag();
         $this->headerAttrs = new ComponentAttributeBag();
 
@@ -163,23 +163,23 @@ class Cell
         return $this;
     }
 
-    public function getOrderBy(): string
+    public function getSort(): string
     {
-        return $this->orderBy;
+        return $this->sort;
+    }
+
+    /**
+     * Set the orderBy column
+     */
+    public function setSort(string $sort): static
+    {
+        $this->sort = str_starts_with($sort, '-') ? substr($sort, 1) : $sort;
+        return $this;
     }
 
     public function getComponent(): string
     {
         return $this->component;
-    }
-
-    /**
-     * return the head component name renderer
-     */
-    public function getComponentHead(): string
-    {
-        if (empty($this->component)) return '';
-        return $this->component . '-head';
     }
 
     /**
@@ -195,31 +195,32 @@ class Cell
     }
 
     /**
-     * Check if a component exists
-     *
-     * @note View::exists() function requires a view namespace,
-     *       use this method to prepend `components.`
-     *       to the path so the function can find the template..
+     * return the head component name renderer
      */
-    public function componentExists(string $component): bool
+    public function getComponentHead(): string
     {
-        if (!$component) return false;
-        if (str_contains($component, '::')) {
-            [$pkg, $comp] = explode('::', $component);
-            $component = $pkg.'::components.'.$comp;
-        } else {
-            $component = 'components.'.$component;
-        }
-        return view()->exists($component);
+        if (empty($this->component)) return '';
+        return $this->component . '-head';
     }
 
     /**
-     * Set the orderBy column
+     * Check if a component view template exists
+     *
+     * @note View::exists() function requires a view namespace,
+     *       use this method to prepend `components.`
+     *       to the path so the function can find the template.
+     * @todo: test this works for livewire components
      */
-    public function setOrderBy(string $orderBy): static
+    public function componentExists(string $view): bool
     {
-        $this->orderBy = str_starts_with($orderBy, '-') ? substr($orderBy, 1) : $orderBy;
-        return $this;
+        if (!$view) return false;
+        if (str_contains($view, '::')) {
+            [$pkg, $comp] = explode('::', $view);
+            $view = $pkg.'::components.'.$comp;
+        } else {
+            $view = 'components.'.$view;
+        }
+        return view()->exists($view);
     }
 
     /**
@@ -245,54 +246,52 @@ class Cell
      *
      * @todo think about how to manage multiple orderBy values
      */
-    public function getOrderByUrl(): string
+//    public function getOrderByUrl(): string
+//    {
+//        if (!$this->getTable()) return '';
+//        if (!$this->isSortable()) return '';
+//
+////        $key = $this->getTable()->key(Table::QUERY_ORDER);
+////        $url = request()->url();
+//        //$url = url()->query($url, [$key => null]);
+//
+//        $orderBy = $this->getOrderBy();
+//        $tableOrderBy = $this->getTable()->getOrderBy();
+//
+//        $dir = str_starts_with($tableOrderBy, '-') ? '' : '-';
+//
+//        if (str_replace('-', '', $tableOrderBy) == $orderBy) {     // if ordered by current cell
+//            // set to DESC
+//            if ($dir == '-') {
+//                $url = $this->table->url([Table::QUERY_ORDER => $dir.$orderBy]);
+//            } else {
+//                // remove cell order
+//                // TODO: When default desc order by set to this col we cannot
+//                //       toggle the order by when setting it to null, as the default then becomes set.
+//                //       Using an empty string may be fine, just means we have an empty query param in the url?
+//                //$url = url()->query($url, [$key => null]);
+//                $url = $this->table->url([Table::QUERY_ORDER => '']);
+//            }
+//        } else {
+//            // set to ASC
+//            $url = $this->table->url([Table::QUERY_ORDER => $orderBy]);
+//        }
+//
+//        return $url;
+//    }
+
+    /**
+     * @todo: we should use the table dir
+     */
+    public function getSortDir():string
     {
         if (!$this->getTable()) return '';
         if (!$this->isSortable()) return '';
-
-//        $key = $this->getTable()->key(Table::QUERY_ORDER);
-//        $url = request()->url();
-        //$url = url()->query($url, [$key => null]);
-
-        $orderBy = $this->getOrderBy();
-        $tableOrderBy = $this->getTable()->getOrderBy();
-
-        $dir = str_starts_with($tableOrderBy, '-') ? '' : '-';
-
-        if (str_replace('-', '', $tableOrderBy) == $orderBy) {     // if ordered by current cell
-            // set to DESC
-            if ($dir == '-') {
-                $url = $this->table->url([Table::QUERY_ORDER => $dir.$orderBy]);
-            } else {
-                // remove cell order
-                // TODO: When default desc order by set to this col we cannot
-                //       toggle the order by when setting it to null, as the default then becomes set.
-                //       Using an empty string may be fine, just means we have an empty query param in the url?
-                //$url = url()->query($url, [$key => null]);
-                $url = $this->table->url([Table::QUERY_ORDER => '']);
-            }
-        } else {
-            // set to ASC
-            $url = $this->table->url([Table::QUERY_ORDER => $orderBy]);
-        }
-
-        return $url;
-    }
-
-    public function getOrderByDir():string
-    {
-        $orderBy = $this->getOrderBy();
-        $tableOrderBy = $this->getTable()->getOrderBy();
-
-        // if ordered by current cell
-        if (str_replace('-', '', $tableOrderBy) == $orderBy) {
-            if (str_starts_with($tableOrderBy, '-')) {
-                return 'desc';
-            } elseif (!empty($this->getTable()->getOrderBy())) {
-                return 'asc';
-            }
-        }
-        return '';
+        return match ($this->getTable()->dir) {
+            'asc' => 'desc',
+            'desc' => 'asc',
+            default => '',
+        };
     }
 
 }

@@ -7,6 +7,6 @@
     'row',
 ])
 
-<td {{ $attributes->merge($cell->getAttrs()->toArray()) }}>
+<td {{ $attributes->merge($cell->getAttributes()->toArray()) }}>
     {!! $cell->getHtml($row) !!}
 </td>
