@@ -26,7 +26,7 @@ class CreateAdminUserSeeder extends Seeder
         );
 
         // Assign admin role to user
-        $role = Role::firstOrCreate(['name' => 'Admin']);
+        $role = Role::firstOrCreate(['name' => 'admin']);
         $user->assignRole([$role->id]);
     }
 }

@@ -34,7 +34,7 @@
         <select {{ $attributes->merge([
                 'name'  => $name,
                 'id'    => 'fid-'.$cleanName,
-                'class' => 'form-select' . ( $errors->has($name) ? ' is-invalid' : '')
+                'class' => 'form-select' . ( $errors->isNotEmpty() ? ' is-invalid' : '')
             ]) }}
         >
             @foreach ($options as $val => $text)

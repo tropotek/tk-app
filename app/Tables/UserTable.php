@@ -13,11 +13,11 @@ class UserTable extends Table
 
     protected function build(): void
     {
-        $this->appendCell('row_id')
-            ->setComponent(Cell::COMP_ROW_SELECT)
-            ->setValue(function (User $row , Cell $cell) {
-                return $row->id;
-            });
+//        $this->appendCell('row_id')
+//            ->setComponent(Cell::COMP_ROW_SELECT)
+//            ->setValue(function (User $row , Cell $cell) {
+//                return $row->id;
+//            });
 
         $this->appendCell('name')
             ->setSortable()

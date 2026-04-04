@@ -24,7 +24,7 @@
             'readonly' => ($mode == 'view') ? 'readonly' : null,
             'class'    => ($mode == 'view') ?
                 'form-control-plaintext' :
-                'form-control' . ( $errors->has($name) ? ' is-invalid' : ''),
+                'form-control' . ( $errors->isNotEmpty() ? ' is-invalid' : ''),
         ]) }}
     />
 </x-tkl-ui::form.ui.field>

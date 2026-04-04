@@ -18,7 +18,7 @@
 
 <x-tkl-ui::form.ui.field :$errorText>
     @foreach ($options as $optValue => $text)
-        <div class="{{$isSwitch ? 'form-switch' : 'form-check'}} {{$errors->has($name) ? ' is-invalid' : ''}}">
+        <div class="{{$isSwitch ? 'form-switch' : 'form-check'}} {{$errors->isNotEmpty() ? ' is-invalid' : ''}}">
             @if($mode == 'view')
                 @php
                     $css = 'text-primary ' . (\Tk\Utils\Form::isSelected($optValue, $value) ? ' fa-regular fa-square-check' : 'fa-regular fa-square');
@@ -35,7 +35,7 @@
                         'id'       => sprintf('fid-%s-%s', $cleanName, $optValue),
                         'value'    => $optValue,
                         'checked'  => \Tk\Utils\Form::isSelected($optValue, $value) ? 'checked' : null,
-                        'class'    => 'form-check-input' . ( $errors->has($name) ? ' is-invalid' : ''),
+                        'class'    => 'form-check-input' . ( $errors->isNotEmpty() ? ' is-invalid' : ''),
                     ]) }}
                 />
                 <label class="form-check-label" for="fid-{{ $cleanName }}-{{ $optValue }}">{{ $text }}</label>

@@ -19,10 +19,10 @@ enum IdeaStatus: string
 
     public static function getLabels(): array
     {
-        return [
-            self::PENDING->value => self::PENDING->label(),
-            self::IN_PROGRESS->value => self::IN_PROGRESS->label(),
-            self::COMPLETED->value => self::COMPLETED->label(),
-        ];
+        $items = [];
+        foreach (self::cases() as $case) {
+            $items[$case->value] = $case->label();
+        }
+        return $items;
     }
 }

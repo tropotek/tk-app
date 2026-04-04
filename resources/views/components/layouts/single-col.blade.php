@@ -5,6 +5,7 @@
 	'col2'      => '',
 ])
 
+{{--  TODO: Remove this from the layouts, can be done in parent --}}
 @if (!empty($pageTitle) && $pageTitle->hasActualContent())
     <h3 class="mb-4">{{ $pageTitle }}</h3>
 @endif

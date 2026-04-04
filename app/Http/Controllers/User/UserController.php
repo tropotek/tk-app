@@ -41,7 +41,6 @@ class UserController extends Controller
     public function show(User $user)
     {
         $this->setPageName('user.edit|User View');
-        //Gate::authorize('update', $idea);
 
         return view('pages.users.edit',[
             'mode' => 'view',
@@ -54,7 +53,6 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $this->setPageName('user.edit|User Edit');
-        //Gate::authorize('update', $idea);
 
         return view('pages.users.edit', [
             'mode' => 'edit',
@@ -70,12 +68,19 @@ class UserController extends Controller
         $vals = $request->validate([
             'name' => ['required', 'min:3'],
             'email' => 'email',
+            'roles' => ['required', 'array', 'min:1'],
+            'roles.*' => ['string'],
         ]);
 
         $user->update([
             'name' => $vals['name'],
             'email' => $vals['email'],
         ]);
+
+        // TODO: Remove this when permission system fully implemented
+        if ($user->id != 1) {
+            $user->syncRoles($vals['roles']);
+        }
 
         return redirect('/user/' . $user->id);
     }
@@ -86,9 +91,12 @@ class UserController extends Controller
             'name' => ['required', 'min:3'],
             'email' => 'email|unique:users,email',
             'password' => 'required|min:4|max:64',
+            'roles' => ['required', 'array', 'min:1'],
+            'roles.*' => ['string'],
         ]);
 
-        Auth::user()->create($vals);
+        $user = Auth::user()->create($vals);
+        $user->syncRoles($vals['roles']);
 
         return redirect('/users');
     }

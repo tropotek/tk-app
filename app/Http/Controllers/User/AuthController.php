@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Enum\Roles;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRegisterRequest;
 use App\Models\User;
@@ -46,7 +47,10 @@ class AuthController extends Controller
         }
 
         if ($request->isMethod('post')) {
+
             $user = User::create($request->validated());
+            $user->assignRole(Roles::Member->value);
+
             auth()->login($user);
             return redirect(route('dashboard'))->with('success', 'Registration successful. You are now logged in!');
         }

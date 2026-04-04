@@ -27,13 +27,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::define('admin-view', function(?User $user) {
-            if ($user->isAdmin()) {
-                return Response::allow();
-            }
-            return Response::denyAsNotFound();
-        });
-
         // Config paginator
         Paginator::useBootstrapFive();
 

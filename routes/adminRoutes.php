@@ -1,27 +1,30 @@
 <?php
 
 // TODO: admin permissions
-use App\Http\Controllers\User\StaffController;
 use App\Http\Controllers\User\UserController;
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'role:admin'])->name('admin.')->group(function () {
 
 
     // Manage Users
-    Route::get('/users', [UserController::class, 'index']);
-    Route::get('/user/create', [UserController::class, 'create']);
-    Route::get('/user/{user}', [UserController::class, 'show']);
-    Route::get('/user/{user}/edit', [UserController::class, 'edit']);
-    Route::patch('/user/{user}', [UserController::class, 'update']);
-    Route::post('/user', [UserController::class, 'store']);
+    Route::name('users.')->group(function () {
 
-    // Manage Staff
-    Route::get('/staff', [StaffController::class, 'index']);
-    Route::get('/staff/create', [StaffController::class, 'create']);
-    Route::get('/staff/{staff}', [StaffController::class, 'show']);
-    Route::get('/staff/{staff}/edit', [StaffController::class, 'edit']);
-    Route::patch('/staff/{staff}', [StaffController::class, 'update']);
-    Route::post('/staff', [StaffController::class, 'store']);
+        Route::livewire('/users2', 'pages.users')->name('index2');
+
+        Route::get('/users', [UserController::class, 'index'])->name('index');
+        Route::get('/user/create', [UserController::class, 'create'])->name('create');
+        Route::get('/user/{user}', [UserController::class, 'show'])->name('show');
+        Route::get('/user/{user}/edit', [UserController::class, 'edit'])->name('edit');
+        Route::patch('/user/{user}', [UserController::class, 'update'])->name('update');
+        Route::post('/user', [UserController::class, 'store'])->name('store');
+    });
 
 
+    // development-specific
+    if (app()->environment('local')) {
+        Route::get('/phpinfo', fn() => phpinfo())->name('phpinfo');
+        Route::get('/user',
+            fn() => '<pre>'.print_r(Auth::user()->attributesToArray(), true).'</pre>')->name('dump-user');
+        Route::get('/session', fn() => '<pre>'.print_r(session()->all(), true).'</pre>')->name('dump-session');
+    }
 });

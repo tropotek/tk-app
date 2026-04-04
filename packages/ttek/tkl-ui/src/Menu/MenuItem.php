@@ -46,7 +46,7 @@ class MenuItem
         }
     }
 
-    public static function make(string $label, string $url = ''): self
+    public static function make(string $label, string|Route $url = ''): self
     {
         return new self($label, $url);
     }

@@ -12,13 +12,13 @@ final class UserNav implements MenuBuilderInterface
     public function build(Menu $menu): void
     {
         $menu->addChildren([
-            MenuItem::make('Dashboard', '/')->setIcon('fa-solid fa-gauge'),
-            MenuItem::make('My Profile', '/')->setIcon('fa-solid fa-user'),
+            MenuItem::make('Dashboard', route('dashboard'))->setIcon('fa-solid fa-gauge'),
+            MenuItem::make('My Profile', route('dashboard'))->setIcon('fa-solid fa-user'),
             MenuItem::makeSeparator(),
             MenuItem::make('About')
                 ->addAttribute(['data-bs-toggle' => 'modal', 'data-bs-target' => '#aboutModal'])
                 ->setIcon('fa-solid fa-circle-info'),
-            MenuItem::make('Logout', '/logout')->setIcon('fa-solid fa-right-from-bracket'),
+            MenuItem::make('Logout', route('logout'))->setIcon('fa-solid fa-right-from-bracket'),
         ]);
 
         // Reset breadcrumbs if menu item selected

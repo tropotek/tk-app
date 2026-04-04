@@ -2,6 +2,7 @@
 
 namespace App\Menus;
 
+use App\Enum\Roles;
 use Tk\Breadcrumbs\Breadcrumbs;
 use Tk\Menu\MenuBuilderInterface;
 use Tk\Menu\Menu;
@@ -37,19 +38,12 @@ final class NavBar implements MenuBuilderInterface
             ]),
 
             MenuItem::make('Admin')->addChildren([
-                MenuItem::make('Settings', '/')->setDisabled(),
-                MenuItem::make('Users', '/users'),
-                MenuItem::make('Staff', '/staff'),
-                MenuItem::make('Member', '/members')->setDisabled(),
-            ])->setVisible(auth()->check()),
+                MenuItem::make('Settings', route('dashboard'))->setDisabled(),
+                MenuItem::make('Users', route('admin.users.index')),
+                MenuItem::make('Users2', route('admin.users.index2')),
+            ])->setVisible(auth()->user()->hasRole(Roles::Admin->value)),
 
-//            MenuItem::make('Test')->addChildren([
-//                MenuItem::make('Sql Query', '/tableQuery'),
-//                MenuItem::make('Array Rows', '/tableArray'),
-//                MenuItem::make('Csv File', '/tableCsv'),
-//            ])->setVisible(auth()->check()),
-
-            MenuItem::make('Logout', '/logout')
+            MenuItem::make('Logout', route('logout'))
                 ->setTitleVisible(false)
                 ->setIcon('fa-solid fa-right-from-bracket')
                 ->setVisible(auth()->check()),

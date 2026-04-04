@@ -16,7 +16,7 @@
 
 <x-tkl-ui::form.ui.field :$errorText>
     @foreach ($options as $optValue => $text)
-        <div class="form-check {{$errors->has($name) ? ' is-invalid' : ''}}">
+        <div class="form-check {{ $errors->isNotEmpty() ? ' is-invalid' : '' }}">
             @if($mode == 'view')
                 <i class="text-primary fa-lg {{ \Tk\Utils\Form::isSelected($optValue, $value) ? ' fa-regular fa-circle-dot' : 'fa-regular fa-circle' }}"></i>
                 <span class="text-muted">{{ $text }}</span>
@@ -27,7 +27,7 @@
                         'id'       => sprintf('fid-%s-%s', $name, $optValue),
                         'value'    => $optValue,
                         'checked'  => \Tk\Utils\Form::isSelected($optValue, $value) ? 'checked' : null,
-                        'class'    => 'form-check-input' . ( $errors->has($name) ? ' is-invalid' : ''),
+                        'class'    => 'form-check-input' . ( $errors->isNotEmpty()? ' is-invalid' : ''),
                     ]) }}
                 />
                 <label class="form-check-label" for="fid-{{ $name }}-{{ $optValue }}">{{ $text }}</label>

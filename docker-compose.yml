@@ -28,13 +28,20 @@ services:
   vite:
     <<: *app_shared
     ports:
-      - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
+      - '${VITE_PORT:-5173}:5173'
     restart: unless-stopped
     tty: true
     environment:
       APP_URL: "http://localhost:${HTTP_PORT}"
     working_dir: /app
-    entrypoint: ["npm", "run", "dev"]
+    command: npm run dev
+    healthcheck:
+      # Use wget to check if the Vite server is responding
+      test: [ "CMD-SHELL", "curl -s http://127.0.0.1:5173/ | grep -q 'This is the Vite development server'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     networks:
       - network
 
