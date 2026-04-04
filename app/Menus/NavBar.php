@@ -3,35 +3,37 @@
 namespace App\Menus;
 
 use Tk\Breadcrumbs\Breadcrumbs;
-use Tk\Menu\MenuInterface;
+use Tk\Menu\MenuBuilderInterface;
+use Tk\Menu\Menu;
 use Tk\Menu\MenuItem;
 
-final class NavBar extends MenuInterface
+final class NavBar implements MenuBuilderInterface
 {
 
-    public function build(): static
+    public function build(Menu $menu): void
     {
-        $this->addChildren([
+        $menu->addChildren([
             MenuItem::make('Home', route('home'))
                 ->setVisible(!auth()->check()),
             MenuItem::make('Dashboard', route('dashboard'))
                 ->setVisible(auth()->check()),
 
             MenuItem::make('Examples')->addChildren([
-                MenuItem::make('One Column', '/formOne'),
-                MenuItem::make('Two Columns', '/formTwo'),
-                MenuItem::make('Three Columns', '/formThree'),
-                MenuItem::make('Fieldsets', '/formFieldset'),
+                MenuItem::make('One Column', '/examples/formOne'),
+                MenuItem::make('Two Columns', '/examples/formTwo'),
+                MenuItem::make('Three Columns', '/examples/formThree'),
+                MenuItem::make('Fieldsets', '/examples/formFieldset'),
                 MenuItem::makeSeparator(),
-                MenuItem::make('Livewire', '/tableLivewire'),
-                MenuItem::make('Sql Query', '/tableQuery'),
-                MenuItem::make('Array Rows', '/tableArray'),
-                MenuItem::make('Csv File', '/tableCsv'),
+                MenuItem::make('Livewire', '/examples/tableLivewire'),
+                MenuItem::make('Livewire 2', '/examples/tableLivewireTwo'),
+                MenuItem::make('Sql Query', '/examples/tableQuery'),
+                MenuItem::make('Array Rows', '/examples/tableArray'),
+                MenuItem::make('Csv File', '/examples/tableCsv'),
                 MenuItem::makeSeparator(),
-                MenuItem::make('Ideas Example', '/ideas')
+                MenuItem::make('Ideas Example', '/examples/ideas')
                     ->setVisible(auth()->check()),
                 MenuItem::makeSeparator(),
-                MenuItem::make('Layout Example', '/examples'),
+                MenuItem::make('Layout Example', '/examples/examples'),
             ]),
 
             MenuItem::make('Admin')->addChildren([
@@ -55,8 +57,7 @@ final class NavBar extends MenuInterface
         ]);
 
         // Reset breadcrumbs if menu item selected
-        $this->appendQuery([Breadcrumbs::CRUMB_RESET => '1']);
+        $menu->appendQuery([Breadcrumbs::CRUMB_RESET => '1']);
 
-        return $this;
     }
 }

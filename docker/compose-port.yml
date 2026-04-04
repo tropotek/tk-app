@@ -2,7 +2,7 @@
 name: tk-app
 
 x-shared: &app_shared
-  image: tk-app:latest
+  image: tropotek/tk-app:latest
   user: 1000:1000
   volumes:
     - storage:/app/storage
@@ -45,11 +45,11 @@ services:
     depends_on:
       - app
     healthcheck:
-      test: ["CMD", "/app/artisan", "about"]
+      test: [ "CMD", "sh", "-c", "pgrep -f 'php artisan queue:work' > /dev/null || exit 1" ]
       interval: 10s
       timeout: 5s
       retries: 3
-      start_period: 10s
+      start_period: 30s
     networks:
       LAN:
         ipv4_address: 192.168.0.226

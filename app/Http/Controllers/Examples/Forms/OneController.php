@@ -62,7 +62,7 @@ class OneController extends Controller
 
         vd($request->all());
 
-        return redirect('/formOne')->with('success', 'Form submitted successfully!');
+        return redirect('/examples/formOne')->with('success', 'Form submitted successfully!');
     }
 
 }

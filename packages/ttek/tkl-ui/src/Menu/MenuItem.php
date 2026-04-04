@@ -25,17 +25,19 @@ class MenuItem
 {
     const string SEPARATOR = '---';
 
-    private string  $label;
-    private string  $url          = '';
-    private string  $icon         = '';
-    private string  $target       = '_self';
-    private bool    $visible      = true;
-    private bool    $disabled     = false;
-    private bool    $titleVisible = true;
+    private string $label;
+    private string $url = '';
+    private string $icon = '';
+    private string $target = '_self';
+    private bool $visible = true;
+    private bool $disabled = false;
+    private bool $titleVisible = true;
     private ComponentAttributeBag $attributes;
-    private array   $children     = [];
+    private array $children = [];
+    private array $query = [];
 
-    public function __construct(string $label, string $url = '')
+
+    public function __construct(string $label, string|Route $url = '')
     {
         $this->attributes = new ComponentAttributeBag();
         $this->setLabel($label);
@@ -67,16 +69,58 @@ class MenuItem
         return $this->label;
     }
 
-    public function setUrl(string $url): self
+    /**
+     * Set the URL for the menu item.
+     * Accepts a string URL or a Route instance.
+     * If a string is passed in, it will attempt to find a matching Route from a route name or URI.
+     * If a Route is found or passed in, the URL will be set to the Route URI
+     *   and the visible flag will be set based on middleware and permissions.
+     * If no Route is found or passed, the URL will be set to the string value.
+     */
+    public function setUrl(string|Route $url): self
     {
+        $route = ($url instanceof Route) ? $url : null;
+
+        if (is_string($url) && !empty($url)) {
+            if ($this->isUrl($url)) {
+                try {
+                    // Try finding a Route from its URL
+                    $request = Request::create($url);
+                    $route = app('router')->getRoutes()->match($request);
+                } catch (\Exception $e) { }
+            } else {
+                // Find the Route from its name or throw an error
+                $route = app('router')->getRoutes()->getByName($url);
+            }
+        }
+
+        if ($route) {
+            $url = $route->uri();
+
+            // todo: check middleware and permission and set visible value ??
+
+        }
+
         $this->url = $url;
         return $this;
     }
 
     public function getUrl(): string
     {
-        if (!$this->showUrl()) return '';
         return $this->url;
+    }
+
+    /**
+     * Check if a string is a valid URL or path
+     */
+    protected function isUrl(string|Route $value): bool
+    {
+        return match(true) {
+            ($value instanceof Route) => true,
+            filter_var($value, FILTER_VALIDATE_URL) => true,
+            str_starts_with($value, '/') => true,
+            default => false
+        };
     }
 
     public function getAttributes(): ComponentAttributeBag
@@ -88,15 +132,6 @@ class MenuItem
     {
         $this->attributes = $this->attributes->merge($attrs);
         return $this;
-    }
-
-    public function getRoute(): ?Route
-    {
-        $url = $this->getUrl();
-        if (empty($url)) return null;
-
-        $request = Request::create($url);
-        return app('router')->getRoutes()->match($request);
     }
 
     public function setTarget(string $target): self
@@ -165,7 +200,7 @@ class MenuItem
         return $this->titleVisible;
     }
 
-    public function setDisabled(bool $disabled = true, bool $includeChildren = true): self
+    public function setDisabled(bool $disabled = true): self
     {
         $this->disabled = $disabled;
         return $this;
@@ -199,16 +234,20 @@ class MenuItem
 
     /**
      * Iterate items and remove any that are hidden
+     * Clean up any separator children removing start/end and duplicates items
      * To be called within the menu build stage
      */
-    public function removeHidden(): static
+    public function normalize(): static
     {
         if ($this->hasChildren()) {
             $this->children = array_filter($this->children, fn(self $itm) => $itm->isVisible());
         }
         foreach ($this->children as $child) {
-            $child->removeHidden();
+            $child->normalize();
         }
+
+        // TODO: normalize separators
+
         return $this;
     }
 
@@ -222,7 +261,10 @@ class MenuItem
         foreach ($this->children as $child) {
             $child->appendQuery($query);
         }
-        if ($this->showUrl()) { // TODO: need to check if it is a real http url not `mailto:, #, Javascript, ...`
+        // TODO: This should happen at compile time
+        //       Only group add queries to local links
+        //       An this should live in the top Menu item
+        if ($this->showUrl()) {
             $this->setUrl(url()->query($this->getUrl(), $query));
         }
         return $this;

@@ -24,44 +24,62 @@ use Illuminate\Support\Facades\Session;
  */
 class MenuBuilder
 {
-    const int CACHE_HOURS = 4;
+    protected array $builders = [];
+
 
     /**
-     * Search the menus directory for available menu builder objects
-     * The menu will be cached for production/staging environments.
-     * The $name 'StaffNav' will resolve to `\App\Menu\Menus\StaffNav`
+     * Register a menu builder class
      */
-    public function build(string $name =  ''): MenuInterface
+    public function registerBuilder(string $builderClass, string $namespace = 'menu'): void
     {
-//        $sid = 'menu_'.$name;
+        $this->builders[$namespace][] = $builderClass;
+    }
 
-        // get cached menu
-//        $menu = Session::cache()->get($sid);
-//        if (
-//            $menu instanceof MenuInterface &&
-//            app()->environment(['production', 'staging'])
-//        ) {
-//            return $menu;
-//        }
+    /**
+     * Compile all registered builders for a menu and return that menu
+     */
+    public function compileMenu(string $namespace = 'menu'): Menu
+    {
 
-        $menuClass = '';
-        foreach (config('tkl-ui.menu_builders') as $namespace) {
-            $menuClass = $namespace . $name;
-            if (class_exists($menuClass)) {
-                break;
+        if (!isset($this->builders[$namespace])) {
+            throw new \Exception("no menu builders found for namespace $namespace");
+        }
+
+        $menu = Session::cache()->get($this->getSid($namespace));
+        //if ($menu instanceof Menu) {
+        if ($menu instanceof Menu && app()->environment(['production', 'staging'])) {
+            return $menu;
+        }
+
+        $menu = new Menu($namespace);
+
+        foreach (($this->builders[$namespace] ?? []) as $builderClass) {
+            if (class_exists($builderClass)) {
+                $builder = app($builderClass);
+                if ($builder instanceof \Tk\Menu\MenuBuilderInterface) {
+                    $builder->build($menu);
+                }
             }
         }
-        if (!class_exists($menuClass)) {
-            throw new \Exception("Menu builder object for $name not found.");
-        }
 
-        /** @var MenuInterface $menu */
-        $menu = (new $menuClass('_top'))->build();
-        $menu->removeHidden();
+        $menu->normalize();
 
-        // cache menu
-//        Session::cache()->put($sid, $menu, now()->addHours(self::CACHE_HOURS));
+        Session::cache()->put($this->getSid($namespace), $menu);
 
         return $menu;
     }
+
+    public function clearCache(string $namespace = 'menu'): void
+    {
+        Session::cache()->forget($this->getSid($namespace));
+    }
+
+    /**
+     * return the session id for a menu
+     */
+    private function getSid($namespace): string
+    {
+        return 'menu_' . $namespace;
+    }
+
 }

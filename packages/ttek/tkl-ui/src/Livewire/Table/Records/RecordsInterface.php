@@ -15,6 +15,7 @@ abstract class RecordsInterface implements \IteratorAggregate, \Countable
     protected array $records;
     protected mixed $filter = null;
     protected int $total = 0;
+    protected int $page = 1;
     protected ?AbstractPaginator $paginator = null;
 
     /**
@@ -65,6 +66,17 @@ abstract class RecordsInterface implements \IteratorAggregate, \Countable
     {
         $this->filter = $filter;
         return $this;
+    }
+
+    public function setPage(int $page): static
+    {
+        $this->page = max(1, $page);
+        return $this;
+    }
+
+    public function getPage(): int
+    {
+        return $this->page;
     }
 
     public function getPaginator(): ?AbstractPaginator

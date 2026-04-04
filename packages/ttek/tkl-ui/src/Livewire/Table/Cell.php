@@ -10,16 +10,16 @@ class Cell
     use HasAttributes;
 
     // Custom Cell views
-    const string COMP_ROW_SELECT = 'tkl-ui::table.livewire.cell.rowselect';
+    const string COMP_ROW_SELECT = 'tkl-ui::livewire.table.cell.rowselect';
 
-    protected string     $name      = '';
-    protected string     $header    = '';
-    protected string     $sort   = '';
-    protected string     $component = '';
-    protected bool       $sortable  = false;
-    protected mixed      $value     = null;  // null|string|callable
-    protected mixed      $html      = null;  // null|string|callable
-    protected ?Table     $table     = null;
+    protected string $name = '';
+    protected string $header = '';
+    protected string $sort = '';
+    protected string $component = '';
+    protected bool $sortable = false;
+    protected mixed $value = null;  // null|string|callable
+    protected mixed $html = null;  // null|string|callable
+    protected ?Table $table = null;
     protected ComponentAttributeBag $headerAttrs;
 
     // the current row being rendered, null if not rendering
@@ -66,15 +66,21 @@ class Cell
      */
     public function getValue(object|array $row): mixed
     {
-        if (is_null($this->row)) $this->row = $row;
+        if (is_null($this->row)) {
+            $this->row = $row;
+        }
 
         $value = $this->value;
         if (is_callable($value)) {
             $value = $value($row, $this);
         }
         if (is_null($value)) {
-            if (is_array($row)) $value = $row[$this->name] ?? '';
-            if (is_object($row)) $value = $row->{$this->name} ?? '';
+            if (is_array($row)) {
+                $value = $row[$this->name] ?? '';
+            }
+            if (is_object($row)) {
+                $value = $row->{$this->name} ?? '';
+            }
         }
         return $value;
     }
@@ -199,8 +205,10 @@ class Cell
      */
     public function getComponentHead(): string
     {
-        if (empty($this->component)) return '';
-        return $this->component . '-head';
+        if (empty($this->component)) {
+            return '';
+        }
+        return $this->component.'-head';
     }
 
     /**
@@ -213,7 +221,9 @@ class Cell
      */
     public function componentExists(string $view): bool
     {
-        if (!$view) return false;
+        if (!$view) {
+            return false;
+        }
         if (str_contains($view, '::')) {
             [$pkg, $comp] = explode('::', $view);
             $view = $pkg.'::components.'.$comp;
@@ -283,10 +293,14 @@ class Cell
     /**
      * @todo: we should use the table dir
      */
-    public function getSortDir():string
+    public function getSortDir(): string
     {
-        if (!$this->getTable()) return '';
-        if (!$this->isSortable()) return '';
+        if (!$this->getTable()) {
+            return '';
+        }
+        if (!$this->isSortable()) {
+            return '';
+        }
         return match ($this->getTable()->dir) {
             'asc' => 'desc',
             'desc' => 'asc',

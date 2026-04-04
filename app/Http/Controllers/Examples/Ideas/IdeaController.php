@@ -82,7 +82,7 @@ class IdeaController extends Controller
             'description' => request('description'),
         ]);
 
-        return redirect('/ideas/' . $idea->id);
+        return redirect('/examples/ideas/' . $idea->id);
     }
 
     public function store(Request $request)
@@ -101,7 +101,7 @@ class IdeaController extends Controller
 
         Auth::user()->notify(new \App\Notifications\IdeaPublished($idea->first()));
 
-        return redirect('/ideas');
+        return redirect('/examples/ideas');
     }
 
     public function destroy(Idea $idea)
@@ -109,13 +109,13 @@ class IdeaController extends Controller
         vd("delete idea {$idea->id}");
         Gate::authorize('update', $idea);
         $idea->delete();
-        return redirect('/ideas');
+        return redirect('/examples/ideas');
     }
 
     public function deleteAll()
     {
         vd('Delete All Ideas');
         Auth::user()->ideas()->delete();
-        return redirect('/ideas');
+        return redirect('/examples/ideas');
     }
 }

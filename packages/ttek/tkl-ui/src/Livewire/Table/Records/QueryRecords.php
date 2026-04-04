@@ -3,6 +3,7 @@
 namespace Tk\Livewire\Table\Records;
 
 use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
+use Livewire\WithPagination;
 use Tk\Livewire\Table\Table;
 
 /**
@@ -10,19 +11,35 @@ use Tk\Livewire\Table\Table;
  */
 class QueryRecords extends RecordsInterface
 {
+    //use WithPagination;
+
     protected BuilderContract $query;
 
-    public function __construct(BuilderContract $query)
+    public function __construct(BuilderContract $query, int $page = 1)
     {
         $this->query = $query;
+        $this->page = $page;
     }
 
     protected function initQuery(): void
     {
+    }
+
+    /**
+     * @interface RecordsInterface
+     */
+    public function toArray(): array
+    {
+        if (isset($this->records)) return $this->records;
+
+        if (!$this->getTable()) {
+            throw new \Exception('Table is not set');
+        }
+
         // filter results using callable
-//        if ($this->filter) {
-//            $this->query = call_user_func($this->filter, $this->getTable()->getParams(), $this->getQuery());
-//        }
+        if ($this->filter) {
+            $this->query = call_user_func($this->filter, $this->getTable()->getParams(), $this->getQuery());
+        }
 
         // sort results
 //        $orders = explode(',', $this->getTable()->sort);
@@ -35,6 +52,7 @@ class QueryRecords extends RecordsInterface
 //            }
 //            $this->getQuery()->orderBy($order, $dir);
 //        }
+
         // if no direction sort by query default
         if (!empty($this->getTable()->dir)) {
             $this->getQuery()->orderBy($this->getTable()->sort, $this->getTable()->dir);
@@ -44,38 +62,26 @@ class QueryRecords extends RecordsInterface
 
         // paginate results
         if ($this->getTable()->limit > 0) {
-            $this->table->getPaginator();
-
             $this->paginator = $this->getQuery()->paginate(
                 $this->getTable()->limit,
-                '[*]',
-                $this->getTable()->key(\Tk\Table\Table::QUERY_PAGE),
-                $this->getTable()->page
-            )->withQueryString(); //->appends(Table::QUERY_ID, $this->getTable()->getId());
+                ['*'],
+                $this->getTable()->key(Table::QUERY_PAGE)
+            );
         }
+
+        $this->records = $this->getQuery()->get()->all();
+        return $this->records;
     }
 
     public function setTable(Table $table): static
     {
         parent::setTable($table);
-        $this->initQuery();
         return $this;
     }
 
     public function getQuery(): BuilderContract
     {
         return $this->query;
-    }
-
-    /**
-     * @interface RecordsInterface
-     */
-    public function toArray(): array
-    {
-        if (!isset($this->records)) {
-            $this->records = $this->getQuery()->get()->all();
-        }
-        return $this->records;
     }
 
     public function countAll(): int

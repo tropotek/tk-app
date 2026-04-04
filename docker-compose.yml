@@ -9,7 +9,7 @@ x-shared: &app_shared
     - ./docker/php.ini:/usr/local/etc/php/conf.d/overrides.ini
     - caddy_data:/data/caddy
     - caddy_config:/config/caddy
-  user: 1000:1000
+#  user: 1000:1000
 
 services:
   app:
@@ -33,14 +33,22 @@ services:
     tty: true
     environment:
       APP_URL: "http://localhost:${HTTP_PORT}"
+    working_dir: /app
     entrypoint: ["npm", "run", "dev"]
     networks:
       - network
 
 #  queue:
 #    <<: *app_shared
+#    working_dir: /app
 #    entrypoint: ["php"]
-#    command: ["/app/artisan", "queue:work", "--verbose", "--tries=5", "--timeout=90", "--sleep=3"]
+#    command: ["artisan", "queue:work", "--verbose", "--tries=5", "--timeout=90", "--sleep=3"]
+#    healthcheck:
+#      test: [ "CMD", "sh", "-c", "pgrep -f 'php artisan queue:work' > /dev/null || exit 1" ]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 3
+#      start_period: 30s
 #    restart: unless-stopped
 #    networks:
 #      - network

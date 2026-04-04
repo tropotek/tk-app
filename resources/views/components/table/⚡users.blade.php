@@ -1,18 +1,11 @@
 <?php
 
-namespace App\Livewire\Tables;
-
-use App\Models\User;
-use Illuminate\Contracts\Database\Query\Builder;
-use Livewire\WithPagination;
-use Tk\Livewire\Table\FilterTable;
-use Tk\Livewire\Table\Records\QueryRecords;
+use Livewire\Component;
 use Tk\Livewire\Table\Table;
 use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
 
-class LivewireTable extends Table
-{
-    //use WithPagination;
+new class extends Table {
+
 
     public function boot(): void
     {
@@ -22,7 +15,7 @@ class LivewireTable extends Table
         $this->appendCell('email');
         $this->appendCell('created_at')->setHeader('Created');
 
-        $this->setRecords(new QueryRecords($this->buildQuery()));
+        $this->setRecords(new \Tk\Livewire\Table\Records\QueryRecords($this->buildQuery()));
     }
 
     public function buildQuery(): ?BuilderContract
@@ -31,7 +24,7 @@ class LivewireTable extends Table
         //$filters = $this->getParams();
 
         // get idea query builder
-        $query = User::query();
+        $query = \App\Models\User::query();
         //$query->where('user_id', '=', auth()->id());
 
         // filter records
@@ -57,4 +50,13 @@ class LivewireTable extends Table
         return $query;
     }
 
-}
+    public function render()
+    {
+        return view('tkl-ui::livewire.table.index');
+    }
+};
+?>
+
+<div>
+ <p>This is a test</p>
+</div>

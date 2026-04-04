@@ -65,7 +65,7 @@ class FieldsetController extends Controller
 
         vd($request->all());
 
-        return redirect('/formFieldset')->with('success', 'Form submitted successfully!');
+        return redirect('/examples/formFieldset')->with('success', 'Form submitted successfully!');
     }
 
 }

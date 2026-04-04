@@ -14,7 +14,7 @@
                 @if($cell->componentExists($cell->getComponentHead()))
                     <x-dynamic-component :component="$cell->getComponentHead()" :$cell />
                 @else
-                    <x-tkl-ui::table.livewire.header :$cell />
+                    <x-tkl-ui::livewire.table.header :$cell />
                 @endif
             @endforeach
         </tr>
@@ -22,14 +22,13 @@
         <tbody class="">
             @if($this->hasRecords())
                 @foreach ($this->getRecords() as $i => $row)
-                    <x-tkl-ui::table.livewire.row :idx="$i" :$row :table="$this" />
+                    <x-tkl-ui::livewire.table.row :idx="$i" :$row :table="$this" />
                 @endforeach
             @endif
         </tbody>
     </table>
 
     @if ($limit > 0 && $this->getPaginator() && $showPaginator)
-
         <div class="mt-2">
             {!! str_replace ('class="pagination"', 'class="pagination pagination-sm"', $this->getPaginator()->links()) !!}
         </div>

@@ -1,12 +1,12 @@
 @props([
     'mode'   => 'view',       // ['view', 'edit', 'create']
-    'action' => '/ideas/' . $idea->id,
+    'action' => '/examples/ideas/' . $idea->id,
     'method' => 'patch'
 ])
 <x-pages.main>
     <h3>{{ $pageName }}</h3>
 
-    <form action="/ideas/{{ $idea->id }}" method="POST" id="btn-delete-idea">
+    <form action="/examples/ideas/{{ $idea->id }}" method="POST" id="btn-delete-idea">
         @csrf
         @method('DELETE')
     </form>
@@ -15,8 +15,8 @@
 
         <x-slot:buttons>
             <x-tkl-ui::form.buttons.default-btns
-                editRoute="/ideas/{{ $idea->id }}/edit"
-                cancelRoute="/ideas" />
+                editRoute="/examples/ideas/{{ $idea->id }}/edit"
+                cancelRoute="/examples/ideas" />
             <x-tkl-ui::form.buttons.submit label="Delete" form="btn-delete-idea" class="btn btn-danger" />
         </x-slot:buttons>
 
@@ -30,7 +30,7 @@
 
             <x-tkl-ui::form.fields.select
                 name="status"
-                :options="['' => '-- Select --']+\App\Enum\IdeaStatus::getLabels()"
+                :options="['' => '-- Select --'] + \App\Enum\IdeaStatus::getLabels()"
                 :value="$idea->status->value"
             />
 

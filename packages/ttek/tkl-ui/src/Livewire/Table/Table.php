@@ -11,7 +11,8 @@ use Tk\Traits\HasAttributes;
 
 abstract class Table extends Component
 {
-    use WithPagination, HasAttributes;
+    use WithPagination;
+    use HasAttributes;
 
     const string DEFAULT_ID = 'table';
 
@@ -20,30 +21,27 @@ abstract class Table extends Component
     // Table query properties
     #const string QUERY_ID       = '_tid';   // reserved param for table queries
     #const string QUERY_RESET    = 'tr_';
-    const string QUERY_LIMIT    = 'tl_';
-    const string QUERY_PAGE     = 'tp_';
-    const string QUERY_SORT     = 'ts_';
+    const string QUERY_LIMIT = 'tl_';
+    const string QUERY_PAGE = 'tp_';
+    const string QUERY_SORT = 'ts_';
     // sort direction
-    const string QUERY_DIR      = 'td_';
+    const string QUERY_DIR = 'td_';
 
-    public string     $id    = self::DEFAULT_ID;
-    public int        $limit = 50;
-    public int        $page  = 1;
-    public string     $sort  = '';
-    public string     $dir   = '';
+    public string $id = self::DEFAULT_ID;
+    public int $limit = 50;
+    //public int $page = 1;
+    public string $sort = '';
+    public string $dir = '';
 
     public bool $showPaginator = true;
     protected Collection $cells;
     protected RecordsInterface $records;
     protected mixed $rowAttrs = null;
 
-
-    abstract protected function build(): void;
-
-    public function mount(): void
-    {
-        $this->build();
-    }
+    /**
+     * Add your cells and query/array results here
+     */
+    abstract public function boot(): void;
 
     public function getQueryString(): array
     {
@@ -94,7 +92,9 @@ abstract class Table extends Component
 
     public function getPaginator(): ?AbstractPaginator
     {
-        if (!$this->hasRecords()) return null;
+        if (!$this->hasRecords()) {
+            return null;
+        }
         return $this->getRecords()->getPaginator();
     }
 
@@ -143,8 +143,12 @@ abstract class Table extends Component
 
     public function appendCell(string|Cell $cell, ?string $after = null): Cell
     {
-        if (is_string($cell)) $cell = new Cell($cell);
-        if (empty($this->cells)) $this->cells = collect();
+        if (is_string($cell)) {
+            $cell = new Cell($cell);
+        }
+        if (empty($this->cells)) {
+            $this->cells = collect();
+        }
 
         if ($this->getCells()->has($cell->getName())) {
             throw new \Exception("Cell with name '{$cell->getName()}' already exists.");
@@ -168,8 +172,12 @@ abstract class Table extends Component
 
     public function prependCell(string|Cell $cell, ?string $before = null): Cell
     {
-        if (is_string($cell)) $cell = new Cell($cell);
-        if (empty($this->cells)) $this->cells = collect();
+        if (is_string($cell)) {
+            $cell = new Cell($cell);
+        }
+        if (empty($this->cells)) {
+            $this->cells = collect();
+        }
 
         if ($this->getCells()->has($cell->getName())) {
             throw new \Exception("Cell with name '{$cell->getName()}' already exists.");
@@ -200,7 +208,9 @@ abstract class Table extends Component
      */
     public function key(string $key): string
     {
-        if ($this->id == self::DEFAULT_ID) return $key;
+        if ($this->id == self::DEFAULT_ID) {
+            return $key;
+        }
         return self::makeKey($key, $this->id);
     }
 
@@ -210,7 +220,9 @@ abstract class Table extends Component
      */
     public static function makeKey(string $key, string $tableId = ''): string
     {
-        if (str_starts_with($key, $tableId.'_')) return $key;
-        return $tableId . '_' . $key;
+        if (str_starts_with($key, $tableId.'_')) {
+            return $key;
+        }
+        return $tableId.'_'.$key;
     }
 }

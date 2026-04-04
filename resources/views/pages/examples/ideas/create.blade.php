@@ -1,6 +1,6 @@
 @props([
     'mode'   => 'create',       // ['view', 'edit', 'create']
-    'action' => '/ideas',
+    'action' => '/examples/ideas',
     'method' => 'post',
 ])
 <x-pages.main>
@@ -10,8 +10,8 @@
 
         <x-slot:buttons>
             <x-tkl-ui::form.buttons.default-btns
-                editRoute="/ideas/edit"
-                cancelRoute="/ideas" />
+                editRoute="/examples/ideas/edit"
+                cancelRoute="/examples/ideas" />
         </x-slot:buttons>
 
 

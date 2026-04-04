@@ -8,7 +8,7 @@ It consists of:
 
 - a **facade**: `\Tk\Support\Facades\Menu`
 - a **builder service**: `\Tk\Menu\MenuBuilder`
-- a **base menu class**: `\Tk\Menu\MenuInterface`
+- a **base menu class**: `\Tk\Menu\Menu`
 - **menu items**: `\Tk\Menu\MenuItem`
 - a reusable **Blade renderer**: `x-tkl-ui::navitem`
 - a helper function: `menu('YourMenuClass')`
@@ -23,7 +23,7 @@ Main files involved:
 
 - `app/packages/ttek/tk-base/src/Support/Facades/Menu.php`
 - `app/packages/ttek/tk-base/src/Menu/MenuBuilder.php`
-- `app/packages/ttek/tk-base/src/Menu/MenuInterface.php`
+- `app/packages/ttek/tk-base/src/Menu/Menu.php`
 - `app/packages/ttek/tk-base/src/Menu/MenuItem.php`
 - `app/packages/ttek/tk-base/src/helpers.php`
 - `app/packages/ttek/tk-base/resources/views/components/navitem.blade.php`
@@ -39,9 +39,9 @@ You can use either the facade or the helper.
 ### Facade
 
 ```php
-use Tk\Support\Facades\Menu;
+use Tk\Support\Facades\MenuBuilder;
 
-$menu = Menu::build('MainNav');
+$menu = MenuBuilder::build('MainNav');
 ```
 
 
@@ -94,14 +94,14 @@ If the class does not exist, an exception is thrown.
 
 ## Creating a menu class
 
-A menu class should extend `\Tk\Menu\MenuInterface` and implement:
+A menu class should extend `\Tk\Menu\Menu` and implement:
 
 ```php
 public function build(): static
 ```
 
 
-Because `MenuInterface` extends `MenuItem`, the menu itself acts as the root container and can hold child items.
+Because `Menu` extends `MenuItem`, the menu itself acts as the root container and can hold child items.
 
 ### Example menu class
 
@@ -110,10 +110,10 @@ Because `MenuInterface` extends `MenuItem`, the menu itself acts as the root con
 
 namespace App\Menus;
 
-use Tk\Menu\MenuInterface;
+use Tk\Menu\Menu;
 use Tk\Menu\MenuItem;
 
-class MainNav extends MenuInterface
+class MainNav extends Menu
 {
     public function build(): static
     {
@@ -148,7 +148,7 @@ Then render it with:
 
 ## Why `getChildren()` is the correct way to iterate
 
-The root menu object extends `MenuItem`, but `MenuInterface` intentionally hides normal item behavior:
+The root menu object extends `MenuItem`, but `Menu` intentionally hides normal item behavior:
 
 - `getUrl()` always returns an empty string
 - `isTitleVisible()` returns `false`
@@ -208,10 +208,10 @@ A `MenuItem` can have child items.
 
 namespace App\Menus;
 
-use Tk\Menu\MenuInterface;
+use Tk\Menu\Menu;
 use Tk\Menu\MenuItem;
 
-class MainNav extends MenuInterface
+class MainNav extends Menu
 {
     public function build(): static
     {
@@ -544,10 +544,10 @@ It also prevents rendering nested dropdowns deeper than the configured `maxLevel
 
 namespace App\Menus;
 
-use Tk\Menu\MenuInterface;
+use Tk\Menu\Menu;
 use Tk\Menu\MenuItem;
 
-class MainNav extends MenuInterface
+class MainNav extends Menu
 {
     public function build(): static
     {
@@ -626,7 +626,7 @@ The package registers a `Menu` alias in `TkBaseServiceProvider`, so the facade a
 That supports both:
 
 ```php
-use Tk\Support\Facades\Menu;
+use Tk\Support\Facades\MenuBuilder;
 ```
 
 
@@ -707,14 +707,14 @@ $menu = menu('MainNav');
 or
 
 ```php
-$menu = \Tk\Support\Facades\Menu::build('MainNav');
+$menu = \Tk\Support\Facades\MenuBuilder::build('MainNav');
 ```
 
 
 ### Define a menu class
 
 ```php
-class MainNav extends \Tk\Menu\MenuInterface
+class MainNav extends \Tk\Menu\Menu
 {
     public function build(): static
     {

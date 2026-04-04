@@ -1,13 +1,12 @@
 <?php
 
 use Tk\Breadcrumbs\Breadcrumbs;
-use Tk\Menu\MenuInterface;
-use Tk\Support\Facades\Menu;
+use Tk\Support\Facades\MenuBuilder;
 
 if (!function_exists('menu')) {
-    function menu(string $builder = ''): MenuInterface
+    function menu(string $builder = ''): Tk\Menu\Menu
     {
-        return Menu::build($builder);
+        return MenuBuilder::compileMenu($builder);
     }
 }
 

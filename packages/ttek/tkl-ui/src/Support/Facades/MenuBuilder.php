@@ -4,9 +4,10 @@ namespace Tk\Support\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method static \Tk\Menu\MenuInterface build(string $name)
+ * @method static void registerBuilder(string $builderClass, string $namespace = 'menu')
+ * @method static \Tk\Menu\Menu compileMenu(string $namespace = 'menu')
  */
-class Menu extends Facade
+class MenuBuilder extends Facade
 {
     public static function getFacadeAccessor(): string
     {

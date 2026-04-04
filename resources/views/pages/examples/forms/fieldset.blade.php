@@ -1,7 +1,7 @@
 @props([
     'mode'   => 'view',       // ['view', 'edit', 'create']
     'values' => [],
-    'action' => '/formFieldset/submit',
+    'action' => '/examples/formFieldset/submit',
     'method' => 'post',
 ])
 
@@ -17,8 +17,8 @@
 
         <x-slot:buttons>
             <x-tkl-ui::form.buttons.default-btns
-                editRoute="/formFieldset/edit"
-                cancelRoute="/formFieldset" />
+                editRoute="/examples/formFieldset/edit"
+                cancelRoute="/examples/formFieldset" />
         </x-slot:buttons>
 
         <x-slot:fields>

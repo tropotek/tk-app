@@ -6,7 +6,7 @@ use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Tk\Support\Facades\Breadcrumbs;
-use Tk\Support\Facades\Menu;
+use Tk\Support\Facades\MenuBuilder;
 use Tk\View\Composers\DefaultPageName;
 use Illuminate\Pagination\Paginator;
 
@@ -20,8 +20,11 @@ class TkBaseServiceProvider extends ServiceProvider
             __DIR__.'/../config/tkbase.php', 'tkl-ui'
         );
 
-        // Menu
-        AliasLoader::getInstance()->alias('Menu', Menu::class);
+        // MenuBuilder
+        $this->app->singleton('menu-builder', function () {
+            return new \Tk\Menu\MenuBuilder();
+        });
+        AliasLoader::getInstance()->alias('MenuBuilder', MenuBuilder::class);
 
         // Breadcrumbs
         AliasLoader::getInstance()->alias('Breadcrumbs', Breadcrumbs::class);

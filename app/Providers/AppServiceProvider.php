@@ -2,12 +2,15 @@
 
 namespace App\Providers;
 
+use App\Menus\NavBar;
+use App\Menus\UserNav;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Tk\Support\Facades\MenuBuilder;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -37,6 +40,9 @@ class AppServiceProvider extends ServiceProvider
         Model::unguard();
         Model::shouldBeStrict();
         Model::automaticallyEagerLoadRelationships();
+
+        MenuBuilder::registerBuilder(NavBar::class, 'NavBar');
+        MenuBuilder::registerBuilder(UserNav::class, 'UserNav');
 
     }
 

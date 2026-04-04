@@ -43,9 +43,10 @@
                         @continue
                     @endif
                     {{-- hide a seperator if it is the first or last item, or prev item was a seperator --}}
-                    @if($child->isSeparator() && ($i == (count($item->getChildren())-1) || $i == 0 || $item->getChildren()[$i-1]->isSeparator()))
-                        @continue
-                    @endif
+                    {{-- TODO: do this in the menu build stage --}}
+{{--                    @if($child->isSeparator() && ($i == (count($item->getChildren())-1) || $i == 0 || $item->getChildren()[$i-1]->isSeparator()))--}}
+{{--                        @continue--}}
+{{--                    @endif--}}
                     {{-- Pass classes down, adding a specific class for the next level --}}
                     <x-tkl-ui::navitem :item="$child" level="{{ $level + 1 }}" linkClass="dropdown-item" submenuClass="dropdown-menu"/>
                 @endforeach

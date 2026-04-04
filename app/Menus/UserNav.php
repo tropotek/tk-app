@@ -3,14 +3,15 @@
 namespace App\Menus;
 
 use Tk\Breadcrumbs\Breadcrumbs;
-use Tk\Menu\MenuInterface;
+use Tk\Menu\MenuBuilderInterface;
+use Tk\Menu\Menu;
 use Tk\Menu\MenuItem;
 
-final class UserNav extends MenuInterface
+final class UserNav implements MenuBuilderInterface
 {
-    public function build(): static
+    public function build(Menu $menu): void
     {
-        $this->addChildren([
+        $menu->addChildren([
             MenuItem::make('Dashboard', '/')->setIcon('fa-solid fa-gauge'),
             MenuItem::make('My Profile', '/')->setIcon('fa-solid fa-user'),
             MenuItem::makeSeparator(),
@@ -21,7 +22,7 @@ final class UserNav extends MenuInterface
         ]);
 
         // Reset breadcrumbs if menu item selected
-        $this->appendQuery([Breadcrumbs::CRUMB_RESET => '1']);
-        return $this;
+        $menu->appendQuery([Breadcrumbs::CRUMB_RESET => '1']);
+
     }
 }

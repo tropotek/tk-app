@@ -65,7 +65,7 @@ class ThreeController extends Controller
 
         vd($request->all());
 
-        return redirect('/formThree')->with('success', 'Form submitted successfully!');
+        return redirect('/examples/formThree')->with('success', 'Form submitted successfully!');
     }
 
 }

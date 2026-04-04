@@ -2,10 +2,15 @@
 
 namespace Tk\Menu;
 
-abstract class MenuInterface extends MenuItem
+final class Menu extends MenuItem
 {
-    abstract public function build(): static;
 
+    public function __construct(string $label)
+    {
+        parent::__construct($label);
+    }
+
+    // override menu item methods for a parent menu
 
     public function getUrl(): string
     {

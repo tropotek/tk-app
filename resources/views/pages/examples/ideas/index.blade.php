@@ -19,7 +19,7 @@
                         <x-slot name="actions">
                             {{-- todo create action components --}}
                             <div class="p-2 ps-0">
-                                <a class="btn btn-sm btn-outline-secondary" href="/ideas/create">
+                                <a class="btn btn-sm btn-outline-secondary" href="/examples/ideas/create">
                                     <i class="fa fa-plus-circle"></i> Create
                                 </a>
                             </div>
@@ -30,8 +30,8 @@
             @endif
 
             <div class="mt-3">
-                <a href="/ideas/create" class="btn btn-sm btn-outline-primary">Create New Idea</a>
-                <a href="/delete-all" class="btn btn-sm btn-outline-danger">Clear All</a>
+                <a href="/examples/ideas/create" class="btn btn-sm btn-outline-primary">Create New Idea</a>
+                <a href="/examples/ideas/delete-all" class="btn btn-sm btn-outline-danger">Clear All</a>
             </div>
 
         </div>
@@ -43,7 +43,7 @@
                 <ul class="list-group mt-3">
                     @foreach ($ideas as $idea)
                         <li class="list-group-item">
-                            <a href="/ideas/{{ $idea->id }}">
+                            <a href="/examples/ideas/{{ $idea->id }}">
                                 {{ $idea->title }}
                                 <em class="d-inline-block float-end">[{{ $idea->status->label() }}]</em>
                             </a>

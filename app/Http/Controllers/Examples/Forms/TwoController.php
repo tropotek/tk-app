@@ -62,7 +62,7 @@ class TwoController extends Controller
 
         vd($request->all());
 
-        return redirect('/formTwo')->with('success', 'Form submitted successfully!');
+        return redirect('/examples/formTwo')->with('success', 'Form submitted successfully!');
     }
 
 }

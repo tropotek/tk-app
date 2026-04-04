@@ -1,7 +1,7 @@
 @props([
     'mode'   => 'view',       // ['view', 'edit', 'create']
     'values' => [],
-    'action' => '/formThree/submit',
+    'action' => '/examples/formThree/submit',
     'method' => 'post',
 ])
 

@@ -15,7 +15,7 @@
         @if($cell->getComponent() && $cell->componentExists($cell->getComponent()))
             <x-dynamic-component :component="$cell->getComponent()" :$row :$cell />
         @else
-            <x-tkl-ui::table.livewire.cell :$row :$cell />
+            <x-tkl-ui::livewire.table.cell :$row :$cell />
         @endif
     @endforeach
 </tr>

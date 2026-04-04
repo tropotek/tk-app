@@ -20,10 +20,14 @@ class ArrayRecords extends RecordsInterface
     }
 
     /**
-     * filter, sort, and paginate the array returning the results
+     * @interface RecordsInterface
      */
-    protected function initArray(): array
+    public function toArray(): array
     {
+        if (isset($this->records)) {
+            return $this->records;
+        }
+
         if (!$this->getTable() || is_null($this->rows)) {
             throw new \Exception('Table or rows not set');
         }
@@ -41,55 +45,30 @@ class ArrayRecords extends RecordsInterface
         $this->rows = $this->sortRows($this->rows, ...$columns);
 
         // paginate results
-        return $this->paginateRows($this->rows);
-    }
+        $limit = $this->getTable()->limit;
+        if ($limit > 0) {
+            $page = $this->page;
+            $offset = ($page - 1) * $limit;
+            $items = array_slice($this->rows, $offset, $limit);
+            $this->records = $items;
 
-    /**
-     * @interface RecordsInterface
-     */
-    public function toArray(): array
-    {
-        if (!isset($this->records)) {
-            $this->records = $this->initArray();
-            $this->rows = null;
+            // setup paginator
+            $this->paginator = new LengthAwarePaginator(
+                $items,
+                $this->total,
+                $limit,
+                $page,
+                [
+                    'path' => request()->url(),
+                    'pageName' => $this->getTable()->key(Table::QUERY_PAGE),
+                ]
+            );
+        } else {
+            $this->records = $this->rows;
         }
+
+        $this->rows = null;
         return $this->records;
-    }
-
-    public function getPaginator(): ?AbstractPaginator
-    {
-        $items = $this->toArray();
-        $total = $this->countAll();
-        $perPage = $this->getTable()->getLimit();
-        $currentPage = $this->getTable()->getPage();
-        $pageKey = $this->getTable()->key(Table::QUERY_PAGE);
-        $options = [
-            'path' => $this->getTable()->url([
-                Table::QUERY_PAGE => null,
-                //Table::QUERY_ID => $this->getTable()->getId()
-            ]),
-            'pageName' => $pageKey,
-        ];
-        return Container::getInstance()->makeWith(LengthAwarePaginator::class, compact(
-            'items', 'total', 'perPage', 'currentPage', 'options'
-        ));
-    }
-
-    /**
-     * Set the table rows and apply pagination and sorting with PHP
-     * Use this method when all the results are in the $rows array
-     * Set $sort to null to disable sorting
-     *
-     * @param array<int|string, mixed> $rows
-     * @return array<int|string, mixed>
-     */
-    protected function paginateRows(array $rows): array
-    {
-        $offset = ($this->getTable()->getPage()-1)*$this->getTable()->getLimit();
-        if ($this->getTable()->getLimit() > 0 && $this->getTable()->getLimit() < $this->countAll()) {
-            return array_slice($rows, $offset, $this->getTable()->getLimit());
-        }
-        return $rows;
     }
 
     /**
