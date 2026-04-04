@@ -45,18 +45,18 @@ class extends Component {
         $this->table->appendCell(new Cell(
             name: 'roles',
             sortable: false,
-//            text: function ($row) {
-//                return $row->roles->pluck('name')->implode(', ');
-//            },
+            text: function ($row) {
+                return $row->roles->pluck('name')->implode(', ');
+            },
         ));
 
         // alt method to add cells
         $this->table->appendCell(new Cell('created_at'), 'roles')
             ->setHeader('Created')
             ->setSortable()
-//            ->setText(function ($row) {
-//                return $row->created_at->format('Y-m-d h:i');
-//            })
+            ->setText(function ($row) {
+                return $row->created_at->format('Y-m-d h:i');
+            })
         ;
     }
 
@@ -147,47 +147,48 @@ class extends Component {
 
     <table class="table table-striped table-hover">
         <thead>
-        <tr>
-            @foreach ($this->table->getCells()->filter(fn($r) => $r->isVisible()) as $cell)
-                <th class="{{ $cell->isSortable() ? 'col-sort'  : '' }}">
-                    @if ($cell->sortable)
-                        <button class="btn btn-link ms-2 px-0 py-0 fw-bold text-decoration-underline"
-                                wire:click="{{ ($this->sort === $cell->getName()) ? 'toggleDir' : '$set("sort", "'.$cell->name.'")' }}">
-                            {{ $cell->getHeader() }}
-                            @if ($this->sort === $cell->getName())
-                                <i class="fa {{ ($this->dir === 'asc') ? 'fa-sort-down' : 'fa-sort-up' }}"></i>
-                            @endif
-                        </button>
-                    @else
-                        <span class="ms-2 fw-bold">{{ $cell->getHeader() }}</span>
-                    @endif
-                </th>
-            @endforeach
-            <th class="text-muted"><i class="fa-solid fa-pen-to-square"></i></th>
-
-        </tr>
-        </thead>
-        <tbody class="table-group-divider">
-        @foreach ($this->rows as $user)
-            <tr wire:key="{{ $user->id }}">
-                @foreach($this->table->getCells()->filter(fn($r) => $r->isVisible()) as $cell)
-                    @if ($cell->getName() == 'name')
-                        <td class="fw-bold">
-                            <a href="{{ route('admin.users.edit', $user->id) }}">{{ $cell->html($user) }}</a>
-                        </td>
-                    @else
-                        <td class="tt">{{ $cell->html($user) }}</td>
-                    @endif
+            <tr>
+                @foreach ($this->table->getCells()->filter(fn($r) => $r->isVisible()) as $cell)
+                    <th class="{{ $cell->isSortable() ? 'col-sort'  : '' }}">
+                        @if ($cell->sortable)
+                            <button class="btn btn-link ms-2 px-0 py-0 fw-bold text-decoration-underline"
+                                    wire:click="{{ ($this->sort === $cell->getName()) ? 'toggleDir' : '$set("sort", "'.$cell->name.'")' }}">
+                                {{ $cell->getHeader() }}
+                                @if ($this->sort === $cell->getName())
+                                    <i class="fa {{ ($this->dir === 'asc') ? 'fa-sort-down' : 'fa-sort-up' }}"></i>
+                                @endif
+                            </button>
+                        @else
+                            <span class="ms-2 fw-bold">{{ $cell->getHeader() }}</span>
+                        @endif
+                    </th>
                 @endforeach
 
-                <td>
-                    <a href="{{ route('admin.users.edit', $user->id) }}">
-                        <i class="fa-solid fa-pen-to-square"></i>
-                    </a>
-                </td>
-
+                <th class="text-muted"><i class="fa-solid fa-pen-to-square"></i></th>
             </tr>
-        @endforeach
+        </thead>
+
+        <tbody class="table-group-divider">
+            @foreach ($this->rows as $user)
+                <tr wire:key="{{ $user->id }}">
+                    @foreach($this->table->getCells()->filter(fn($r) => $r->isVisible()) as $cell)
+                        @if ($cell->getName() == 'name')
+                            <td class="fw-bold">
+                                <a href="{{ route('admin.users.edit', $user->id) }}">{{ $cell->html($user) }}</a>
+                            </td>
+                        @else
+                            <td class="tt">{{ $cell->html($user) }}</td>
+                        @endif
+                    @endforeach
+
+                    <td>
+                        <a href="{{ route('admin.users.edit', $user->id) }}">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </a>
+                    </td>
+
+                </tr>
+            @endforeach
         </tbody>
     </table>
     {{ $this->rows->links() }}
