@@ -6,19 +6,15 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Session;
-
-// internal Breadcrumbs use only
-final class Crumb
-{
-    public function __construct(
-        public string $name,
-        public string $title,
-        public string $url
-    ) {}
-}
+use Illuminate\Support\Facades\View;
 
 final class Breadcrumbs
 {
+    /**
+     * the page title view property
+     */
+    const string PAGE_NAME = 'pageName';
+
     /**
      * query string to reset breadcrumbs
      */
@@ -51,13 +47,16 @@ final class Breadcrumbs
      * $title can include breadcrumb name and display name
      * internal breadcrumb name used to remove duplicates/loops.
      * e.g: "crumb name|Page Title"
-     *
-     * @return Crumb
      */
-    protected function createCrumb(string $pageName, string $url): Crumb
+    protected function createCrumb(string $pageName, string $url): \stdClass
     {
         [$name, $pageName] = $this->parseTitle($pageName);
-        return new Crumb($name, $pageName, $this->normalizeUrl($url));
+
+        return (object)[
+            'name' => $name,
+            'title' => $pageName,
+            'url' => $this->normalizeUrl($url),
+        ];
     }
 
     /**
@@ -121,6 +120,9 @@ final class Breadcrumbs
 
 	    // add this page to the top of the breadcrumbs
         $this->stack->push($crumb);
+
+        // set $pageName for all views
+        View::share(self::PAGE_NAME, $crumb->title);
 
         // return page display title
         return $crumb->title;

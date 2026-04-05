@@ -16,7 +16,7 @@ trait HasTable
 {
 
     protected Table $table;
-    public int      $limit = 30;
+    public int      $limit = 2;
     public string   $sort  = '';
     public string   $dir   = 'asc';
 

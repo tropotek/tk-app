@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Examples;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Tk\Support\Facades\Breadcrumbs;
 use Tk\Table\Records\CsvRecords;
 use Tk\Table\Table;
 
@@ -13,7 +14,7 @@ class ExamplesController extends Controller
 
     public function index(Request $request)
     {
-        $this->setPageName('Examples');
+        Breadcrumbs::push('Examples');
 
         $table = $this->buildTable($request);
 

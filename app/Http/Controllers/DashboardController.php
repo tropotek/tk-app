@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Enum\Roles;
 use Illuminate\Http\Request;
+use Tk\Support\Facades\Breadcrumbs;
 
 class DashboardController extends Controller
 {
 
     public function doDefault(Request $request)
     {
-        $this->setPageName('Dashboard');
+        Breadcrumbs::push('Dashboard');
 
 
         if ($request->has('alert')) {

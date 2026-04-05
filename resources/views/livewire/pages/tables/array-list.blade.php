@@ -79,7 +79,7 @@ class extends Component {
             (object)['id' => 7, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test', 'created_at' => '2021-01-01 12:23:33'],
             (object)['id' => 8, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test', 'created_at' => '2021-01-01 12:23:33'],
         ];
-        
+
         // 1. filter results with any filters if available
 
 
@@ -89,19 +89,6 @@ class extends Component {
 
         // 3. return paginated results
         return $this->paginate($rows);
-
-//        return User::query()
-//            //->search($this->search, fn() => $this->resetPage())
-//            //->when($this->country, fn($query) => $query->where('country', $this->country))
-//            ->when($this->search, function (Builder $builder) {
-//                $str = preg_replace("/[^a-zA-Z0-9' -]/", " ", $this->search);
-//                $email = preg_replace("/[^a-zA-Z0-9@._-]/", "", $this->search);
-//                return $builder->where('name', 'like', "%{$str}%")
-//                    ->orWhere('email', 'like', "%{$email}%")
-//                    ->tap($this->resetPage() ?? fn () => null); // noop
-//            })
-//            ->orderBy($this->safeSort(), $this->dir)
-//            ->paginate($this->limit);
     }
 
 };

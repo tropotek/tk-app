@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Examples\Tables;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Tk\Support\Facades\Breadcrumbs;
 use Tk\Table\Records\CsvRecords;
 use Tk\Table\Table;
 
@@ -13,7 +14,7 @@ class CsvTable extends Controller
 
     public function index(Request $request)
     {
-        $this->setPageName('Csv File Table');
+        Breadcrumbs::push('Csv File Table');
 
         $table = $this->buildCsvTable($request);
 

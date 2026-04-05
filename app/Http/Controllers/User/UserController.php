@@ -7,13 +7,14 @@ use App\Models\User;
 use App\Tables\UserTable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Tk\Support\Facades\Breadcrumbs;
 
 class UserController extends Controller
 {
 
     public function index(Request $request)
     {
-        $this->setPageName('User Manager');
+        Breadcrumbs::push('User Manager');
 
         $table = new UserTable();
 
@@ -25,7 +26,7 @@ class UserController extends Controller
 
     public function create()
     {
-        $this->setPageName('user.edit|User Create');
+        Breadcrumbs::push('user.edit|User Create');
 
         $user = new User();
 
@@ -40,7 +41,7 @@ class UserController extends Controller
 
     public function show(User $user)
     {
-        $this->setPageName('user.edit|User View');
+        Breadcrumbs::push('user.edit|User View');
 
         return view('pages.users.edit',[
             'mode' => 'view',
@@ -52,7 +53,7 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        $this->setPageName('user.edit|User Edit');
+        Breadcrumbs::push('user.edit|User Edit');
 
         return view('pages.users.edit', [
             'mode' => 'edit',

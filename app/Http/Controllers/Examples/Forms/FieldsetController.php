@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Examples\Forms;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Tk\Support\Facades\Breadcrumbs;
 
 class FieldsetController extends Controller
 {
@@ -25,7 +26,7 @@ class FieldsetController extends Controller
 
     public function index(Request $request)
     {
-        $this->setPageName('Fieldset View');
+        Breadcrumbs::push('Fieldset View');
 
         return view('pages.examples.forms.fieldset', [
             'mode' => 'view',
@@ -35,7 +36,7 @@ class FieldsetController extends Controller
 
     public function edit(Request $request)
     {
-        $this->setPageName('Fieldset Edit');
+        Breadcrumbs::push('Fieldset Edit');
 
         return view('pages.examples.forms.fieldset', [
             'mode' => 'edit',
@@ -45,7 +46,7 @@ class FieldsetController extends Controller
 
     public function create(Request $request)
     {
-        $this->setPageName('Fieldset Create');
+        Breadcrumbs::push('Fieldset Create');
 
         return view('pages.examples.forms.fieldset', [
             'mode' => 'create'

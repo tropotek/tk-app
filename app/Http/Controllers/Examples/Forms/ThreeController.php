@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Examples\Forms;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Tk\Support\Facades\Breadcrumbs;
 
 class ThreeController extends Controller
 {
@@ -28,7 +29,7 @@ class ThreeController extends Controller
 
     public function index(Request $request)
     {
-        $this->setPageName('form three|Form Three View');
+        Breadcrumbs::push('form three|Form Three View');
         return view($this->view, [
             'mode' => 'view',
             'values' => $this->values,
@@ -37,7 +38,7 @@ class ThreeController extends Controller
 
     public function edit(Request $request)
     {
-        $this->setPageName('form three|Form Three Edit');
+        Breadcrumbs::push('form three|Form Three Edit');
         return view($this->view, [
             'mode' => 'edit',
             'values' => $this->values,
@@ -46,7 +47,7 @@ class ThreeController extends Controller
 
     public function create(Request $request)
     {
-        $this->setPageName('form three|Form Three create');
+        Breadcrumbs::push('form three|Form Three create');
         return view($this->view, [
             'mode' => 'create'
         ]);

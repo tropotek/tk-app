@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Examples\Forms;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Tk\Support\Facades\Breadcrumbs;
 
 class OneController extends Controller
 {
@@ -25,7 +26,7 @@ class OneController extends Controller
 
     public function index(Request $request)
     {
-        $this->setPageName('form one|Form One View');
+        Breadcrumbs::push('form one|Form One View');
         return view('pages.examples.forms.one', [
             'mode' => 'view',
             'values' => $this->values,
@@ -34,7 +35,7 @@ class OneController extends Controller
 
     public function edit(Request $request)
     {
-        $this->setPageName('form one|Form One Edit');
+        Breadcrumbs::push('form one|Form One Edit');
         return view('pages.examples.forms.one', [
             'mode' => 'edit',
             'values' => $this->values,
@@ -43,7 +44,7 @@ class OneController extends Controller
 
     public function create(Request $request)
     {
-        $this->setPageName('form one|Form One Create');
+        Breadcrumbs::push('form one|Form One Create');
         return view('pages.examples.forms.one', [
             'mode' => 'create'
         ]);

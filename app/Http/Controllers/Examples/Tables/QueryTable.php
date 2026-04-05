@@ -6,13 +6,14 @@ namespace App\Http\Controllers\Examples\Tables;
 use App\Http\Controllers\Controller;
 use App\Tables\IdeaTable;
 use Illuminate\Http\Request;
+use Tk\Support\Facades\Breadcrumbs;
 
 class QueryTable extends Controller
 {
 
     public function index(Request $request)
     {
-        $this->setPageName('SQL Query Table');
+        Breadcrumbs::push('SQL Query Table');
 
         $table = new IdeaTable();
 

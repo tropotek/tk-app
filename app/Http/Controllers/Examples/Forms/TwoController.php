@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Examples\Forms;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Tk\Support\Facades\Breadcrumbs;
 
 class TwoController extends Controller
 {
@@ -25,7 +26,7 @@ class TwoController extends Controller
 
     public function index(Request $request)
     {
-        $this->setPageName('Form Two View');
+        Breadcrumbs::push('Form Two View');
         return view('pages.examples.forms.two', [
             'mode' => 'view',
             'values' => $this->values,
@@ -34,7 +35,7 @@ class TwoController extends Controller
 
     public function edit(Request $request)
     {
-        $this->setPageName('Form Two Edit');
+        Breadcrumbs::push('Form Two Edit');
         return view('pages.examples.forms.two', [
             'mode' => 'edit',
             'values' => $this->values,
@@ -43,7 +44,7 @@ class TwoController extends Controller
 
     public function create(Request $request)
     {
-        $this->setPageName('Form Two Create');
+        Breadcrumbs::push('Form Two Create');
         return view('pages.examples.forms.two', [
             'mode' => 'create'
         ]);

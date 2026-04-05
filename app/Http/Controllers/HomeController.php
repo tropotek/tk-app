@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 
 use Illuminate\Http\Request;
+use Tk\Support\Facades\Breadcrumbs;
 
 class HomeController extends Controller
 {
 
     public function doDefault(Request $request)
     {
-        $this->setPageName('Home');
+        Breadcrumbs::push('Home');
 
         if (auth()->check()) {
             return redirect(route('dashboard'));

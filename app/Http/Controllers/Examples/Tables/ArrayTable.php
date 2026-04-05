@@ -5,55 +5,79 @@ namespace App\Http\Controllers\Examples\Tables;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Tk\Table\Records\ArrayRecords;
-use Tk\Table\Table;
+use Tk\Support\Facades\Breadcrumbs;
+use Tk\Tbl\Cell;
+use Tk\Tbl\HasTable;
+use Tk\Tbl\Table;
 
 class ArrayTable extends Controller
 {
+    use HasTable;
 
     public function index(Request $request)
     {
-        $this->setPageName('Array Table');
+        Breadcrumbs::push('Array Table');
+
+        $this->table = new Table();
+
+        $this->table->appendCell(new Cell(
+            name: 'name',
+            sortable: true,
+        ));
+
+        $this->table->appendCell(new Cell(
+            name: 'email',
+            sortable: true,
+        ));
+
+        $this->table->appendCell(new Cell(
+            name: 'roles',
+            sortable: false,
+//            text: function ($row) {
+//                return $row->roles->pluck('name')->implode(', ');
+//            },
+        ));
+
+        // alt method to add cells
+        $this->table->appendCell(new Cell('created_at'), 'roles')
+            ->setHeader('Created')
+            ->setSortable()
+//            ->setText(function ($row) {
+//                return $row->created_at->format('Y-m-d h:i');
+//            })
+        ;
 
 
-        $table1 = $this->buildTable($request);
-        $table2 = $this->buildTable($request);
 
-        return view('pages.examples.tables.table-array', Compact('table1', 'table2'));
+        return view('pages.examples.tables.table-array', [
+            'table' => $this->table,
+            'rows' => $this->rows(),
+        ]);
     }
 
-    protected function buildTable(Request $request): Table
+    public function rows(): \Traversable
     {
 
         $rows = [
-            ['id' => 1, 'status' => 'active', 'type' => 'docx', 'created' => '2021-01-01'],
-            ['id' => 2, 'status' => 'active', 'type' => 'csv', 'created' => '2021-01-01'],
-            ['id' => 3, 'status' => 'complete', 'type' => 'bmp', 'created' => '2021-01-01'],
-            ['id' => 4, 'status' => 'pending', 'type' => 'csv', 'created' => '2021-01-01'],
-            ['id' => 5, 'status' => 'cancelled', 'type' => 'pdf', 'created' => '2021-01-01'],
-            ['id' => 6, 'status' => 'active', 'type' => 'pdf', 'created' => '2021-01-01'],
-            ['id' => 7, 'status' => 'active', 'type' => 'csv', 'created' => '2021-01-01'],
-            ['id' => 8, 'status' => 'complete', 'type' => 'bmp', 'created' => '2021-01-01'],
-            ['id' => 9, 'status' => 'pending', 'type' => 'csv', 'created' => '2021-01-01'],
-            ['id' => 10, 'status' => 'cancelled', 'type' => 'pdf', 'created' => '2021-01-01'],
-            ['id' => 11, 'status' => 'active', 'type' => 'pdf', 'created' => '2021-01-01'],
-            ['id' => 12, 'status' => 'active', 'type' => 'csv', 'created' => '2021-01-01'],
-            ['id' => 13, 'status' => 'complete', 'type' => 'bmp', 'created' => '2021-01-01'],
-            ['id' => 14, 'status' => 'pending', 'type' => 'csv', 'created' => '2021-01-01'],
-            ['id' => 15, 'status' => 'cancelled', 'type' => 'pdf', 'created' => '2021-01-01'],
+            (object)['id' => 1, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test', 'created_at' => '2021-01-01 12:23:33'],
+            (object)['id' => 2, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test', 'created_at' => '2021-01-01 12:23:33'],
+            (object)['id' => 3, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test', 'created_at' => '2021-01-01 12:23:33'],
+            (object)['id' => 4, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test', 'created_at' => '2021-01-01 12:23:33'],
+            (object)['id' => 5, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test', 'created_at' => '2021-01-01 12:23:33'],
+            (object)['id' => 6, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test', 'created_at' => '2021-01-01 12:23:33'],
+            (object)['id' => 7, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test', 'created_at' => '2021-01-01 12:23:33'],
+            (object)['id' => 8, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test', 'created_at' => '2021-01-01 12:23:33'],
         ];
 
-        $table = new Table();
-        $table->setLimit(5);
+        // 1. filter results with any filters if available
 
-        $table->appendCell('id')->setSortable();
-        $table->appendCell('status')->setSortable();
-        $table->appendCell('type')->setSortable();
-        $table->appendCell('created')->setSortable();
 
-        $table->setRecords(new ArrayRecords($rows));
+        // 2. sort results (todo: using Gregs sort method for now, review)
+        $sortCol = ($this->dir == 'desc' ? '-' : '') . $this->safeSort();
+        $rows = $this->sortRows($rows, $sortCol);
 
-        return $table;
+        // 3. return paginated results
+        return $this->paginate($rows);
     }
 
 }

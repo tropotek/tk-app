@@ -2,8 +2,8 @@
 
 namespace Tk\View\Composers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\View;
+use Tk\Breadcrumbs\Breadcrumbs;
 
 class DefaultPageName
 {
@@ -13,11 +13,11 @@ class DefaultPageName
      */
     public function compose(\Illuminate\View\View $view): void
     {
-        if (View::getShared()[Controller::PAGE_NAME] ?? false) return;
+        if (View::getShared()[Breadcrumbs::PAGE_NAME] ?? false) return;
 
         $basename = basename(request()->path()) ?: '';
         $defaultName = ucwords(str_replace(['/', '_'], ' ', strtolower($basename)));
 
-        View::share(Controller::PAGE_NAME, $defaultName);
+        View::share(Breadcrumbs::PAGE_NAME, $defaultName);
     }
 }

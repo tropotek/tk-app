@@ -8,12 +8,13 @@ use App\Tables\IdeaTable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Tk\Support\Facades\Breadcrumbs;
 
 class IdeaController extends Controller
 {
     public function index(Request $request)
     {
-        $this->setPageName('ideas|Idea Manager');
+        Breadcrumbs::push('ideas|Idea Manager');
 
         $table = new IdeaTable();
 
@@ -40,13 +41,13 @@ class IdeaController extends Controller
     }
     public function create()
     {
-        $this->setPageName('idea|Idea Create');
+        Breadcrumbs::push('idea|Idea Create');
         return view('pages.examples.ideas.create');
     }
 
     public function show(Idea $idea)
     {
-        $this->setPageName('idea|Idea View');
+        Breadcrumbs::push('idea|Idea View');
         //Gate::authorize('update', $idea);
 
         return view('pages.examples.ideas.edit',[
@@ -57,7 +58,7 @@ class IdeaController extends Controller
 
     public function edit(Idea $idea)
     {
-        $this->setPageName('idea|Idea Edit');
+        Breadcrumbs::push('idea|Idea Edit');
         Gate::authorize('update', $idea);
 
         return view('pages.examples.ideas.edit',[
