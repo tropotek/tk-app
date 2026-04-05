@@ -28,7 +28,8 @@ final class NavBar implements MenuBuilderInterface
                 MenuItem::make('Livewire', '/examples/tableLivewire'),
                 MenuItem::make('Livewire 2', '/examples/tableLivewireTwo'),
                 MenuItem::make('Sql Query', '/examples/tableQuery'),
-                MenuItem::make('Array Rows', '/examples/tableArray'),
+                MenuItem::make('Array Rows (sis)', '/examples/tableArray'),
+                MenuItem::make('Array Rows (sis live)', '/examples/tableArray2'),
                 MenuItem::make('Csv File', '/examples/tableCsv'),
                 MenuItem::makeSeparator(),
                 MenuItem::make('Ideas Example', '/examples/ideas')
@@ -40,7 +41,7 @@ final class NavBar implements MenuBuilderInterface
             MenuItem::make('Admin')->addChildren([
                 MenuItem::make('Settings', route('dashboard'))->setDisabled(),
                 MenuItem::make('Users', route('admin.users.index')),
-                MenuItem::make('Users2', route('admin.users.index2')),
+                MenuItem::make('Users (live)', route('admin.users.index2')),
             ])->setVisible(auth()->user()->hasRole(Roles::Admin->value)),
 
             MenuItem::make('Logout', route('logout'))

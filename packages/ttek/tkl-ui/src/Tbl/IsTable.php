@@ -14,32 +14,23 @@ trait IsTable
 {
 
     public string $tableId = 'tbl';
-    public int $tableLimit = 30;
-    public string $tableSort = '';
-    public string $tableDir = 'asc';
+    public int $limit = 30;
+    public string $sort = '';
+    public string $dir = 'asc';
 
-    protected Collection $tableCells;
+    protected Collection $cells;
 
 
     abstract public function rows(): LengthAwarePaginator;
 
     /**
-     * Livewire function
+     * Controller function
      */
     protected function hydrateTableFromRequest(): void
     {
-        $this->tableLimit = request()->input($this->tableKey('limit'), $this->tableLimit);
-        $this->tableSort = request()->input($this->tableKey('sort'), $this->tableSort);
-        $this->tableDir = request()->input($this->tableKey('dir'), $this->tableDir);
-    }
-
-    /**
-     * Livewire method
-     */
-    public function toggleDir(): void
-    {
-        // TODO: change to 3 way sort
-        $this->tableDir = $this->tableDir === 'asc' ? 'desc' : 'asc';
+        $this->limit = request()->input($this->tableKey('limit'), $this->limit);
+        $this->sort = request()->input($this->tableKey('sort'), $this->sort);
+        $this->dir = request()->input($this->tableKey('dir'), $this->dir);
     }
 
     /**
@@ -47,11 +38,11 @@ trait IsTable
      */
     protected function safeSort(): string
     {
-        $sortables = $this->tableCells->pluck('tableSort')->filter()->all();
+        $sortables = $this->cells->pluck('sort')->filter()->all();
 
         // TODO: validate sort options with cell `sort` property
 
-        return $this->tableSort;
+        return $this->sort;
     }
 
     /**
@@ -59,7 +50,7 @@ trait IsTable
      */
     public function getCells(): Collection
     {
-        return $this->tableCells;
+        return $this->cells;
     }
 
     protected function getCell(string $name): ?Cell
@@ -80,8 +71,8 @@ trait IsTable
         if (is_string($cell)) {
             $cell = new Cell($cell);
         }
-        if (empty($this->tableCells)) {
-            $this->tableCells = collect();
+        if (empty($this->cells)) {
+            $this->cells = collect();
         }
 
         if ($this->getCells()->has($cell->name)) {
@@ -94,7 +85,7 @@ trait IsTable
             // If the key is not found, add at the end
             $idx = ($idx === false) ? $this->getCells()->count() - 1 : $idx;
 
-            $this->tableCells = $this->getCells()->slice(0, $idx + 1)
+            $this->cells = $this->getCells()->slice(0, $idx + 1)
                 ->merge([$cell->name => $cell])
                 ->merge($this->getCells()->slice($idx + 1));
         } else {
@@ -110,7 +101,7 @@ trait IsTable
             $cell = new Cell($cell);
         }
         if (empty($this->getCells())) {
-            $this->tableCells = collect();
+            $this->cells = collect();
         }
 
         if ($this->getCells()->has($cell->name)) {
@@ -123,7 +114,7 @@ trait IsTable
             // If the key is not found, add at the beginning
             $idx = ($idx === false) ? 0 : $idx;
 
-            $this->tableCells = $this->getCells()->splice($idx, 0, [$cell->name => $cell]);
+            $this->cells = $this->getCells()->splice($idx, 0, [$cell->name => $cell]);
         } else {
             $this->getCells()->prepend($cell, $cell->name);
         }
@@ -159,11 +150,11 @@ trait IsTable
     {
         $currentPage = $currentPage ?: Paginator::resolveCurrentPage($pageName);
         $total = count($rows);
-        $perPage = $this->tableLimit;
+        $perPage = $this->limit;
         $pageName = $this->tableKey($pageName);
 
-        $offset = ($currentPage - 1) * $this->tableLimit;
-        $items = array_slice($rows, $offset, $this->tableLimit);
+        $offset = ($currentPage - 1) * $this->limit;
+        $items = array_slice($rows, $offset, $this->limit);
 
         $options = [
             'path' => Paginator::resolveCurrentPath(),

@@ -8,7 +8,7 @@
         <div class="card-body">
             {{--            <x-tkl-ui::table :table="$table1" />--}}
 
-            <div class="row my-2">
+            <div class="row">
                 <div class="d-flex flex-nowrap text-nowrap gap-2 align-items-center">
 
                     <div x-data="{ q: '' }">
@@ -29,23 +29,23 @@
 
                     <button
                         type="button"
-                        class="btn btn-link btn-sm pb-1 ms-1"
+                        class="btn btn-link btn-sm"
                         title="Clear Filters & Search"
                         {{--                        wire:click="clearFilters"--}}
                     >
-                        <i class="fa fa-circle-xmark fa-lg pb-2"></i>
+                        <i class="fa fa-circle-xmark fa-lg"></i>
                     </button>
 
-                    <p>
-                        <a href="{{route('admin.users.create')}}" class="btn btn-primary">
+                    <div>
+                        <a href="{{route('admin.users.create')}}" class="btn btn-primary btn-sm">
                             New User
                         </a>
-                    </p>
+                    </div>
 
                     <div class="flex-grow-1 text-end small">
                         <button
                             type="button"
-                            class="btn btn-link btn-sm pb-1 ms-1"
+                            class="btn btn-link btn-sm"
                             title="Download CSV"
                             {{--                    wire:click="csv"--}}
                         >
@@ -71,8 +71,8 @@
                     @foreach ($table->getCells()->filter(fn($r) => $r->isVisible()) as $cell)
                         <th class="{{ ($cell->isSortable() ? 'col-sort '  : '') }}">
                             @if ($cell->isSortable())
-                                <a href="{{ $cell->getNextSortUrl($table->tableSort, $table->tableDir) }}"
-                                   class="fw-bold {{ ($table->tableSort === $cell->getName()) ? $table->tableDir : '' }}">
+                                <a href="{{ $cell->getNextSortUrl($table->sort, $table->dir) }}"
+                                   class="fw-bold {{ ($table->sort === $cell->getName()) ? $table->dir : '' }}">
                                     {{ $cell->getHeader() }}
                                 </a>
                             @else

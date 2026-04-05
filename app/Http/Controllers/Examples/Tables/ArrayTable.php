@@ -73,7 +73,7 @@ class ArrayTable extends Controller
 
 
         // 2. sort results (todo: using Gregs sort method for now, review)
-        $sortCol = ($this->tableDir == 'desc' ? '-' : '') . $this->safeSort();
+        $sortCol = ($this->dir == 'desc' ? '-' : '') . $this->safeSort();
         $rows = $this->sortRows($rows, $sortCol);
 
         // 3. return/cache paginated results

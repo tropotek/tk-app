@@ -53,5 +53,6 @@ Route::get('/examples/tableLivewire', [LivewireTable::class, 'index']);
 Route::get('/examples/tableLivewireTwo', [\App\Http\Controllers\Examples\Tables\LivewireTwoTable::class, 'index']);
 Route::get('/examples/tableQuery', [QueryTable::class, 'index']);
 Route::get('/examples/tableArray', [ArrayTable::class, 'index']);
+Route::livewire('/examples/tableArray2', 'pages.examples.array-list');
 Route::get('/examples/tableCsv', [CsvTable::class, 'index']);
 

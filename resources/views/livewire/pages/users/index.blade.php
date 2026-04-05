@@ -12,12 +12,12 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Tk\Support\Facades\Breadcrumbs;
 use Tk\Tbl\Cell;
-use Tk\Tbl\IsTable;
+use Tk\Tbl\IsLivewireTable;
 
 new #[Layout('pages.main')]
 class extends Component {
 
-    use WithPagination, IsTable;
+    use WithPagination, IsLivewireTable;
 
     #[Url(except: '')]
     public $search = '';
@@ -26,15 +26,6 @@ class extends Component {
     public function mount()
     {
         Breadcrumbs::push('Manage Users');
-    }
-
-    public function getQueryString(): array
-    {
-        return [
-            'tableLimit' => ['except' => 30],
-            'tableSort' => ['except' => ''],
-            'tableDir' => ['except' => 'asc'],
-        ];
     }
 
     public function boot()
@@ -84,10 +75,10 @@ class extends Component {
                     ->orWhere('email', 'like', "%{$email}%")
                     ->tap($this->resetPage() ?? fn() => null); // noop
             })
-            ->when($this->tableDir, function (Builder $builder) {
-                return $builder->orderBy($this->safeSort(), $this->tableDir);
+            ->when($this->dir, function (Builder $builder) {
+                return $builder->orderBy($this->safeSort(), $this->dir);
             })
-            ->paginate($this->tableLimit);
+            ->paginate($this->limit);
     }
 
 };
@@ -96,7 +87,7 @@ class extends Component {
 <div>
     <h1>Manage Staff</h1>
 
-    <div class="row my-2">
+    <div class="row">
         <div class="d-flex flex-nowrap text-nowrap gap-2 align-items-center">
 
             <div x-data="{ q: '' }">
@@ -117,27 +108,27 @@ class extends Component {
 
             <button
                 type="button"
-                class="btn btn-link btn-sm pb-1 ms-1"
+                class="btn btn-link btn-sm"
                 title="Clear Filters & Search"
                 wire:click="clearFilters"
             >
                 <i class="fa fa-circle-xmark fa-lg pb-2"></i>
             </button>
 
-            <p>
-                <a href="{{route('admin.users.create')}}" class="btn btn-primary">
+            <div>
+                <a href="{{route('admin.users.create')}}" class="btn btn-primary btn-sm">
                     New User
                 </a>
-            </p>
+            </div>
 
             <div class="flex-grow-1 text-end small">
                 <button
                     type="button"
-                    class="btn btn-link btn-sm pb-1 ms-1"
+                    class="btn btn-link btn-sm"
                     title="Download CSV"
                     {{--                    wire:click="csv"--}}
                 >
-                    <i class="fa-regular fa-file-excel fa-lg pb-2"></i>
+                    <i class="fa-regular fa-file-excel fa-lg"></i>
                 </button>
 
                 <span class="text-secondary">
@@ -159,11 +150,9 @@ class extends Component {
             @foreach ($this->getCells()->filter(fn($r) => $r->isVisible()) as $cell)
                 <th class="{{ $cell->isSortable() ? 'col-sort'  : '' }}">
                     @if ($cell->isSortable())
-                        @php
-                            vd($this->tableSort, $this->tableDir);
-                        @endphp
-                        <button class="btn btn-link fw-bold {{ ($this->tableSort === $cell->getName()) ? $this->tableDir : ''  }}"
-                                wire:click="{{ ($this->tableSort === $cell->getName()) ? 'toggleDir' : '$set("tableSort", "' . $cell->getName() . '")' }}">
+                        <button
+                            class="btn btn-link fw-bold {{ ($this->sort === $cell->getName()) ? $this->dir : ''  }}"
+                            wire:click="{{ ($this->sort === $cell->getName()) ? 'toggleDir' : '$set("sort", "' . $cell->getName() . '")' }}">
                             {{ $cell->getHeader() }}
                         </button>
                     @else
