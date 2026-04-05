@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             CreateAdminUserSeeder::class,
         ]);
 
-        User::factory(10)->create();
+        User::factory(76)->create();
         IdeaFactory::times(512)->create();
 
 

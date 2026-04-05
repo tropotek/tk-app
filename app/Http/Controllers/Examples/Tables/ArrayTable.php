@@ -10,6 +10,11 @@ use Tk\Support\Facades\Breadcrumbs;
 use Tk\Tbl\Cell;
 use Tk\Tbl\IsTable;
 
+/**
+ * This is an example of using the Table trait within a controller.
+ * Data is sourced from an array.
+ * 
+ */
 class ArrayTable extends Controller
 {
     use IsTable;
@@ -23,7 +28,7 @@ class ArrayTable extends Controller
         $this->appendCell(new Cell(
             name: 'name',
             sortable: true,
-        ));
+        ))->addClass('fw-bold');
 
         $this->appendCell(new Cell(
             name: 'email',
@@ -33,21 +38,19 @@ class ArrayTable extends Controller
         $this->appendCell(new Cell(
             name: 'roles',
             sortable: false,
-//            text: function ($row) {
-//                return $row->roles->pluck('name')->implode(', ');
-//            },
         ));
 
         // alt method to add cells
         $this->appendCell(new Cell('created_at'), 'roles')
             ->setHeader('Created')
             ->setSortable()
-//            ->setText(function ($row) {
-//                return $row->created_at->format('Y-m-d h:i');
-//            })
         ;
 
         $this->hydrateTableFromRequest();
+        if (request()->has($this->tableKey('reset'))) {
+            // remove all table query params
+            return redirect(url()->current());
+        }
 
         return view('pages.examples.tables.table-array', [
             'table' => $this,
@@ -59,18 +62,24 @@ class ArrayTable extends Controller
         if (isset($this->rows)) return $this->rows;
 
         $rows = [
-            (object)['id' => 1, 'name' => 'Test 1', 'email' => 'email1@example.com', 'roles' => 'test', 'created_at' => '2021-01-01 12:23:33'],
-            (object)['id' => 2, 'name' => 'Test 2', 'email' => 'email2@example.com', 'roles' => 'test', 'created_at' => '2021-01-02 12:23:33'],
-            (object)['id' => 3, 'name' => 'Test 3', 'email' => 'email3@example.com', 'roles' => 'test', 'created_at' => '2021-03-01 12:23:33'],
-            (object)['id' => 4, 'name' => 'Test 4', 'email' => 'email4@example.com', 'roles' => 'test', 'created_at' => '2021-07-01 12:23:33'],
-            (object)['id' => 5, 'name' => 'Test 6', 'email' => 'email6@example.com', 'roles' => 'test', 'created_at' => '2021-04-25 12:23:33'],
-            (object)['id' => 6, 'name' => 'Test 8', 'email' => 'email8@example.com', 'roles' => 'test', 'created_at' => '2021-02-03 12:23:33'],
-            (object)['id' => 7, 'name' => 'Test 9', 'email' => 'email9@example.com', 'roles' => 'test', 'created_at' => '2021-02-01 12:23:33'],
-            (object)['id' => 8, 'name' => 'Test 19', 'email' => 'email10@example.com', 'roles' => 'test', 'created_at' => '2021-04-12 12:23:33'],
+            (object)['id' => 1, 'name' => 'Test 1', 'email' => 'email1@example.com', 'roles' => 'admin', 'created_at' => '2021-01-01 12:23:33'],
+            (object)['id' => 2, 'name' => 'Test 2', 'email' => 'email2@example.com', 'roles' => 'staff', 'created_at' => '2021-01-02 12:23:33'],
+            (object)['id' => 3, 'name' => 'Test 3', 'email' => 'email3@example.com', 'roles' => 'staff', 'created_at' => '2021-03-01 12:23:33'],
+            (object)['id' => 4, 'name' => 'Test 4', 'email' => 'email4@example.com', 'roles' => 'admin,staff', 'created_at' => '2021-07-01 12:23:33'],
+            (object)['id' => 5, 'name' => 'Test 6', 'email' => 'email6@example.com', 'roles' => 'member', 'created_at' => '2021-04-25 12:23:33'],
+            (object)['id' => 6, 'name' => 'Test 8', 'email' => 'email8@example.com', 'roles' => 'member', 'created_at' => '2021-02-03 12:23:33'],
+            (object)['id' => 7, 'name' => 'Test 9', 'email' => 'email9@example.com', 'roles' => 'admin,staff', 'created_at' => '2021-02-01 12:23:33'],
+            (object)['id' => 8, 'name' => 'Test 19', 'email' => 'email10@example.com', 'roles' => 'member', 'created_at' => '2021-04-12 12:23:33'],
         ];
 
         // 1. filter results with any filters if available
-
+        // search
+        $search = request()->get($this->tableKey('search'), '');
+        if ($search) {
+            $rows = array_filter($rows, function ($row) use ($search) {
+                return str_contains(strtolower($row->name), strtolower($search));
+            });
+        }
 
         // 2. sort results (todo: using Gregs sort method for now, review)
         $sortCol = ($this->dir == 'desc' ? '-' : '') . $this->safeSort();

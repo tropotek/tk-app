@@ -18,6 +18,10 @@ trait IsTable
     public string $sort = '';
     public string $dir = 'asc';
 
+    protected int $defaultLimit = 30;
+    protected string $defaultSort = '';
+    protected string $defaultDir = 'asc';
+
     protected Collection $cells;
 
 
@@ -28,9 +32,9 @@ trait IsTable
      */
     protected function hydrateTableFromRequest(): void
     {
-        $this->limit = request()->input($this->tableKey('limit'), $this->limit);
-        $this->sort = request()->input($this->tableKey('sort'), $this->sort);
-        $this->dir = request()->input($this->tableKey('dir'), $this->dir);
+        $this->limit = request()->input($this->tableKey('limit'), $this->defaultLimit);
+        $this->sort = request()->input($this->tableKey('sort'), $this->defaultSort);
+        $this->dir = request()->input($this->tableKey('dir'), $this->defaultDir);
     }
 
     /**
@@ -39,10 +43,26 @@ trait IsTable
     protected function safeSort(): string
     {
         $sortables = $this->cells->pluck('sort')->filter()->all();
-
+        //vd($sortables, $this->sort);
         // TODO: validate sort options with cell `sort` property
 
         return $this->sort;
+    }
+
+    public function setDefaultLimit(int $limit): static
+    {
+        $this->defaultLimit = $limit;
+        $this->limit = $limit;
+        return $this;
+    }
+
+    public function setDefaultSort(string $sort, string $dir = 'asc'): static
+    {
+        $this->defaultSort = $sort;
+        $this->defaultDir = $dir;
+        $this->sort = $sort;
+        $this->dir = $dir;
+        return $this;
     }
 
     /**
@@ -150,11 +170,15 @@ trait IsTable
     {
         $currentPage = $currentPage ?: Paginator::resolveCurrentPage($pageName);
         $total = count($rows);
-        $perPage = $this->limit;
+        $perPage = $this->limit ?: $total;
         $pageName = $this->tableKey($pageName);
 
-        $offset = ($currentPage - 1) * $this->limit;
-        $items = array_slice($rows, $offset, $this->limit);
+        if ($this->limit > 0) {
+            $offset = ($currentPage - 1) * $this->limit;
+            $items = array_slice($rows, $offset, $this->limit);
+        } else {
+            $items = $rows;
+        }
 
         $options = [
             'path' => Paginator::resolveCurrentPath(),
@@ -174,7 +198,7 @@ trait IsTable
      * sort array of objects by primary and optional second and third columns
      * $col1, $col2, and $col3 contain column names (properties) in the rows
      * prefix column names with '-' for descending sort
-     * returns sorted array
+     * returns a sorted array
      *
      * @template K of string|int
      * @template T of mixed

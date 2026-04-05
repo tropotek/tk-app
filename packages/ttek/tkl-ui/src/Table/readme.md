@@ -176,6 +176,7 @@ class UserController extends Controller
 ---
 
 ## 2. Render the table in a controller
+
 ```php
 <?php
 
@@ -189,7 +190,7 @@ class UserController extends Controller
     {
         $table = new UserTable('users');
 
-        return view('pages.users.index', [
+        return view('pages.users.table', [
             'table' => $table,
         ]);
     }
@@ -202,8 +203,9 @@ class UserController extends Controller
 How you render it depends on the Blade components available in your app, but the controller should pass the built table object into the view.
 
 Example:
+
 ```php
-return view('pages.users.index', [
+return view('pages.users.table', [
     'table' => new UserTable('users'),
 ]);
 ```

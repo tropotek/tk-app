@@ -255,7 +255,7 @@ class UserController extends Controller
     {
         $this->setPageName('users.index|Users');
 
-        return view('pages.users.index');
+        return view('pages.users.table');
     }
 
     public function edit(int $id)

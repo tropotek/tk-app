@@ -11,7 +11,8 @@ table thead th.col-sort {
 
     a, button {
         position: relative; /* This is needed for the absolute positioning. */
-        padding-left: 0.8em;
+        margin: 0;
+        padding: 0 0 0 0.8em;
     }
 
     a::before, a::after,

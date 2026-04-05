@@ -2,6 +2,8 @@
 
 namespace Tk\Tbl;
 
+use Illuminate\View\ComponentAttributeBag;
+
 class Cell
 {
     public string $name = '';
@@ -14,6 +16,8 @@ class Cell
     protected mixed $html = null;   // null|callable
     protected mixed $table = null;  // HasTable trait
 
+    protected ComponentAttributeBag $attrs;
+
 
     public function __construct(
         string $name,
@@ -25,6 +29,7 @@ class Cell
         bool $visible = true
     )
     {
+        $this->attrs = new ComponentAttributeBag();
         $this->name = $name;
 
         if (empty($header)) {
@@ -58,11 +63,15 @@ class Cell
         if (is_callable($this->text)) {
             return call_user_func($this->text, $row);
         }
+        $val = '';
         if (is_array($row)) {
-            return $row[$this->name] ?? '';
+            $val = $row[$this->name] ?? '';
         }
         if (is_object($row)) {
-            return $row->{$this->name} ?? '';
+            $val = $row->{$this->name} ?? '';
+        }
+        if (is_string($val) || $val instanceof \Stringable) {
+            return strval($val);
         }
         return '';
     }
@@ -160,6 +169,26 @@ class Cell
     {
         $this->html = $html;
         return $this;
+    }
+
+    /**
+     * Add a CSS class to the cell
+     */
+    public function addClass(string $class): static
+    {
+        $this->attrs = $this->attrs->class($class);
+        return $this;
+    }
+
+    public function addAttr(array $attrs): static
+    {
+        $this->attrs = $this->attrs->merge($attrs);
+        return $this;
+    }
+
+    public function getAttrs(): ComponentAttributeBag
+    {
+        return $this->attrs;
     }
 
     public function getNextSortUrl(string $currentSort = '', string $currentDir = '', array $query = []): string

@@ -18,7 +18,7 @@ class UserController extends Controller
 
         $table = new UserTable();
 
-        return view('pages.users.index', [
+        return view('pages.users.table', [
             'table' => $table,
             'create' => '/user/create',
         ]);
