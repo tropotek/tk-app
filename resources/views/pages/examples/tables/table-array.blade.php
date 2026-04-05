@@ -6,7 +6,7 @@
 
     <div class="card mb-3">
         <div class="card-body">
-{{--            <x-tkl-ui::table :table="$table1" />--}}
+            {{--            <x-tkl-ui::table :table="$table1" />--}}
 
             <div class="row my-2">
                 <div class="d-flex flex-nowrap text-nowrap gap-2 align-items-center">
@@ -14,8 +14,8 @@
                     <div x-data="{ q: '' }">
                         <input type="text" class="form-control form-control-sm w-auto"
                                placeholder="Name, Email"
-{{--                               x-model="q"--}}
-{{--                               @input.debounce.250ms="if (q.trim().length >= 3 || q.trim() === '') $wire.set('search', q.trim())"--}}
+                            {{--                               x-model="q"--}}
+                            {{--                               @input.debounce.250ms="if (q.trim().length >= 3 || q.trim() === '') $wire.set('search', q.trim())"--}}
                         />
                     </div>
 
@@ -31,7 +31,7 @@
                         type="button"
                         class="btn btn-link btn-sm pb-1 ms-1"
                         title="Clear Filters & Search"
-{{--                        wire:click="clearFilters"--}}
+                        {{--                        wire:click="clearFilters"--}}
                     >
                         <i class="fa fa-circle-xmark fa-lg pb-2"></i>
                     </button>
@@ -54,11 +54,11 @@
 
                         <span class="text-secondary">
                     Showing
-                    <span class="fw-semibold">{{ $rows->firstItem() }}</span>
+                    <span class="fw-semibold">{{ $table->rows()->firstItem() }}</span>
                     to
-                    <span class="fw-semibold">{{ $rows->lastItem() }}</span>
+                    <span class="fw-semibold">{{ $table->rows()->lastItem() }}</span>
                     of
-                    <span class="fw-semibold">{{ $rows->total() }}</span>
+                    <span class="fw-semibold">{{ $table->rows()->total() }}</span>
                     results
                 </span>
                     </div>
@@ -69,18 +69,15 @@
                 <thead>
                 <tr>
                     @foreach ($table->getCells()->filter(fn($r) => $r->isVisible()) as $cell)
-                        <th class="{{ $cell->isSortable() ? 'col-sort'  : '' }}">
-{{--                            @if ($cell->sortable)--}}
-{{--                                <button class="btn btn-link ms-2 px-0 py-0 fw-bold text-decoration-underline"--}}
-{{--                                        wire:click="{{ ($this->sort === $cell->getName()) ? 'toggleDir' : '$set("sort", "'.$cell->name.'")' }}">--}}
-{{--                                    {{ $cell->getHeader() }}--}}
-{{--                                    @if ($this->sort === $cell->getName())--}}
-{{--                                        <i class="fa {{ ($this->dir === 'asc') ? 'fa-sort-down' : 'fa-sort-up' }}"></i>--}}
-{{--                                    @endif--}}
-{{--                                </button>--}}
-{{--                            @else--}}
-                                <span class="ms-2 fw-bold">{{ $cell->getHeader() }}</span>
-{{--                            @endif--}}
+                        <th class="{{ ($cell->isSortable() ? 'col-sort '  : '') }}">
+                            @if ($cell->isSortable())
+                                <a href="{{ $cell->getNextSortUrl($table->tableSort, $table->tableDir) }}"
+                                   class="fw-bold {{ ($table->tableSort === $cell->getName()) ? $table->tableDir : '' }}">
+                                    {{ $cell->getHeader() }}
+                                </a>
+                            @else
+                                <span class="fw-bold">{{ $cell->getHeader() }}</span>
+                            @endif
                         </th>
                     @endforeach
 
@@ -89,7 +86,7 @@
                 </thead>
 
                 <tbody class="table-group-divider">
-                @foreach ($rows as $user)
+                @foreach ($table->rows() as $user)
                     <tr wire:key="{{ $user->id }}">
                         @foreach($table->getCells()->filter(fn($r) => $r->isVisible()) as $cell)
                             @if ($cell->getName() == 'name')
@@ -111,8 +108,7 @@
                 @endforeach
                 </tbody>
             </table>
-            {{ $rows->links() }}
-
+            {{ $table->rows()->links() }}
 
 
         </div>

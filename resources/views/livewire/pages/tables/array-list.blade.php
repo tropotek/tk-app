@@ -3,6 +3,7 @@
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -11,7 +12,6 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Tk\Support\Facades\Breadcrumbs;
 use Tk\Tbl\Cell;
-use Tk\Tbl\Table;
 use Tk\Tbl\IsTable;
 
 new #[Layout('pages.main')]
@@ -25,24 +25,31 @@ class extends Component {
 
     public function mount()
     {
-        Breadcrumbs::push('Manage Staff');
+        Breadcrumbs::push('Manage Array');
+    }
+
+    public function getQueryString(): array
+    {
+        return [
+            'tableLimit' => ['except' => 30],
+            'tableSort' => ['except' => ''],
+            'tableDir' => ['except' => 'asc'],
+        ];
     }
 
     public function boot()
     {
-        $this->table = new Table();
-
-        $this->table->appendCell(new Cell(
+        $this->appendCell(new Cell(
             name: 'name',
             sortable: true,
         ));
 
-        $this->table->appendCell(new Cell(
+        $this->appendCell(new Cell(
             name: 'email',
             sortable: true,
         ));
 
-        $this->table->appendCell(new Cell(
+        $this->appendCell(new Cell(
             name: 'roles',
             sortable: false,
 //            text: function ($row) {
@@ -51,7 +58,7 @@ class extends Component {
         ));
 
         // alt method to add cells
-        $this->table->appendCell(new Cell('created_at'), 'roles')
+        $this->appendCell(new Cell('created_at'), 'roles')
             ->setHeader('Created')
             ->setSortable()
 //            ->setText(function ($row) {
@@ -66,29 +73,52 @@ class extends Component {
     }
 
     #[Computed]
-    public function rows(): \Traversable
+    public function rows(): LengthAwarePaginator
     {
-
         $rows = [
-            (object)['id' => 1, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test', 'created_at' => '2021-01-01 12:23:33'],
-            (object)['id' => 2, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test', 'created_at' => '2021-01-01 12:23:33'],
-            (object)['id' => 3, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test', 'created_at' => '2021-01-01 12:23:33'],
-            (object)['id' => 4, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test', 'created_at' => '2021-01-01 12:23:33'],
-            (object)['id' => 5, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test', 'created_at' => '2021-01-01 12:23:33'],
-            (object)['id' => 6, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test', 'created_at' => '2021-01-01 12:23:33'],
-            (object)['id' => 7, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test', 'created_at' => '2021-01-01 12:23:33'],
-            (object)['id' => 8, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test', 'created_at' => '2021-01-01 12:23:33'],
+            (object) [
+                'id' => 1, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test',
+                'created_at' => '2021-01-01 12:23:33'
+            ],
+            (object) [
+                'id' => 2, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test',
+                'created_at' => '2021-01-01 12:23:33'
+            ],
+            (object) [
+                'id' => 3, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test',
+                'created_at' => '2021-01-01 12:23:33'
+            ],
+            (object) [
+                'id' => 4, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test',
+                'created_at' => '2021-01-01 12:23:33'
+            ],
+            (object) [
+                'id' => 5, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test',
+                'created_at' => '2021-01-01 12:23:33'
+            ],
+            (object) [
+                'id' => 6, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test',
+                'created_at' => '2021-01-01 12:23:33'
+            ],
+            (object) [
+                'id' => 7, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test',
+                'created_at' => '2021-01-01 12:23:33'
+            ],
+            (object) [
+                'id' => 8, 'name' => 'Test', 'email' => 'email@example.com', 'roles' => 'test',
+                'created_at' => '2021-01-01 12:23:33'
+            ],
         ];
 
         // 1. filter results with any filters if available
 
 
-        // 2. sort results (todo: using Gregs sort method for now, review)
-        $sortCol = ($this->dir == 'desc' ? '-' : '') . $this->safeSort();
+        // 2. sort results (todo: using Greg's sort method for now, review)
+        $sortCol = ($this->tableDir == 'desc' ? '-' : '').$this->safeSort();
         $rows = $this->sortRows($rows, $sortCol);
 
         // 3. return paginated results
-        return $this->paginate($rows);
+        return $this->paginateArray($rows);
     }
 
 };
@@ -157,14 +187,14 @@ class extends Component {
     <table class="table table-striped table-hover">
         <thead>
         <tr>
-            @foreach ($this->table->getCells()->filter(fn($r) => $r->isVisible()) as $cell)
+            @foreach ($this->getCells()->filter(fn($r) => $r->isVisible()) as $cell)
                 <th class="{{ $cell->isSortable() ? 'col-sort'  : '' }}">
-                    @if ($cell->sortable)
+                    @if ($cell->isSortable())
                         <button class="btn btn-link ms-2 px-0 py-0 fw-bold text-decoration-underline"
-                                wire:click="{{ ($this->sort === $cell->getName()) ? 'toggleDir' : '$set("sort", "'.$cell->name.'")' }}">
+                                wire:click="{{ ($this->tableSort === $cell->getName()) ? 'toggleDir' : '$set("tableSort", "' . $cell->getName() . '")' }}">
                             {{ $cell->getHeader() }}
-                            @if ($this->sort === $cell->getName())
-                                <i class="fa {{ ($this->dir === 'asc') ? 'fa-sort-down' : 'fa-sort-up' }}"></i>
+                            @if ($this->tableSort === $cell->getName())
+                                <i class="fa {{ ($this->tableDir === 'asc') ? 'fa-sort-down' : 'fa-sort-up' }}"></i>
                             @endif
                         </button>
                     @else
@@ -179,7 +209,7 @@ class extends Component {
         <tbody class="table-group-divider">
         @foreach ($this->rows as $user)
             <tr wire:key="{{ $user->id }}">
-                @foreach($this->table->getCells()->filter(fn($r) => $r->isVisible()) as $cell)
+                @foreach($this->getCells()->filter(fn($r) => $r->isVisible()) as $cell)
                     @if ($cell->getName() == 'name')
                         <td class="fw-bold">
                             <a href="{{ route('admin.users.edit', $user->id) }}">{{ $cell->html($user) }}</a>

@@ -10,9 +10,9 @@ class Cell
     public string $sort = '';
     public bool $visible = true;
 
-    protected mixed $text = null;  // null|callable
-    protected mixed $html = null;  // null|callable
-    protected ?Table $table = null;
+    protected mixed $text = null;   // null|callable
+    protected mixed $html = null;   // null|callable
+    protected mixed $table = null;  // HasTable trait
 
 
     public function __construct(
@@ -78,13 +78,19 @@ class Cell
         return $this->text($row);
     }
 
-    public function getTable(): ?Table
+    public function getTable(): mixed
     {
         return $this->table;
     }
 
-    public function setTable(?Table $table): static
+    public function setTable(mixed $table): static
     {
+        if (is_null($table)) {
+            throw new \InvalidArgumentException("cannot set a null table object");
+        }
+        if (!method_exists($table, 'rows')) {
+            throw new \InvalidArgumentException('expected table object using the isTable trait');
+        }
         $this->table = $table;
         return $this;
     }
@@ -156,25 +162,33 @@ class Cell
         return $this;
     }
 
-
-
+    public function getNextSortUrl(string $currentSort = '', string $currentDir = '', array $query = []): string
+    {
+        $url = request()->fullUrl();
+        if ($this->isSortable()) {
+            if ($currentSort == $this->getSort() && $currentDir == 'desc') {
+                $query[$this->getTable()->tableKey('sort')] = null;
+                $query[$this->getTable()->tableKey('dir')] = null;
+            } else {
+                $query[$this->getTable()->tableKey('sort')] = $this->getSort();
+                $query[$this->getTable()->tableKey('dir')] = $this->getNextDir($currentSort, $currentDir);
+            }
+        }
+        return url()->query($url, $query);
+    }
 
     /**
-     * @todo: we should use the table dir
+     * get the next sort direction
      */
-//    public function getNextSortDir(): string
-//    {
-//        if (!$this->getTable()) {
-//            return '';
-//        }
-//        if (!$this->isSortable()) {
-//            return '';
-//        }
-//        return match ($this->getTable()->dir) {
-//            'asc' => 'desc',
-//            'desc' => 'asc',
-//            default => '',
-//        };
-//    }
+    protected function getNextDir(string $currentSort = '', string $currentDir = ''): string
+    {
+        if ($currentSort == $this->getSort()) {
+            if ($currentDir == 'desc') {
+                return '';
+            }
+            return empty($currentDir) ? 'asc' : 'desc';
+        }
+        return 'asc';
+    }
 
 }

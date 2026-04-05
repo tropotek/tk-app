@@ -3,6 +3,7 @@
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -11,7 +12,6 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Tk\Support\Facades\Breadcrumbs;
 use Tk\Tbl\Cell;
-use Tk\Tbl\Table;
 use Tk\Tbl\IsTable;
 
 new #[Layout('pages.main')]
@@ -25,24 +25,31 @@ class extends Component {
 
     public function mount()
     {
-        Breadcrumbs::push('Manage Staff');
+        Breadcrumbs::push('Manage Users');
+    }
+
+    public function getQueryString(): array
+    {
+        return [
+            'tableLimit' => ['except' => 30],
+            'tableSort' => ['except' => ''],
+            'tableDir' => ['except' => 'asc'],
+        ];
     }
 
     public function boot()
     {
-        $this->table = new Table();
-
-        $this->table->appendCell(new Cell(
+        $this->appendCell(new Cell(
             name: 'name',
             sortable: true,
         ));
 
-        $this->table->appendCell(new Cell(
+        $this->appendCell(new Cell(
             name: 'email',
             sortable: true,
         ));
 
-        $this->table->appendCell(new Cell(
+        $this->appendCell(new Cell(
             name: 'roles',
             sortable: false,
             text: function ($row) {
@@ -51,13 +58,12 @@ class extends Component {
         ));
 
         // alt method to add cells
-        $this->table->appendCell(new Cell('created_at'), 'roles')
+        $this->appendCell(new Cell('created_at'), 'roles')
             ->setHeader('Created')
             ->setSortable()
             ->setText(function ($row) {
                 return $row->created_at->format('Y-m-d h:i');
-            })
-        ;
+            });
     }
 
     public function clearFilters(): void
@@ -66,7 +72,7 @@ class extends Component {
     }
 
     #[Computed]
-    public function rows()
+    public function rows(): LengthAwarePaginator
     {
         return User::query()
             //->search($this->search, fn() => $this->resetPage())
@@ -76,10 +82,12 @@ class extends Component {
                 $email = preg_replace("/[^a-zA-Z0-9@._-]/", "", $this->search);
                 return $builder->where('name', 'like', "%{$str}%")
                     ->orWhere('email', 'like', "%{$email}%")
-                    ->tap($this->resetPage() ?? fn () => null); // noop
+                    ->tap($this->resetPage() ?? fn() => null); // noop
             })
-            ->orderBy($this->safeSort(), $this->dir)
-            ->paginate($this->limit);
+            ->when($this->tableDir, function (Builder $builder) {
+                return $builder->orderBy($this->safeSort(), $this->tableDir);
+            })
+            ->paginate($this->tableLimit);
     }
 
 };
@@ -147,48 +155,48 @@ class extends Component {
 
     <table class="table table-striped table-hover">
         <thead>
-            <tr>
-                @foreach ($this->table->getCells()->filter(fn($r) => $r->isVisible()) as $cell)
-                    <th class="{{ $cell->isSortable() ? 'col-sort'  : '' }}">
-                        @if ($cell->sortable)
-                            <button class="btn btn-link ms-2 px-0 py-0 fw-bold text-decoration-underline"
-                                    wire:click="{{ ($this->sort === $cell->getName()) ? 'toggleDir' : '$set("sort", "'.$cell->name.'")' }}">
-                                {{ $cell->getHeader() }}
-                                @if ($this->sort === $cell->getName())
-                                    <i class="fa {{ ($this->dir === 'asc') ? 'fa-sort-down' : 'fa-sort-up' }}"></i>
-                                @endif
-                            </button>
-                        @else
-                            <span class="ms-2 fw-bold">{{ $cell->getHeader() }}</span>
-                        @endif
-                    </th>
-                @endforeach
+        <tr>
+            @foreach ($this->getCells()->filter(fn($r) => $r->isVisible()) as $cell)
+                <th class="{{ $cell->isSortable() ? 'col-sort'  : '' }}">
+                    @if ($cell->isSortable())
+                        @php
+                            vd($this->tableSort, $this->tableDir);
+                        @endphp
+                        <button class="btn btn-link fw-bold {{ ($this->tableSort === $cell->getName()) ? $this->tableDir : ''  }}"
+                                wire:click="{{ ($this->tableSort === $cell->getName()) ? 'toggleDir' : '$set("tableSort", "' . $cell->getName() . '")' }}">
+                            {{ $cell->getHeader() }}
+                        </button>
+                    @else
+                        <span class="fw-bold">{{ $cell->getHeader() }}</span>
+                    @endif
+                </th>
+            @endforeach
 
-                <th class="text-muted"><i class="fa-solid fa-pen-to-square"></i></th>
-            </tr>
+            <th class="text-muted"><i class="fa-solid fa-pen-to-square"></i></th>
+        </tr>
         </thead>
 
         <tbody class="table-group-divider">
-            @foreach ($this->rows as $user)
-                <tr wire:key="{{ $user->id }}">
-                    @foreach($this->table->getCells()->filter(fn($r) => $r->isVisible()) as $cell)
-                        @if ($cell->getName() == 'name')
-                            <td class="fw-bold">
-                                <a href="{{ route('admin.users.edit', $user->id) }}">{{ $cell->html($user) }}</a>
-                            </td>
-                        @else
-                            <td class="tt">{{ $cell->html($user) }}</td>
-                        @endif
-                    @endforeach
+        @foreach ($this->rows as $user)
+            <tr wire:key="{{ $user->id }}">
+                @foreach($this->getCells()->filter(fn($r) => $r->isVisible()) as $cell)
+                    @if ($cell->getName() == 'name')
+                        <td class="fw-bold">
+                            <a href="{{ route('admin.users.edit', $user->id) }}">{{ $cell->html($user) }}</a>
+                        </td>
+                    @else
+                        <td class="tt">{{ $cell->html($user) }}</td>
+                    @endif
+                @endforeach
 
-                    <td>
-                        <a href="{{ route('admin.users.edit', $user->id) }}">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                        </a>
-                    </td>
+                <td>
+                    <a href="{{ route('admin.users.edit', $user->id) }}">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </a>
+                </td>
 
-                </tr>
-            @endforeach
+            </tr>
+        @endforeach
         </tbody>
     </table>
     {{ $this->rows->links() }}
