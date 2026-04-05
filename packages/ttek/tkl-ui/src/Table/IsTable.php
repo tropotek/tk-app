@@ -1,6 +1,6 @@
 <?php
 
-namespace Tk\Tbl;
+namespace Tk\Table;
 
 use Illuminate\Pagination\Paginator;
 use Illuminate\Container\Container;

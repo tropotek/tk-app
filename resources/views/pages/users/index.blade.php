@@ -11,8 +11,8 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Tk\Support\Facades\Breadcrumbs;
-use Tk\Tbl\Cell;
-use Tk\Tbl\IsLivewireTable;
+use Tk\Table\Cell;
+use Tk\Table\IsLivewireTable;
 
 new #[Layout('pages.main')]
 class extends Component {
@@ -49,7 +49,6 @@ class extends Component {
         $this->appendCell(new Cell('created_at'))
             ->setHeader('Created')
             ->setSortable();
-
     }
 
     #[Computed]
@@ -61,9 +60,9 @@ class extends Component {
                 $email = preg_replace("/[^a-zA-Z0-9@._-]/", "", $search);
                 return $builder->where('name', 'like', "%{$str}%")
                     ->orWhere('email', 'like', "%{$email}%")
-                    ->tap($this->resetPage() ?? fn () => null);
+                    ->tap($this->resetPage() ?? fn() => null);
             })
-            ->when($this->roles, fn (Builder $query) => $query->role($this->roles))
+            ->when($this->roles, fn(Builder $query) => $query->role($this->roles))
             ->orderBy($this->safeSort(), $this->dir)
             ->paginate($this->limit);
     }
@@ -74,9 +73,9 @@ class extends Component {
 <div>
     <h1>{{ $pageName }}</h1>
 
-    <x-tkl-ui::tbl.livewire.filters :table="$this">
+    <x-tkl-ui::table.livewire.filters :table="$this">
         <x-slot name="filters">
-            <x-tkl-ui::tbl.livewire.filters.select
+            <x-tkl-ui::table.livewire.filters.select
                 wire:model.live="roles"
                 :name="$this->tableKey('roles')"
                 :options="[ '' => '- All Roles -', 'test' => 'Test', 'admin' => 'Admin', 'staff' => 'Staff', 'member' => 'Member']"
@@ -101,8 +100,8 @@ class extends Component {
                 </a>
             </div>
         </x-slot>
-    </x-tkl-ui::tbl.livewire.filters>
+    </x-tkl-ui::table.livewire.filters>
 
-    <x-tkl-ui::tbl.livewire :table="$this" />
+    <x-tkl-ui::table.livewire :table="$this"/>
 
 </div>

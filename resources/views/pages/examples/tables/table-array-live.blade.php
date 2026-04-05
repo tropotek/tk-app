@@ -11,8 +11,8 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Tk\Support\Facades\Breadcrumbs;
-use Tk\Tbl\Cell;
-use Tk\Tbl\IsLivewireTable;
+use Tk\Table\Cell;
+use Tk\Table\IsLivewireTable;
 
 new #[Layout('pages.main')]
 class extends Component {
@@ -51,22 +51,45 @@ class extends Component {
         // alt method to add cells
         $this->appendCell(new Cell('created_at'), 'roles')
             ->setHeader('Created')
-            ->setSortable()
-        ;
+            ->setSortable();
     }
 
     #[Computed]
     public function rows(): LengthAwarePaginator
     {
         $rows = [
-            (object)['id' => 1, 'name' => 'Test 1', 'email' => 'email1@example.com', 'roles' => 'test', 'created_at' => '2021-01-01 12:23:33'],
-            (object)['id' => 2, 'name' => 'Test 2', 'email' => 'email2@example.com', 'roles' => 'test', 'created_at' => '2021-01-02 12:23:33'],
-            (object)['id' => 3, 'name' => 'Test 3', 'email' => 'email3@example.com', 'roles' => 'test', 'created_at' => '2021-03-01 12:23:33'],
-            (object)['id' => 4, 'name' => 'Test 4', 'email' => 'email4@example.com', 'roles' => 'test', 'created_at' => '2021-07-01 12:23:33'],
-            (object)['id' => 5, 'name' => 'Test 5', 'email' => 'email5@example.com', 'roles' => 'test', 'created_at' => '2021-04-25 12:23:33'],
-            (object)['id' => 6, 'name' => 'Test 6', 'email' => 'email6@example.com', 'roles' => 'test', 'created_at' => '2021-02-03 12:23:33'],
-            (object)['id' => 7, 'name' => 'Test 7', 'email' => 'email7@example.com', 'roles' => 'test', 'created_at' => '2021-02-01 12:23:33'],
-            (object)['id' => 8, 'name' => 'Test 8', 'email' => 'email8@example.com', 'roles' => 'test', 'created_at' => '2021-04-12 12:23:33'],
+            (object) [
+                'id' => 1, 'name' => 'Test 1', 'email' => 'email1@example.com', 'roles' => 'test',
+                'created_at' => '2021-01-01 12:23:33'
+            ],
+            (object) [
+                'id' => 2, 'name' => 'Test 2', 'email' => 'email2@example.com', 'roles' => 'test',
+                'created_at' => '2021-01-02 12:23:33'
+            ],
+            (object) [
+                'id' => 3, 'name' => 'Test 3', 'email' => 'email3@example.com', 'roles' => 'test',
+                'created_at' => '2021-03-01 12:23:33'
+            ],
+            (object) [
+                'id' => 4, 'name' => 'Test 4', 'email' => 'email4@example.com', 'roles' => 'test',
+                'created_at' => '2021-07-01 12:23:33'
+            ],
+            (object) [
+                'id' => 5, 'name' => 'Test 5', 'email' => 'email5@example.com', 'roles' => 'test',
+                'created_at' => '2021-04-25 12:23:33'
+            ],
+            (object) [
+                'id' => 6, 'name' => 'Test 6', 'email' => 'email6@example.com', 'roles' => 'test',
+                'created_at' => '2021-02-03 12:23:33'
+            ],
+            (object) [
+                'id' => 7, 'name' => 'Test 7', 'email' => 'email7@example.com', 'roles' => 'test',
+                'created_at' => '2021-02-01 12:23:33'
+            ],
+            (object) [
+                'id' => 8, 'name' => 'Test 8', 'email' => 'email8@example.com', 'roles' => 'test',
+                'created_at' => '2021-04-12 12:23:33'
+            ],
         ];
 
         // 1. filter results with any filters if available
@@ -83,7 +106,7 @@ class extends Component {
         }
 
         // 2. sort results (todo: using Greg's sort method for now, review)
-        $sortCol = ($this->dir == 'desc' ? '-' : '') . $this->safeSort();
+        $sortCol = ($this->dir == 'desc' ? '-' : '').$this->safeSort();
         $rows = $this->sortRows($rows, $sortCol);
 
         // 3. return paginated results
@@ -96,9 +119,9 @@ class extends Component {
 <div>
     <h1>Sis Style Array List</h1>
 
-    <x-tkl-ui::tbl.livewire.filters :table="$this">
+    <x-tkl-ui::table.livewire.filters :table="$this">
         <x-slot name="filters">
-            <x-tkl-ui::tbl.livewire.filters.select
+            <x-tkl-ui::table.livewire.filters.select
                 wire:model.live="roles"
                 :name="$this->tableKey('roles')"
                 :options="[ '' => '- All Roles -', 'test' => 'Test', 'admin' => 'Admin', 'staff' => 'Staff', 'member' => 'Member']"
@@ -123,8 +146,8 @@ class extends Component {
                 </a>
             </div>
         </x-slot>
-    </x-tkl-ui::tbl.livewire.filters>
+    </x-tkl-ui::table.livewire.filters>
 
-    <x-tkl-ui::tbl.livewire :table="$this" />
+    <x-tkl-ui::table.livewire :table="$this"/>
 
 </div>

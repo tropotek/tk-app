@@ -1,5 +1,5 @@
 <?php
-/** @var \Tk\Tbl\Cell $cell */
+/** @var \Tk\Table\Cell $cell */
 ?>
 @props([
     // required

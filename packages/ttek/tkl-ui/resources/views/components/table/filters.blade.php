@@ -1,5 +1,5 @@
 <?php
-/** @var \Tk\Tbl\Table $table */
+/** @var \Tk\Table\Table $table */
 ?>
 @props([
     // required
@@ -16,10 +16,11 @@
             <div class="d-flex">
                 <div class="py-2">
 
-{{-- TODO --}}
-{{-- <button type="submit" class="btn btn-primary" name="{{ $table->tableKey('reset') }}" value="1"><i class="fa-solid fa-filter align-middle"></i></button> --}}
+                    {{-- TODO --}}
+                    {{-- <button type="submit" class="btn btn-primary" name="{{ $table->tableKey('reset') }}" value="1"><i class="fa-solid fa-filter align-middle"></i></button> --}}
 
-                    <a title="Click to reset table filters" href="{{ request()->fullUrlWithQuery([$table->tableKey('reset') => '1']) }}">
+                    <a title="Click to reset table filters"
+                       href="{{ request()->fullUrlWithQuery([$table->tableKey('reset') => '1']) }}">
                         <i class="fa-solid fa-filter align-middle"></i>
                     </a>
                 </div>
@@ -33,7 +34,7 @@
                     title="Clear Filters & Search"
                     name="{{ $table->tableKey('reset') }}"
                     value="1"
-{{--                    wire:click="clearFilters"--}}
+                    {{--                    wire:click="clearFilters"--}}
                 >
                     <i class="fa fa-circle-xmark fa-lg"></i>
                 </button>
@@ -49,12 +50,12 @@
 
             <div class="py-2 flex-grow-1">
                 @if ($showSearch)
-                    <x-tkl-ui::tbl.filters.search />
+                    <x-tkl-ui::table.filters.search/>
                 @endif
             </div>
 
             @if($showLimit)
-                <x-tkl-ui::tbl.filters.limit />
+                <x-tkl-ui::table.filters.limit/>
             @endif
         </div>
 

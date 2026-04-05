@@ -4,15 +4,15 @@
         <h2>{{ $pageName }}</h2>
     </div>
 
-    <x-tkl-ui::tbl.filters :table="$table">
+    <x-tkl-ui::table.filters :table="$table">
         <x-slot name="filters">
-            <x-tkl-ui::tbl.filters.select
+            <x-tkl-ui::table.filters.select
                 :name="$table->tableKey('status')"
                 :options="[ '' => '- Status -', 'Pending' => 'Pending', 'In Progress' => 'In Progress', 'Cancelled' => 'Cancelled']"
                 value="{{ request()->input($table->tableKey('status'), '') }}"
             />
 
-            <x-tkl-ui::tbl.filters.select
+            <x-tkl-ui::table.filters.select
                 :name="$table->tableKey('type')"
                 :options="[ '' => '- Type -', 'Biopsy' => 'Biopsy', 'Necropsy' => 'Necropsy']"
                 value="{{ request()->input($table->tableKey('type'), '') }}"
@@ -27,8 +27,8 @@
             </div>
         </x-slot>
 
-    </x-tkl-ui::tbl.filters>
+    </x-tkl-ui::table.filters>
 
-    <x-tkl-ui::tbl :table="$table" />
+    <x-tkl-ui::table :table="$table" />
 
 </x-pages.main>

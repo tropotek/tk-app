@@ -13,8 +13,8 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Tk\Support\Facades\Breadcrumbs;
-use Tk\Tbl\Cell;
-use Tk\Tbl\IsLivewireTable;
+use Tk\Table\Cell;
+use Tk\Table\IsLivewireTable;
 
 new #[Layout('pages.main')]
 class extends Component {
@@ -74,9 +74,9 @@ class extends Component {
 <div>
     <h1>{{ $pageName }}</h1>
 
-    <x-tkl-ui::tbl.livewire.filters :table="$this">
+    <x-tkl-ui::table.livewire.filters :table="$this">
         <x-slot name="filters">
-            <x-tkl-ui::tbl.livewire.filters.select
+            <x-tkl-ui::table.livewire.filters.select
                 wire:model.live="status"
                 :name="$this->tableKey('status')"
                 :options="[ '' => '- All Statuses -'] + IdeaStatus::getLabels()"
@@ -91,8 +91,8 @@ class extends Component {
                 </a>
             </div>
         </x-slot>
-    </x-tkl-ui::tbl.livewire.filters>
+    </x-tkl-ui::table.livewire.filters>
 
-    <x-tkl-ui::tbl.livewire :table="$this"/>
+    <x-tkl-ui::table.livewire :table="$this"/>
 
 </div>

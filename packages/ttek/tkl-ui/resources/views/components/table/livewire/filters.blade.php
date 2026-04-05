@@ -1,5 +1,5 @@
 <?php
-/** @var \Tk\Tbl\Table $table */
+/** @var \Tk\Table\Table $table */
 ?>
 @props([
     // required
@@ -54,12 +54,12 @@
 
         <div class="py-2 flex-grow-1">
             @if ($showSearch)
-                <x-tkl-ui::tbl.livewire.filters.search />
+                <x-tkl-ui::table.livewire.filters.search/>
             @endif
         </div>
 
         @if($showLimit)
-            <x-tkl-ui::tbl.livewire.filters.limit />
+            <x-tkl-ui::table.livewire.filters.limit/>
         @endif
     </div>
 

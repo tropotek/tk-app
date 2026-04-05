@@ -7,8 +7,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Tk\Support\Facades\Breadcrumbs;
-use Tk\Tbl\Cell;
-use Tk\Tbl\IsTable;
+use Tk\Table\Cell;
+use Tk\Table\IsTable;
 
 /**
  * This is an example of using the Table trait within a controller.
