@@ -1,78 +1,98 @@
-<x-pages.main>
+<?php
 
-    <div class="row">
-        <div class="col-lg-9 col-md-8 col-sm-6 col-xs-12">
-            @if($table->count())
-                <div class="mt-2">
-                    <h2>{{ $pageName }}</h2>
+use App\Enum\IdeaStatus;
+use App\Models\Idea;
+use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
+use Livewire\Attributes\Url;
+use Livewire\Component;
+use Livewire\WithPagination;
+use Tk\Support\Facades\Breadcrumbs;
+use Tk\Tbl\Cell;
+use Tk\Tbl\IsLivewireTable;
 
-                    <x-tkl-ui::table.filter-table :$table>
+new #[Layout('pages.main')]
+class extends Component {
 
-                        <x-slot name="filters">
-                            <x-tkl-ui::table.filters.select
-                                    :name="$table->key('status')"
-                                    :options="['' => '- Status -', 'pending' => 'Pending', 'in_progress' => 'In Progress', 'completed' => 'Completed', 'cancelled' => 'Cancelled']"
-                                    value="{{ $table->getParam('status') }}"
-                            />
-                        </x-slot>
+    use WithPagination, IsLivewireTable;
 
-                        <x-slot name="actions">
-                            {{-- todo create action components --}}
-                            <div class="p-2 ps-0">
-                                <a class="btn btn-sm btn-outline-secondary" href="/examples/ideas/create">
-                                    <i class="fa fa-plus-circle"></i> Create
-                                </a>
-                            </div>
-                        </x-slot>
+    #[Url(except: '')]
+    public $search = '';
 
-                    </x-tkl-ui::table.filter-table>
-                </div>
-            @endif
+    #[Url(except: '')]
+    public $status = '';
 
-            <div class="mt-3">
-                <a href="/examples/ideas/create" class="btn btn-sm btn-outline-primary">Create New Idea</a>
-                <a href="/examples/ideas/delete-all" class="btn btn-sm btn-outline-danger">Clear All</a>
+    public function boot()
+    {
+        Breadcrumbs::push('Ideas');
+
+        $this->appendCell(new Cell('title'))
+            ->setSortable()
+            ->addClass('fw-bold')
+            ->setHtml(function (Idea $idea, $cell) {
+                return sprintf('<a href="%s">%s</a>', route('examples.ideas.edit', $idea->id), $cell->text($idea));
+            });
+
+        $this->appendCell(new Cell('status'))
+            ->setSortable()
+            ->setText(function (Idea $idea, $cell) {
+                return $idea->status->label();
+            });
+
+        $this->appendCell(new Cell('created_at'))
+            ->setHeader('Created')
+            ->setSortable();
+
+        $this->appendCell(new Cell('updated_at'))
+            ->setHeader('Updated')
+            ->setSortable();
+    }
+
+    #[Computed]
+    public function rows(): LengthAwarePaginator
+    {
+        return Idea::query()
+            ->when($this->search, function (Builder $builder) {
+                $str = preg_replace("/[^a-zA-Z0-9' -]/", " ", $this->search);
+                return $builder->where('title', 'like', "%{$str}%")
+                    ->orWhere('description', 'like', "%{$str}%")
+                    ->tap($this->resetPage() ?? fn() => null);
+            })
+            ->when($this->status, fn(Builder $query) => $query->where('status', $this->status))
+            ->orderBy($this->safeSort(), $this->dir)
+            ->paginate($this->limit);
+    }
+
+};
+?>
+
+<div>
+    <h1>{{ $pageName }}</h1>
+
+    <x-tkl-ui::tbl.livewire.filters :table="$this">
+        <x-slot name="filters">
+            <x-tkl-ui::tbl.livewire.filters.select
+                wire:model.live="status"
+                :name="$this->tableKey('status')"
+                :options="[ '' => '- All Statuses -'] + IdeaStatus::getLabels()"
+                value="{{ $this->status }}"
+            />
+        </x-slot>
+
+        <x-slot name="actions">
+            <div class="p-2 ps-0">
+                <a href="{{ route('examples.ideas.create') }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fa fa-plus-circle"></i> Create
+                </a>
             </div>
+        </x-slot>
+    </x-tkl-ui::tbl.livewire.filters>
 
-        </div>
-        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-10">
+    <x-tkl-ui::tbl.livewire :table="$this"/>
 
-            <div class="mt-2">
-                <p class="text-muted"><strong>My Ideas</strong></p>
-
-                <ul class="list-group mt-3">
-                    @foreach ($ideas as $idea)
-                        <li class="list-group-item">
-                            <a href="/examples/ideas/{{ $idea->id }}">
-                                {{ $idea->title }}
-                                <em class="d-inline-block float-end">[{{ $idea->status->label() }}]</em>
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
-
-                <div class="modal fade" id="idea-dialog" tabindex="-1" aria-labelledby="exampleModalLabel"
-                     aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Idea</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-
-
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary">Save changes</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</x-pages.main>
+</div>

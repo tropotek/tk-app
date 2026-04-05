@@ -22,65 +22,49 @@ class extends Component {
     #[Url(except: '')]
     public $search = '';
 
+    #[Url(except: '')]
+    public $roles = '';
 
-    public function mount()
-    {
-        Breadcrumbs::push('Manage Users');
-    }
 
     public function boot()
     {
-        $this->appendCell(new Cell(
-            name: 'name',
-            sortable: true,
-        ))->addClass('fw-bold')
-        ->setHtml(function ($user) {
-            return '<a href="' . route('admin.users.edit', $user->id) . '">' . e($user->name) . '</a>';
-        });
+        Breadcrumbs::push('Users');
 
-        $this->appendCell(new Cell(
-            name: 'email',
-            sortable: true,
-        ));
+        $this->appendCell(new Cell('name'))
+            ->setSortable()
+            ->addClass('fw-bold')
+            ->setHtml(function (User $user, $cell) {
+                return sprintf('<a href="%s">%s</a>', route('admin.users.edit', $user->id), $cell->text($user));
+            });
 
-        $this->appendCell(new Cell(
-            name: 'roles',
-            sortable: false,
-            text: function ($row) {
-                return $row->roles->pluck('name')->implode(', ');
-            },
-        ));
+        $this->appendCell(new Cell('email'))
+            ->setSortable();
+
+        $this->appendCell(new Cell('roles'))
+            ->setText(function (User $user, $cell) {
+                return $user->roles->pluck('name')->implode(', ');
+            });
 
         // alt method to add cells
-        $this->appendCell(new Cell('created_at'), 'roles')
+        $this->appendCell(new Cell('created_at'))
             ->setHeader('Created')
-            ->setSortable()
-            ->setText(function ($row) {
-                return $row->created_at->format('Y-m-d h:i');
-            });
-    }
+            ->setSortable();
 
-    public function clearFilters(): void
-    {
-        $this->reset();
     }
 
     #[Computed]
     public function rows(): LengthAwarePaginator
     {
-        return User::query()
-            //->search($this->search, fn() => $this->resetPage())
-            //->when($this->country, fn($query) => $query->where('country', $this->country))
+        return User::with('roles')
             ->when($this->search, function (Builder $builder) {
-                $str = preg_replace("/[^a-zA-Z0-9' -]/", " ", $this->search);
-                $email = preg_replace("/[^a-zA-Z0-9@._-]/", "", $this->search);
+                $str = preg_replace("/[^a-zA-Z0-9' -]/", " ", $search);
+                $email = preg_replace("/[^a-zA-Z0-9@._-]/", "", $search);
                 return $builder->where('name', 'like', "%{$str}%")
                     ->orWhere('email', 'like', "%{$email}%")
-                    ->tap($this->resetPage() ?? fn() => null); // noop
+                    ->tap($this->resetPage() ?? fn () => null);
             })
-            ->when($this->dir, function (Builder $builder) {
-                return $builder->orderBy($this->safeSort(), $this->dir);
-            })
+            ->when($this->roles, fn (Builder $query) => $query->role($this->roles))
+            ->orderBy($this->safeSort(), $this->dir)
             ->paginate($this->limit);
     }
 
@@ -88,64 +72,36 @@ class extends Component {
 ?>
 
 <div>
-    <h1>Manage Staff</h1>
+    <h1>{{ $pageName }}</h1>
 
-    <div class="row mb-4">
-        <div class="d-flex flex-nowrap text-nowrap gap-2 align-items-center">
-
-            <div x-data="{ q: '' }">
-                <input type="text" class="form-control form-control-sm w-auto"
-                       placeholder="Name, Email"
-                       x-model="q"
-                       @input.debounce.250ms="if (q.trim().length >= 3 || q.trim() === '') $wire.set('search', q.trim())"
-                />
-            </div>
-
-            <div class="text-nowrap text-primary">
-                <small>Filter By:</small>
-            </div>
-
-            <select class="form-select form-select-sm w-auto">
-                <option value="">All Countries</option>
-            </select>
-
+    <x-tkl-ui::tbl.livewire.filters :table="$this">
+        <x-slot name="filters">
+            <x-tkl-ui::tbl.livewire.filters.select
+                wire:model.live="roles"
+                :name="$this->tableKey('roles')"
+                :options="[ '' => '- All Roles -', 'test' => 'Test', 'admin' => 'Admin', 'staff' => 'Staff', 'member' => 'Member']"
+                value="{{ $this->roles }}"
+            />
+        </x-slot>
+        <x-slot name="actions2">
             <button
                 type="button"
                 class="btn btn-link btn-sm"
-                title="Clear Filters & Search"
-                wire:click="clearFilters"
+                title="Download CSV"
+                wire:click="csv"
             >
-                <i class="fa fa-circle-xmark fa-lg pb-2"></i>
+                <i class="fa-regular fa-file-excel fa-lg"></i>
             </button>
+        </x-slot>
 
-            <div>
-                <a href="{{route('admin.users.create')}}" class="btn btn-primary btn-sm">
-                    New User
+        <x-slot name="actions">
+            <div class="p-2 ps-0">
+                <a href="{{ route('admin.users.create') }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fa fa-plus-circle"></i> Create
                 </a>
             </div>
-
-            <div class="flex-grow-1 text-end small">
-                <button
-                    type="button"
-                    class="btn btn-link btn-sm"
-                    title="Download CSV"
-                    {{--                    wire:click="csv"--}}
-                >
-                    <i class="fa-regular fa-file-excel fa-lg"></i>
-                </button>
-
-                <span class="text-secondary">
-                    Showing
-                    <span class="fw-semibold">{{ $this->rows->firstItem() }}</span>
-                    to
-                    <span class="fw-semibold">{{ $this->rows->lastItem() }}</span>
-                    of
-                    <span class="fw-semibold">{{ $this->rows->total() }}</span>
-                    results
-                </span>
-            </div>
-        </div>
-    </div>
+        </x-slot>
+    </x-tkl-ui::tbl.livewire.filters>
 
     <x-tkl-ui::tbl.livewire :table="$this" />
 

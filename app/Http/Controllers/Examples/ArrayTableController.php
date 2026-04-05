@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Examples\Tables;
+namespace App\Http\Controllers\Examples;
 
 
 use App\Http\Controllers\Controller;
@@ -13,9 +13,9 @@ use Tk\Tbl\IsTable;
 /**
  * This is an example of using the Table trait within a controller.
  * Data is sourced from an array.
- * 
+ *
  */
-class ArrayTable extends Controller
+class ArrayTableController extends Controller
 {
     use IsTable;
 
@@ -74,7 +74,7 @@ class ArrayTable extends Controller
 
         // 1. filter results with any filters if available
         // search
-        $search = request()->get($this->tableKey('search'), '');
+        $search = request()->input($this->tableKey('search'), '');
         if ($search) {
             $rows = array_filter($rows, function ($row) use ($search) {
                 return str_contains(strtolower($row->name), strtolower($search));

@@ -24,7 +24,6 @@ return Application::configure(basePath: dirname(__DIR__))
         // resets breadcrumb stack and redirects
         $middleware->appendToGroup('web', [
             ResetBreadcrumbs::class,
-            TableSessionParams::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

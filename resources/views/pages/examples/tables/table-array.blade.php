@@ -4,37 +4,31 @@
         <h2>{{ $pageName }}</h2>
     </div>
 
-    <div class="card mb-3">
-        <div class="card-body">
+    <x-tkl-ui::tbl.filters :table="$table">
+        <x-slot name="filters">
+            <x-tkl-ui::tbl.filters.select
+                :name="$table->tableKey('status')"
+                :options="[ '' => '- Status -', 'Pending' => 'Pending', 'In Progress' => 'In Progress', 'Cancelled' => 'Cancelled']"
+                value="{{ request()->input($table->tableKey('status'), '') }}"
+            />
 
-            <x-tkl-ui::tbl.filters :table="$table">
-                <x-slot name="filters">
-                    <x-tkl-ui::table.filters.select
-                        :name="$table->tableKey('status')"
-                        :options="[ '' => '- Status -', 'Pending' => 'Pending', 'In Progress' => 'In Progress', 'Cancelled' => 'Cancelled']"
-                        value="{{ request()->input($table->tableKey('status'), '') }}"
-                    />
+            <x-tkl-ui::tbl.filters.select
+                :name="$table->tableKey('type')"
+                :options="[ '' => '- Type -', 'Biopsy' => 'Biopsy', 'Necropsy' => 'Necropsy']"
+                value="{{ request()->input($table->tableKey('type'), '') }}"
+            />
+        </x-slot>
 
-                    <x-tkl-ui::table.filters.select
-                        :name="$table->tableKey('type')"
-                        :options="[ '' => '- Type -', 'Biopsy' => 'Biopsy', 'Necropsy' => 'Necropsy']"
-                        value="{{ request()->input($table->tableKey('type'), '') }}"
-                    />
-                </x-slot>
+        <x-slot name="actions">
+            <div class="p-2 ps-0">
+                <a href="{{ route('admin.users.create') }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fa fa-plus-circle"></i> Create
+                </a>
+            </div>
+        </x-slot>
 
-                <x-slot name="actions">
-                    <div class="p-2 ps-0">
-                        <a href="{{ route('admin.users.create') }}" class="btn btn-sm btn-outline-secondary">
-                            <i class="fa fa-plus-circle"></i> Create
-                        </a>
-                    </div>
-                </x-slot>
+    </x-tkl-ui::tbl.filters>
 
-            </x-tkl-ui::tbl.filters>
-
-            <x-tkl-ui::tbl :table="$table" />
-
-        </div>
-    </div>
+    <x-tkl-ui::tbl :table="$table" />
 
 </x-pages.main>

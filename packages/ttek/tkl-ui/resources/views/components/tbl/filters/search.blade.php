@@ -4,7 +4,8 @@
 @aware(['table'])
 
 <div class="input-group input-group-sm">
-    <input type="text" class="form-control" placeholder="Search"
+    <input type="text" class="form-control"
+           placeholder="&#x1F50D; Search"
            id="fid-{{ $table->tablekey('search') }}"
            name="{{ $table->tableKey('search') }}"
            value="{{ request()->input($table->tableKey('search'), '') }}"

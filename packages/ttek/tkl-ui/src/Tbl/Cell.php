@@ -61,7 +61,7 @@ class Cell
     public function text(mixed $row): string
     {
         if (is_callable($this->text)) {
-            return call_user_func($this->text, $row);
+            return call_user_func($this->text, $row, $this);
         }
         $val = '';
         if (is_array($row)) {

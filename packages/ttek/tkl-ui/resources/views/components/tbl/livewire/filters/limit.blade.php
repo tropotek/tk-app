@@ -11,7 +11,6 @@
         </button>
         <div class="dropdown-menu">
             <a class="dropdown-item" href="javascript:" wire:click="setLimit(0)">All</a>
-            <a class="dropdown-item" href="javascript:" wire:click="setLimit(2)">2</a>
             <a class="dropdown-item" href="javascript:" wire:click="setLimit(10)">10</a>
             <a class="dropdown-item" href="javascript:" wire:click="setLimit(30)">30</a>
             <a class="dropdown-item" href="javascript:" wire:click="setLimit(50)">50</a>

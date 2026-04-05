@@ -18,12 +18,9 @@
 
                     <div class="card mb-3">
                         <div class="card-body">
-                            <p>&nbsp;</p>
-                            <p>&nbsp;</p>
-                                <h4>My Ideas</h4>
-                                <x-tkl-ui::table :$table />
-                            <p>&nbsp;</p>
-                            <p>&nbsp;</p>
+                            <h4>My Ideas</h4>
+                            <p>...</p>
+                            <p>...</p>
                         </div>
                     </div>
 

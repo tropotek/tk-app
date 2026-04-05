@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Examples\Ideas;
+namespace App\Http\Controllers\Examples;
 
 use App\Http\Controllers\Controller;
 use App\Models\Idea;
@@ -12,33 +12,7 @@ use Tk\Support\Facades\Breadcrumbs;
 
 class IdeaController extends Controller
 {
-    public function index(Request $request)
-    {
-        Breadcrumbs::push('ideas|Idea Manager');
 
-        $table = new IdeaTable();
-
-        // example of using the action params
-        if ($request->has('tbl_delete')) {
-            vd($table->getParams(), $request->all());
-
-            // perform required action (delete, csv, etc...)
-
-            // reset the url removing the action params
-            $url = $request->fullUrlWithQuery([
-                'tbl_delete' => null,
-                'row_id' => null,
-                'row_id_all' => null,
-            ]);
-
-            return redirect(trim($url, '?'))->with('success', "Table Action Completed.");
-        }
-
-        return view('pages.examples.ideas.index', [
-            'ideas' => auth()->user()->ideas,
-            'table' => $table,
-        ]);
-    }
     public function create()
     {
         Breadcrumbs::push('idea|Idea Create');
@@ -59,7 +33,6 @@ class IdeaController extends Controller
     public function edit(Idea $idea)
     {
         Breadcrumbs::push('idea|Idea Edit');
-        Gate::authorize('update', $idea);
 
         return view('pages.examples.ideas.edit',[
             'mode' => 'edit',
@@ -69,7 +42,6 @@ class IdeaController extends Controller
 
     public function update(Idea $idea, Request $request)
     {
-        Gate::authorize('update', $idea);
 
         $request->validate([
             'title' => ['required', 'min:3'],
@@ -107,15 +79,12 @@ class IdeaController extends Controller
 
     public function destroy(Idea $idea)
     {
-        vd("delete idea {$idea->id}");
-        Gate::authorize('update', $idea);
         $idea->delete();
         return redirect('/examples/ideas');
     }
 
     public function deleteAll()
     {
-        vd('Delete All Ideas');
         Auth::user()->ideas()->delete();
         return redirect('/examples/ideas');
     }

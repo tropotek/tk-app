@@ -26,13 +26,10 @@ class extends Component {
     public $roles = '';
 
 
-    public function mount()
-    {
-        Breadcrumbs::push('Sisv2 Array');
-    }
-
     public function boot()
     {
+        Breadcrumbs::push('Sisv2 Array');
+
 //        $this->setDefaultLimit(2);
 //        $this->setDefaultSort('email');
 

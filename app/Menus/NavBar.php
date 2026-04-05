@@ -25,14 +25,10 @@ final class NavBar implements MenuBuilderInterface
                 MenuItem::make('Three Columns', '/examples/formThree'),
                 MenuItem::make('Fieldsets', '/examples/formFieldset'),
                 MenuItem::makeSeparator(),
-                MenuItem::make('Livewire', '/examples/tableLivewire'),
-                MenuItem::make('Livewire 2', '/examples/tableLivewireTwo'),
-                MenuItem::make('Sql Query', '/examples/tableQuery'),
                 MenuItem::make('Array Rows (sis)', '/examples/tableArray'),
                 MenuItem::make('Array Rows (sis live)', '/examples/tableArray2'),
-                MenuItem::make('Csv File', '/examples/tableCsv'),
                 MenuItem::makeSeparator(),
-                MenuItem::make('Ideas Example', '/examples/ideas')
+                MenuItem::make('Ideas Example', route('examples.ideas.index'))
                     ->setVisible(auth()->check()),
                 MenuItem::makeSeparator(),
                 MenuItem::make('Layout Example', '/examples/examples'),
@@ -41,7 +37,6 @@ final class NavBar implements MenuBuilderInterface
             MenuItem::make('Admin')->addChildren([
                 MenuItem::make('Settings', route('dashboard'))->setDisabled(),
                 MenuItem::make('Users', route('admin.users.index')),
-                MenuItem::make('Users (live)', route('admin.users.index2')),
             ])->setVisible(auth()->user()->hasRole(Roles::Admin->value)),
 
             MenuItem::make('Logout', route('logout'))

@@ -12,18 +12,6 @@ use Tk\Support\Facades\Breadcrumbs;
 class UserController extends Controller
 {
 
-    public function index(Request $request)
-    {
-        Breadcrumbs::push('User Manager');
-
-        $table = new UserTable();
-
-        return view('pages.users.table', [
-            'table' => $table,
-            'create' => '/user/create',
-        ]);
-    }
-
     public function create()
     {
         Breadcrumbs::push('user.edit|User Create');
