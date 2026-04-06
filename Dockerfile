@@ -1,14 +1,10 @@
-FROM dunglas/frankenphp:latest
+FROM dunglas/frankenphp:latest AS base
 
 # Set the working directory inside the container
 WORKDIR /app
 
-# Expose port 80 (or 443 if using HTTPS)
 # The EXPOSE instruction only serves as documentation.
-# dev
-EXPOSE 80
-# prod
-EXPOSE 443
+EXPOSE 80 443
 
 # Install requred apt packages
 RUN apt-get update && \
@@ -72,7 +68,6 @@ RUN \
     setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/frankenphp; \
     chown -R ${USER}:${USER} /config/caddy /data/caddy
 
-COPY . /app
 RUN chown -R ${USER}:${USER} /app
 
 USER ${USER}
@@ -80,11 +75,13 @@ USER ${USER}
 # Setup .bashrc
 RUN echo 'alias l="ls -lah --color=auto"' >> ~/.bashrc
 
-# run composer install for non local env
-RUN composer install --no-dev --no-interaction --prefer-dist
 
-# Set the entrypoint
+FROM base AS local
 ENTRYPOINT ["./bin/deploy.sh"]
+CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]
 
-# Default command to run if none is provided
+
+FROM base AS release
+COPY . /app
+ENTRYPOINT ["./bin/deploy.sh"]
 CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]

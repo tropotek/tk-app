@@ -9,8 +9,6 @@ SCRIPT=$(realpath "$0")
 APP_PATH=$(dirname "$(dirname "$SCRIPT")")
 cd "$APP_PATH" || exit 1
 
-docker build -t "$IMAGE" -f docker/Dockerfile .
+docker build --target release -t "$IMAGE" .
 #docker image ls    # To verify the image exists locally
 docker push "$IMAGE"
-
-

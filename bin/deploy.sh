@@ -10,11 +10,11 @@ SCRIPT=$(realpath "$0")
 APP_PATH=$(dirname "$(dirname "$SCRIPT")")
 cd "$APP_PATH" || exit 1
 
-FORCE=""
+FRESH=""
 while getopts 'f' opt; do
 	case "${opt}" in
 		f)
-			FORCE=y
+			FRESH=y
 			;;
 		?)
 			echo "usage: ${0} [-f]"
@@ -29,6 +29,12 @@ shift $((OPTIND-1))
 #PROFILE="${1:-example}"
 
 
+if [[ "$APP_ENV" == "local" ]]; then
+    composer install --no-interaction --prefer-dist
+else
+    composer install --no-dev --no-interaction --prefer-dist
+fi
+
 touch "$APP_PATH/database/storage/database.sqlite"
 
 # generate APP_KEY if none exists (local only)
@@ -37,11 +43,12 @@ if [[ "$APP_ENV" == "local" ]] && ! grep -q '^APP_KEY=base64:' "$APP_PATH/.env";
 fi
 
 # database setup
-if [[ "$FORCE" == "y" ]] || [[ ! -f "$APP_PATH/database/storage/database.sqlite" ]]; then
+if [[ "$FRESH" == "y" ]] || [[ ! -f "$APP_PATH/database/storage/database.sqlite" ]]; then
     if [[ "$APP_ENV" == "local" ]]; then
         php artisan migrate:fresh --seed --force
-        #php artisan db:seed
     fi
+else
+    php artisan migrate --force
 fi
 
 php artisan cache:clear
@@ -49,9 +56,6 @@ php artisan view:clear
 php artisan config:clear
 php artisan optimize:clear
 
-php artisan optimize
-
-php artisan migrate --force
 
 if [[ "$APP_ENV" == "local" ]]; then
     npm install
@@ -61,6 +65,8 @@ else
     php artisan config:cache
     php artisan event:cache
 fi
+
+php artisan optimize
 
 # start container
 exec "$@"
