@@ -3,7 +3,6 @@ name: tk-app
 
 x-shared: &app_shared
   image: tropotek/tk-app:latest
-  user: 1000:1000
   volumes:
     - storage:/app/storage
     - db:/app/database/storage

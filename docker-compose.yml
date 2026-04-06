@@ -45,20 +45,20 @@ services:
     networks:
       - network
 
-#  queue:
-#    <<: *app_shared
-#    working_dir: /app
-#    entrypoint: ["php"]
-#    command: ["artisan", "queue:work", "--verbose", "--tries=5", "--timeout=90", "--sleep=3"]
-#    healthcheck:
-#      test: [ "CMD", "sh", "-c", "pgrep -f 'php artisan queue:work' > /dev/null || exit 1" ]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 3
-#      start_period: 30s
-#    restart: unless-stopped
-#    networks:
-#      - network
+  queue:
+    <<: *app_shared
+    working_dir: /app
+    entrypoint: ["php"]
+    command: ["artisan", "queue:work", "--verbose", "--tries=5", "--timeout=90", "--sleep=3"]
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "pgrep -f 'php artisan queue:work' > /dev/null || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - network
 
   mailpit:
     image: axllent/mailpit
