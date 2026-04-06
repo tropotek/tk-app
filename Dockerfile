@@ -69,19 +69,16 @@ RUN \
     chown -R ${USER}:${USER} /config/caddy /data/caddy
 
 RUN chown -R ${USER}:${USER} /app
-
 USER ${USER}
 
 # Setup .bashrc
 RUN echo 'alias l="ls -lah --color=auto"' >> ~/.bashrc
 
-
-FROM base AS local
+FROM base AS release
+COPY . /app
 ENTRYPOINT ["./bin/deploy.sh"]
 CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]
 
-
-FROM base AS release
-COPY . /app
+FROM base AS local
 ENTRYPOINT ["./bin/deploy.sh"]
 CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]

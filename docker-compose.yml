@@ -4,12 +4,12 @@ name: tk-app
 x-shared: &app_shared
   build:
     context: .
+    target: ${DOCKER_TARGET:-local}
   volumes:
     - .:/app
     - ./docker/php.ini:/usr/local/etc/php/conf.d/overrides.ini
     - caddy_data:/data/caddy
     - caddy_config:/config/caddy
-#  user: 1000:1000
 
 services:
   app:

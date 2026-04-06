@@ -1,7 +1,6 @@
 #!/bin/bash -e
 # Build a release docker image and save it as a tar file
 
-
 SCRIPT=$(realpath "$0")
 APP_PATH=$(dirname "$(dirname "$SCRIPT")")
 cd "$APP_PATH" || exit 1
