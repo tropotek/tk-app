@@ -37,7 +37,7 @@ final class NavBar implements MenuBuilderInterface
             MenuItem::make('Admin')->addChildren([
                 MenuItem::make('Settings', route('dashboard'))->setDisabled(),
                 MenuItem::make('Users', route('admin.users.index')),
-            ])->setVisible(auth()->user()->hasRole(Roles::Admin->value)),
+            ])->setVisible(auth()->check() && auth()->user()->hasRole(Roles::Admin->value)),
 
             MenuItem::make('Logout', route('logout'))
                 ->setTitleVisible(false)

@@ -21,9 +21,9 @@ Route::middleware('auth')->name('examples.')->prefix('/examples')->group(functio
         Route::get('/ideas/{idea}', [IdeaController::class, 'show'])->name('show');
         Route::get('/ideas/{idea}/edit', [IdeaController::class, 'edit'])->name('edit');
         Route::patch('/ideas/{idea}', [IdeaController::class, 'update'])->name('update');
-        Route::post('/ideas', [IdeaController::class, 'store'])->name('index');
+        Route::post('/ideas', [IdeaController::class, 'store'])->name('stor');
         Route::delete('/ideas/{idea}', [IdeaController::class, 'destroy'])->name('destroy');
-        Route::get('/delete-all', [IdeaController::class, 'deleteAll'])->name('deleteAll');
+        Route::get('/ideas/delete-all', [IdeaController::class, 'deleteAll'])->name('deleteAll');
     });
 });
 

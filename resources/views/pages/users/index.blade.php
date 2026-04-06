@@ -54,6 +54,11 @@ class extends Component {
     #[Computed]
     public function rows(): LengthAwarePaginator
     {
+        return $this->query()->paginate($this->limit);
+    }
+
+    protected function query(): Builder
+    {
         return User::with('roles')
             ->when($this->search, function (Builder $builder) {
                 $str = preg_replace("/[^a-zA-Z0-9' -]/", " ", $search);
@@ -63,8 +68,36 @@ class extends Component {
                     ->tap($this->resetPage() ?? fn() => null);
             })
             ->when($this->roles, fn(Builder $query) => $query->role($this->roles))
-            ->orderBy($this->safeSort(), $this->dir)
-            ->paginate($this->limit);
+            ->orderBy($this->safeSort(), $this->dir);
+    }
+
+    public function csv()
+    {
+        $fileName = 'users.csv';
+
+        $callback = function () {
+            $handle = fopen('php://output', 'w');
+
+            $headers = $this->getCells()->pluck('header')->all();
+            fputcsv($handle, $headers);
+
+            $this->query()->chunk(500, function ($users) use ($handle) {
+                foreach ($users as $user) {
+                    $row = $this->getCells()
+                        ->map(fn (Cell $cell) => $cell->text($row))
+                        ->all()
+
+                    fputcsv($handle, $row);
+                }
+            });
+
+            fclose($handle);
+        }
+
+        return response()->streamDownload($callback, $fileName, [
+            'Content-Type' => 'text/csv',
+        ]);
+
     }
 
 };
