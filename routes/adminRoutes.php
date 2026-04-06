@@ -5,7 +5,6 @@ use App\Http\Controllers\User\UserController;
 
 Route::middleware(['auth', 'role:admin'])->name('admin.')->group(function () {
 
-
     // Manage Users
     Route::name('users.')->group(function () {
         Route::livewire('/users', 'pages::users')->name('index');
