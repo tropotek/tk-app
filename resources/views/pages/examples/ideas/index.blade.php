@@ -56,6 +56,11 @@ class extends Component {
     #[Computed]
     public function rows(): LengthAwarePaginator
     {
+        return $this->query()->paginate($this->limit);
+    }
+
+    protected function query(): Builder
+    {
         return Idea::query()
             ->when($this->search, function (Builder $builder) {
                 $str = preg_replace("/[^a-zA-Z0-9' -]/", " ", $this->search);
@@ -64,8 +69,12 @@ class extends Component {
                     ->tap($this->resetPage() ?? fn() => null);
             })
             ->when($this->status, fn(Builder $query) => $query->where('status', $this->status))
-            ->orderBy($this->safeSort(), $this->dir)
-            ->paginate($this->limit);
+            ->orderBy($this->safeSort(), $this->dir);
+    }
+
+    public function csv()
+    {
+        return $this->buildCsv($this->query(), 'ideas.csv');
     }
 
 };

@@ -57,6 +57,11 @@ class extends Component {
     #[Computed]
     public function rows(): LengthAwarePaginator
     {
+        return $this->paginateArray($this->query());
+    }
+
+    protected function query(): array
+    {
         $rows = [
             (object) [
                 'id' => 1, 'name' => 'Test 1', 'email' => 'email1@example.com', 'roles' => 'test',
@@ -107,10 +112,12 @@ class extends Component {
 
         // 2. sort results (todo: using Greg's sort method for now, review)
         $sortCol = ($this->dir == 'desc' ? '-' : '').$this->safeSort();
-        $rows = $this->sortRows($rows, $sortCol);
+        return $this->sortRows($rows, $sortCol);
+    }
 
-        // 3. return paginated results
-        return $this->paginateArray($rows);
+    public function csv()
+    {
+        return $this->buildCsv($this->query(), 'tableArray.csv');
     }
 
 };

@@ -6,6 +6,7 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Container\Container;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * Use this trait to when adding a table to a controller
@@ -26,6 +27,45 @@ trait IsTable
 
 
     abstract public function rows(): LengthAwarePaginator;
+
+
+    protected function buildCsv(array|Collection|Builder $rows, string $fileName = 'unknown.csv')
+    {
+        $callback = function () use ($rows) {
+            $handle = fopen('php://output', 'w');
+
+            $headers = $this->getCells()->pluck('header')->all();
+            fputcsv($handle, $headers);
+
+            if (is_array($rows)) {
+                $rows = collect($rows);
+            }
+
+            if ($rows instanceof Collection) {
+                foreach ($rows as $row) {
+                    $row = $this->getCells()
+                        ->map(fn(Cell $cell) => $cell->text($row))
+                        ->all();
+                    fputcsv($handle, $row);
+                }
+            } else {
+                $rows->chunk(500, function ($rows) use ($handle) {
+                    foreach ($rows as $row) {
+                        $row = $this->getCells()
+                            ->map(fn(Cell $cell) => $cell->text($row))
+                            ->all();
+                        fputcsv($handle, $row);
+                    }
+                });
+            }
+
+            fclose($handle);
+        };
+
+        return response()->streamDownload($callback, $fileName, [
+            'Content-Type' => 'text/csv',
+        ]);
+    }
 
     /**
      * Controller function

@@ -73,31 +73,7 @@ class extends Component {
 
     public function csv()
     {
-        $fileName = 'users.csv';
-
-        $callback = function () {
-            $handle = fopen('php://output', 'w');
-
-            $headers = $this->getCells()->pluck('header')->all();
-            fputcsv($handle, $headers);
-
-            $this->query()->chunk(500, function ($users) use ($handle) {
-                foreach ($users as $user) {
-                    $row = $this->getCells()
-                        ->map(fn (Cell $cell) => $cell->text($row))
-                        ->all()
-
-                    fputcsv($handle, $row);
-                }
-            });
-
-            fclose($handle);
-        }
-
-        return response()->streamDownload($callback, $fileName, [
-            'Content-Type' => 'text/csv',
-        ]);
-
+        return $this->buildCsv($this->query(), 'users.csv');
     }
 
 };
