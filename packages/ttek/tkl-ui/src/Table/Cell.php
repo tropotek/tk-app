@@ -60,6 +60,7 @@ class Cell
      */
     public function text(mixed $row): string
     {
+        if (!$this->isVisible()) return '';
         if (is_callable($this->text)) {
             return call_user_func($this->text, $row, $this);
         }
@@ -81,6 +82,7 @@ class Cell
      */
     public function html(mixed $row): string
     {
+        if (!$this->isVisible()) return '';
         if (is_callable($this->html)) {
             return call_user_func($this->html, $row, $this);
         }
