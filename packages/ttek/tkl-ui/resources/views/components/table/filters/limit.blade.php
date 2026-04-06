@@ -10,8 +10,8 @@
             <span>{{ $table->limit ?: 'ALL' }}</span>
         </button>
         <div class="dropdown-menu">
-            <a class="dropdown-item"
-               href="{{ request()->fullUrlWithQuery([$table->tableKey('page') => '1', $table->tableKey('limit') => 0]) }}">All</a>
+{{--            <a class="dropdown-item"--}}
+{{--               href="{{ request()->fullUrlWithQuery([$table->tableKey('page') => '1', $table->tableKey('limit') => 0]) }}">All</a>--}}
             <a class="dropdown-item"
                href="{{ request()->fullUrlWithQuery([$table->tableKey('page') => '1', $table->tableKey('limit') => 10]) }}">10</a>
             <a class="dropdown-item"

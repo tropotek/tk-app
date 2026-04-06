@@ -54,7 +54,7 @@ class extends Component {
     #[Computed]
     public function rows(): LengthAwarePaginator
     {
-        return $this->query()->paginate($this->limit);
+        return $this->query()->paginate($this->limit ?: null);
     }
 
     protected function query(): Builder

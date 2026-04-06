@@ -245,7 +245,7 @@ trait IsTable
      * @param array<K, T> $rows
      * @return array<K, T>
      */
-    protected function sortRows(array $rows, string ...$columns): array
+    protected function sortArray(array $rows, string ...$columns): array
     {
         if (count($rows) < 2) return $rows;
 

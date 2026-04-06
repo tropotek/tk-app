@@ -63,35 +63,35 @@ class extends Component {
     protected function query(): array
     {
         $rows = [
-            (object) [
+            (object)[
                 'id' => 1, 'name' => 'Test 1', 'email' => 'email1@example.com', 'roles' => 'test',
                 'created_at' => '2021-01-01 12:23:33'
             ],
-            (object) [
+            (object)[
                 'id' => 2, 'name' => 'Test 2', 'email' => 'email2@example.com', 'roles' => 'test',
                 'created_at' => '2021-01-02 12:23:33'
             ],
-            (object) [
+            (object)[
                 'id' => 3, 'name' => 'Test 3', 'email' => 'email3@example.com', 'roles' => 'test',
                 'created_at' => '2021-03-01 12:23:33'
             ],
-            (object) [
+            (object)[
                 'id' => 4, 'name' => 'Test 4', 'email' => 'email4@example.com', 'roles' => 'test',
                 'created_at' => '2021-07-01 12:23:33'
             ],
-            (object) [
+            (object)[
                 'id' => 5, 'name' => 'Test 5', 'email' => 'email5@example.com', 'roles' => 'test',
                 'created_at' => '2021-04-25 12:23:33'
             ],
-            (object) [
+            (object)[
                 'id' => 6, 'name' => 'Test 6', 'email' => 'email6@example.com', 'roles' => 'test',
                 'created_at' => '2021-02-03 12:23:33'
             ],
-            (object) [
+            (object)[
                 'id' => 7, 'name' => 'Test 7', 'email' => 'email7@example.com', 'roles' => 'test',
                 'created_at' => '2021-02-01 12:23:33'
             ],
-            (object) [
+            (object)[
                 'id' => 8, 'name' => 'Test 8', 'email' => 'email8@example.com', 'roles' => 'test',
                 'created_at' => '2021-04-12 12:23:33'
             ],
@@ -111,8 +111,8 @@ class extends Component {
         }
 
         // 2. sort results (todo: using Greg's sort method for now, review)
-        $sortCol = ($this->dir == 'desc' ? '-' : '').$this->safeSort();
-        return $this->sortRows($rows, $sortCol);
+        $sortCol = ($this->dir == 'desc' ? '-' : '') . $this->safeSort();
+        return $this->sortArray($rows, $sortCol);
     }
 
     public function csv()
