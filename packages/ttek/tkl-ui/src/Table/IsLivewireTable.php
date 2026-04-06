@@ -26,6 +26,9 @@ trait IsLivewireTable
     #[Url(except: 'asc')]
     public string $dir = 'asc';
 
+    #[Url(except: '')]
+    public string $search = '';
+
 
     /**
      * Use this method to reset defaults and clear filters

@@ -20,9 +20,6 @@ class extends Component {
     use WithPagination, IsLivewireTable;
 
     #[Url(except: '')]
-    public $search = '';
-
-    #[Url(except: '')]
     public $roles = '';
 
 

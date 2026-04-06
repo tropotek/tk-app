@@ -22,9 +22,6 @@ class extends Component {
     use WithPagination, IsLivewireTable;
 
     #[Url(except: '')]
-    public $search = '';
-
-    #[Url(except: '')]
     public $status = '';
 
     public function boot()
