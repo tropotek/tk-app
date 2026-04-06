@@ -20,18 +20,16 @@ final class NavBar implements MenuBuilderInterface
                 ->setVisible(auth()->check()),
 
             MenuItem::make('Examples')->addChildren([
-                MenuItem::make('One Column', '/examples/formOne'),
-                MenuItem::make('Two Columns', '/examples/formTwo'),
-                MenuItem::make('Three Columns', '/examples/formThree'),
-                MenuItem::make('Fieldsets', '/examples/formFieldset'),
+                MenuItem::make('Form Fieldgroup', route('examples.formThree')),
+                MenuItem::make('Form Fieldset', route('examples.formFieldset')),
                 MenuItem::makeSeparator(),
-                MenuItem::make('Array Rows (sis)', '/examples/tableArray'),
-                MenuItem::make('Array Rows (sis live)', '/examples/tableArray2'),
+                MenuItem::make('Table Arrays', route('examples.tableArray')),
+                MenuItem::make('Table Arrays (Livewire)', route('examples.tableArray2')),
                 MenuItem::makeSeparator(),
-                MenuItem::make('Ideas Example', route('examples.ideas.index'))
+                MenuItem::make('Ideas CRUD Example', route('examples.ideas.index'))
                     ->setVisible(auth()->check()),
                 MenuItem::makeSeparator(),
-                MenuItem::make('Layout Example', '/examples/examples'),
+                MenuItem::make('Page Layout Example', route('examples.index')),
             ]),
 
             MenuItem::make('Admin')->addChildren([

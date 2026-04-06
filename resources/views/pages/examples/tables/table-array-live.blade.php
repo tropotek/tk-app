@@ -25,7 +25,7 @@ class extends Component {
 
     public function boot()
     {
-        Breadcrumbs::push('Sisv2 Array');
+        Breadcrumbs::push('Table Array (Livewire)');
 
 //        $this->setDefaultLimit(2);
 //        $this->setDefaultSort('email');
@@ -121,7 +121,7 @@ class extends Component {
 ?>
 
 <div>
-    <h1>Sis Style Array List</h1>
+    <h1>{{ $pageName }}</h1>
 
     <x-tkl-ui::table.livewire.filters :table="$this">
         <x-slot name="filters">

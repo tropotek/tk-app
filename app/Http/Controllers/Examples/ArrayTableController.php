@@ -23,7 +23,7 @@ class ArrayTableController extends Controller
 
     public function index(Request $request)
     {
-        Breadcrumbs::push('Array Table');
+        Breadcrumbs::push('Table Array');
 
         $this->appendCell(new Cell(
             name: 'name',
