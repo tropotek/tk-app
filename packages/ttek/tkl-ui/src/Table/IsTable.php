@@ -43,9 +43,9 @@ trait IsTable
     protected function safeSort(): string
     {
         $sortables = $this->cells->pluck('sort')->filter()->all();
-        //vd($sortables, $this->sort);
-        // TODO: validate sort options with cell `sort` property
-
+        if (!in_array($this->sort, $sortables)) {
+            return $this->defaultSort;
+        }
         return $this->sort;
     }
 
