@@ -21,11 +21,18 @@ RUN apt-get update && \
     vim-nox \
     git \
     openssh-client \
-    curl \
     gnupg \
     ca-certificates \
+    curl \
+    && curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
+    && apt-get install -y --no-install-recommends \
+    nodejs \
+    && npm install -g npm@latest \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+# Verify node installation
+RUN node -v && npm -v
 
 # Install required PHP extensions for Moodle
 RUN install-php-extensions \
@@ -41,44 +48,35 @@ RUN install-php-extensions \
     sockets \
     zip
 
-# Install dependencies for adding new repositories and for Node.js build tools
-RUN curl -fsSL https://deb.nodesource.com
-RUN apt-get update
-RUN apt-get install -y nodejs npm
-
-# Verify installation
-RUN node -v
-RUN npm -v
-
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Clean apt cache in one layer
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+ARG APP_USER=appuser
+RUN \
+    useradd -m ${APP_USER}; \
+    setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/frankenphp; \
+    chown -R ${APP_USER}:${APP_USER} /config/caddy /data/caddy
 
-# Create required Laravel directories for storage and caching
-RUN mkdir -p storage/framework/{sessions,views,cache} \
-   && mkdir -p storage/logs \
-   && mkdir -p bootstrap/cache
+RUN chown -R ${APP_USER}:${APP_USER} /app
 
 # Running as a Non-Root User
-ARG USER=appuser
-RUN \
-    useradd -m ${USER}; \
-    setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/frankenphp; \
-    chown -R ${USER}:${USER} /config/caddy /data/caddy
-
-RUN chown -R ${USER}:${USER} /app
-USER ${USER}
 
 # Setup .bashrc
 RUN echo 'alias l="ls -lah --color=auto"' >> ~/.bashrc
 
+
 FROM base AS release
+ARG APP_USER=appuser
+
+USER ${APP_USER}
+
 COPY . /app
 ENTRYPOINT ["./bin/deploy.sh"]
 CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]
 
+
 FROM base AS local
+ARG APP_USER=appuser
+USER ${APP_USER}
 ENTRYPOINT ["./bin/deploy.sh"]
 CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]

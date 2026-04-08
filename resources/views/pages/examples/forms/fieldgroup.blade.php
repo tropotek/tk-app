@@ -1,7 +1,7 @@
 @props([
     'mode'   => 'view',       // ['view', 'edit', 'create']
     'values' => [],
-    'action' => '/examples/formThree/submit',
+    'action' => route('examples.formThree.submit'),
     'method' => 'post',
 ])
 
@@ -15,8 +15,8 @@
         {{-- Buttons outside the form require the `form=""` attribute to submit the correct form --}}
         <x-slot:btnrow>
             <x-tkl-ui::form.buttons.default-btns
-                editRoute="/formThree/edit"
-                cancelRoute="/formThree"
+                editRoute="{{ route('examples.formThree.edit') }}"
+                cancelRoute="{{ route('examples.formThree') }}"
                 form="theform"
             />
 
@@ -24,23 +24,23 @@
                 <x-tkl-ui::form.buttons.link
                     label="Do Something"
                     class="btn btn-info"
-                    href="/"
+                    href="{{ route('dashboard') }}"
                 />
                 <x-tkl-ui::form.buttons.link
                     label="Do Something Else"
                     class="btn btn-warning"
-                    href="/"
+                    href="{{ route('dashboard') }}"
                 />
                 <x-tkl-ui::form.buttons.link
                     label="Delete Something"
                     class="btn btn-danger"
-                    href="/"
+                    href="{{ route('dashboard') }}"
                 />
             @elseif ($mode == 'edit')
                 <x-tkl-ui::form.buttons.link
                     label="Do Something In Edit Mode"
                     class="btn btn-info"
-                    href="/"
+                    href="{{ route('dashboard') }}"
                 />
             @endif
         </x-slot:btnrow>

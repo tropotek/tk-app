@@ -46,7 +46,7 @@ class extends Component {
         ));
 
         // alt method to add cells
-        $this->appendCell(new Cell('created_at'), 'roles')
+        $this->appendCell('created_at')
             ->setHeader('Created')
             ->setSortable();
     }
@@ -123,9 +123,9 @@ class extends Component {
 <div>
     <h1>{{ $pageName }}</h1>
 
-    <x-tkl-ui::table.livewire.filters :table="$this">
+    <x-tkl-ui::table.filters :table="$this">
         <x-slot name="filters">
-            <x-tkl-ui::table.livewire.filters.select
+            <x-tkl-ui::table.filters.select
                 wire:model.live="roles"
                 :name="$this->tableKey('roles')"
                 :options="[ '' => '- All Roles -', 'test' => 'Test', 'admin' => 'Admin', 'staff' => 'Staff', 'member' => 'Member']"
@@ -150,8 +150,8 @@ class extends Component {
                 </a>
             </div>
         </x-slot>
-    </x-tkl-ui::table.livewire.filters>
+    </x-tkl-ui::table.filters>
 
-    <x-tkl-ui::table.livewire :table="$this"/>
+    <x-tkl-ui::table :table="$this"/>
 
 </div>

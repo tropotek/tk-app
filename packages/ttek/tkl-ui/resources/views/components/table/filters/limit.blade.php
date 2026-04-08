@@ -10,18 +10,24 @@
             <span>{{ $table->limit ?: 'ALL' }}</span>
         </button>
         <div class="dropdown-menu">
-{{--            <a class="dropdown-item"--}}
-{{--               href="{{ request()->fullUrlWithQuery([$table->tableKey('page') => '1', $table->tableKey('limit') => 0]) }}">All</a>--}}
-            <a class="dropdown-item"
-               href="{{ request()->fullUrlWithQuery([$table->tableKey('page') => '1', $table->tableKey('limit') => 10]) }}">10</a>
-            <a class="dropdown-item"
-               href="{{ request()->fullUrlWithQuery([$table->tableKey('page') => '1', $table->tableKey('limit') => 30]) }}">30</a>
-            <a class="dropdown-item"
-               href="{{ request()->fullUrlWithQuery([$table->tableKey('page') => '1', $table->tableKey('limit') => 50]) }}">50</a>
-            <a class="dropdown-item"
-               href="{{ request()->fullUrlWithQuery([$table->tableKey('page') => '1', $table->tableKey('limit') => 100]) }}">100</a>
-            <a class="dropdown-item"
-               href="{{ request()->fullUrlWithQuery([$table->tableKey('page') => '1', $table->tableKey('limit') => 250]) }}">250</a>
+            @if($table->isLivewire())
+                <a class="dropdown-item" href="javascript:" wire:click="setLimit(10)">10</a>
+                <a class="dropdown-item" href="javascript:" wire:click="setLimit(30)">30</a>
+                <a class="dropdown-item" href="javascript:" wire:click="setLimit(50)">50</a>
+                <a class="dropdown-item" href="javascript:" wire:click="setLimit(100)">100</a>
+                <a class="dropdown-item" href="javascript:" wire:click="setLimit(250)">250</a>
+            @else
+                <a class="dropdown-item"
+                   href="{{ request()->fullUrlWithQuery([$table->tableKey('page') => '1', $table->tableKey('limit') => 10]) }}">10</a>
+                <a class="dropdown-item"
+                   href="{{ request()->fullUrlWithQuery([$table->tableKey('page') => '1', $table->tableKey('limit') => 30]) }}">30</a>
+                <a class="dropdown-item"
+                   href="{{ request()->fullUrlWithQuery([$table->tableKey('page') => '1', $table->tableKey('limit') => 50]) }}">50</a>
+                <a class="dropdown-item"
+                   href="{{ request()->fullUrlWithQuery([$table->tableKey('page') => '1', $table->tableKey('limit') => 100]) }}">100</a>
+                <a class="dropdown-item"
+                   href="{{ request()->fullUrlWithQuery([$table->tableKey('page') => '1', $table->tableKey('limit') => 250]) }}">250</a>
+            @endif
         </div>
     </div>
 </div>

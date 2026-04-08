@@ -49,13 +49,14 @@ trait IsLivewireTable
         $this->resetPage();
     }
 
-    /**
-     * Livewire method
-     */
     public function toggleDir(): void
     {
-        // TODO: change to 3 way sort
         $this->dir = $this->dir === 'asc' ? 'desc' : 'asc';
+    }
+
+    public function isLivewire(): bool
+    {
+        return true;
     }
 
 }

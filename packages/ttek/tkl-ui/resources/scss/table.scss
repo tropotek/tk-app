@@ -1,44 +1,47 @@
-/** Table Styles */
+/**
+ * Table Styles
+ */
 
 
-
-
-/* list table sorting arrows */
+/* header sort arrows */
 table thead th.col-sort {
-    &.th {
-        padding-left: 0.5em;
-    }
+    padding-left: 0.5em;
+    cursor: pointer;
 
-    a, button {
+    span, a {
         position: relative; /* This is needed for the absolute positioning. */
         margin: 0;
         padding: 0 0 0 0.8em;
+        &::before, &::after {
+            position: absolute;
+            left: -0.3em;
+            font-family: 'Font Awesome 7 Free'; /* Use FontAwesome's font so that you can set the content */
+            opacity: 0.15;                      /* Set opacity to gray out icons by default */
+            font-size: 0.75em;                  /* reduce the size of the arrows */
+        }
+        &::before {
+            content: '\f0de';                   /* Font Awesome's up arrow */
+            top: calc(50% - 0.75em);            /* Tricky to calculate the top offset */
+        }
+        &::after {
+            content: '\f0dd';                   /* Font Awesome's down arrow */
+            bottom: calc(50% - 0.75em);
+        }
+    }
+    &.asc {
+        span, a {
+            &::after {
+                opacity: 1;                     /* When sorting, set full opacity on the direction */
+            }
+        }
+    }
+    &.desc {
+        span, a {
+            &::before {
+                opacity: 1;                     /* When sorting, set full opacity on the direction */
+            }
+        }
     }
 
-    a::before, a::after,
-    button::before, button::after {
-        position: absolute;
-        left: -0.3em;
-        font-family: 'Font Awesome 7 Free'; /* Use FontAwesome's font so that you can set the content */
-        opacity: 0.15;                      /* Set opacity to gray out icons by default */
-        font-size: 0.75em;                  /* reduce the size of the arrows */
-    }
-
-    a::before, button::before {
-        content: '\f0de';                   /* Font Awesome's up arrow */
-        top: calc(50% - 0.75em);            /* Tricky to calculate the top offset */
-    }
-
-    a::after, button::after {
-        content: '\f0dd';                   /* Font Awesome's down arrow */
-        bottom: calc(50% - 0.75em);
-    }
-
-    a.asc::after,
-    a.desc::before,
-    button.asc::after,
-    button.desc::before {
-        opacity: 1;                         /* When sorting, set full opacity on the direction */
-    }
 }
 

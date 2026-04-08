@@ -35,6 +35,11 @@ else
     composer install --no-dev --no-interaction --prefer-dist
 fi
 
+# Create required Laravel directories for storage and caching
+mkdir -p "$APP_PATH/storage/framework/{sessions,views,cache}" \
+   && mkdir -p "$APP_PATH/storage/logs" \
+   && mkdir -p "$APP_PATH/bootstrap/cache"
+
 touch "$APP_PATH/database/storage/database.sqlite"
 
 # generate APP_KEY if none exists (local only)
@@ -55,7 +60,6 @@ php artisan cache:clear
 php artisan view:clear
 php artisan config:clear
 php artisan optimize:clear
-
 
 if [[ "$APP_ENV" == "local" ]]; then
     npm install

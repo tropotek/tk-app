@@ -22,50 +22,14 @@ trait IsTable
     protected int $defaultLimit = 30;
     protected string $defaultSort = '';
     protected string $defaultDir = 'asc';
-
+    /**
+     * @var Collection<string, Cell>
+     */
     protected Collection $cells;
 
 
     abstract public function rows(): LengthAwarePaginator;
 
-
-    protected function buildCsv(array|Collection|Builder $rows, string $fileName = 'unknown.csv')
-    {
-        $callback = function () use ($rows) {
-            $handle = fopen('php://output', 'w');
-
-            $headers = $this->getCells()->pluck('header')->all();
-            fputcsv($handle, $headers);
-
-            if (is_array($rows)) {
-                $rows = collect($rows);
-            }
-
-            if ($rows instanceof Collection) {
-                foreach ($rows as $row) {
-                    $row = $this->getCells()
-                        ->map(fn(Cell $cell) => $cell->text($row))
-                        ->all();
-                    fputcsv($handle, $row);
-                }
-            } else {
-                $rows->chunk(500, function ($rows) use ($handle) {
-                    foreach ($rows as $row) {
-                        $row = $this->getCells()
-                            ->map(fn(Cell $cell) => $cell->text($row))
-                            ->all();
-                        fputcsv($handle, $row);
-                    }
-                });
-            }
-
-            fclose($handle);
-        };
-
-        return response()->streamDownload($callback, $fileName, [
-            'Content-Type' => 'text/csv',
-        ]);
-    }
 
     /**
      * Controller function
@@ -115,71 +79,80 @@ trait IsTable
 
     protected function getCell(string $name): ?Cell
     {
-        /** @var Cell $cell */
-        $cell = $this->getCells()->get($name);
-        return $cell;
+        if (empty($this->cells)) return null;
+        return $this->cells->get($name);
     }
 
     protected function removeCell(string $name): static
     {
-        $this->getCells()->forget([$name]);
+        if (empty($this->cells)) return $this;
+        $this->cells->forget([$name]);
         return $this;
     }
 
     protected function appendCell(string|Cell $cell, ?string $after = null): Cell
     {
-        if (is_string($cell)) {
-            $cell = new Cell($cell);
-        }
-        if (empty($this->cells)) {
-            $this->cells = collect();
-        }
+        $this->cells ??= collect();
+        $cell = is_string($cell) ? new Cell($cell) : $cell;
 
-        if ($this->getCells()->has($cell->name)) {
+        if ($this->cells->has($cell->name)) {
             throw new \Exception("Cell with name '{$cell->name}' already exists.");
         }
         $cell->setTable($this);
 
-        if ($after) {
-            $idx = $this->getCells()->keys()->search($after);
-            // If the key is not found, add at the end
-            $idx = ($idx === false) ? $this->getCells()->count() - 1 : $idx;
-
-            $this->cells = $this->getCells()->slice(0, $idx + 1)
-                ->merge([$cell->name => $cell])
-                ->merge($this->getCells()->slice($idx + 1));
-        } else {
-            $this->getCells()->put($cell->name, $cell);
+        if (is_null($after)) {
+            $this->cells->put($cell->name, $cell);
+            return $cell;
         }
+
+        $index = $this->cells->keys()->search($after);
+        if ($index === false) {
+            $this->cells->put($cell->name, $cell);
+            return $cell;
+        }
+
+        $this->cells = $this->insertAt($this->cells, $index+1, $cell);
 
         return $cell;
     }
 
     protected function prependCell(string|Cell $cell, ?string $before = null): Cell
     {
-        if (is_string($cell)) {
-            $cell = new Cell($cell);
-        }
-        if (empty($this->getCells())) {
-            $this->cells = collect();
-        }
+        $this->cells ??= collect();
+        $cell = is_string($cell) ? new Cell($cell) : $cell;
 
         if ($this->getCells()->has($cell->name)) {
             throw new \Exception("Cell with name '{$cell->name}' already exists.");
         }
         $cell->setTable($this);
 
-        if ($before) {
-            $idx = $this->getCells()->keys()->search($before);
-            // If the key is not found, add at the beginning
-            $idx = ($idx === false) ? 0 : $idx;
-
-            $this->cells = $this->getCells()->splice($idx, 0, [$cell->name => $cell]);
-        } else {
-            $this->getCells()->prepend($cell, $cell->name);
+        if (is_null($before)) {
+            $this->cells->prepend($cell, $cell->name);
+            return $cell;
         }
 
+        $index = $this->cells->keys()->search($before);
+        if ($index === false) {
+            $this->cells->prepend($cell, $cell->name);
+            return $cell;
+        }
+
+        $this->cells = $this->insertAt($this->cells, $index, $cell);
+
         return $cell;
+    }
+
+    /**
+     * Collection helper function to insert items at a specific index
+     */
+    private function insertAt(Collection $col, int $index, Cell $cell): Collection
+    {
+        $before = $col->slice(0, $index);
+        $after = $col->slice($index);
+
+        return $before
+            ->put($cell->name, $cell)
+            ->merge($after);
     }
 
     /**
@@ -231,6 +204,48 @@ trait IsTable
         );
     }
 
+    public function isLivewire(): bool
+    {
+        return false;
+    }
+
+    protected function buildCsv(array|Collection|Builder $rows, string $fileName = 'unknown.csv')
+    {
+        $callback = function () use ($rows) {
+            $handle = fopen('php://output', 'w');
+
+            $headers = $this->getCells()->pluck('header')->all();
+            fputcsv($handle, $headers);
+
+            if (is_array($rows)) {
+                $rows = collect($rows);
+            }
+
+            if ($rows instanceof Collection) {
+                foreach ($rows as $row) {
+                    $row = $this->getCells()
+                        ->map(fn(Cell $cell) => $cell->text($row))
+                        ->all();
+                    fputcsv($handle, $row);
+                }
+            } else {
+                $rows->chunk(500, function ($rows) use ($handle) {
+                    foreach ($rows as $row) {
+                        $row = $this->getCells()
+                            ->map(fn(Cell $cell) => $cell->text($row))
+                            ->all();
+                        fputcsv($handle, $row);
+                    }
+                });
+            }
+
+            fclose($handle);
+        };
+
+        return response()->streamDownload($callback, $fileName, [
+            'Content-Type' => 'text/csv',
+        ]);
+    }
 
     // TODO: review the below array sort methods
 

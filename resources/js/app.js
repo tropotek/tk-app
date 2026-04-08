@@ -17,3 +17,4 @@ import '@tkl-ui/js/table.js';
 window.appConfig = {
     isProd: false,
 };
+

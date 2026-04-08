@@ -2,6 +2,7 @@
 
 namespace Tk\Table;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\View\ComponentAttributeBag;
 
 class Cell
@@ -56,6 +57,27 @@ class Cell
     }
 
     /**
+     * get the rows primary key value
+     */
+    public static function getKey(mixed $row, string $key = 'id'): string
+    {
+        if (is_null($row)) return '';
+
+        if ($row instanceof Model) {
+            return $row->getKey();
+        }
+
+        if (is_array($row)) {
+            return $row[$key] ?? '';
+        }
+
+        if (is_object($row)) {
+            return $row->{$key} ?? '';
+        }
+        return '';
+    }
+
+    /**
      * Get the plain text value of the cell (for .txt or .csv)
      */
     public function text(mixed $row): string
@@ -86,7 +108,7 @@ class Cell
         if (is_callable($this->html)) {
             return call_user_func($this->html, $row, $this);
         }
-        return $this->text($row);
+        return e($this->text($row));
     }
 
     public function getTable(): mixed

@@ -28,24 +28,24 @@ class extends Component {
     {
         Breadcrumbs::push('Ideas');
 
-        $this->appendCell(new Cell('title'))
+        $this->appendCell('title')
             ->setSortable()
             ->addClass('fw-bold')
             ->setHtml(function (Idea $idea, $cell) {
                 return sprintf('<a href="%s">%s</a>', route('examples.ideas.edit', $idea->id), $cell->text($idea));
             });
 
-        $this->appendCell(new Cell('status'))
+        $this->appendCell('status')
             ->setSortable()
             ->setText(function (Idea $idea, $cell) {
                 return $idea->status->label();
             });
 
-        $this->appendCell(new Cell('created_at'))
+        $this->appendCell('created_at')
             ->setHeader('Created')
             ->setSortable();
 
-        $this->appendCell(new Cell('updated_at'))
+        $this->appendCell('updated_at')
             ->setHeader('Updated')
             ->setSortable();
     }
@@ -80,9 +80,9 @@ class extends Component {
 <div>
     <h1>{{ $pageName }}</h1>
 
-    <x-tkl-ui::table.livewire.filters :table="$this">
+    <x-tkl-ui::table.filters :table="$this">
         <x-slot name="filters">
-            <x-tkl-ui::table.livewire.filters.select
+            <x-tkl-ui::table.filters.select
                 wire:model.live="status"
                 :name="$this->tableKey('status')"
                 :options="[ '' => '- All Statuses -'] + IdeaStatus::getLabels()"
@@ -97,8 +97,8 @@ class extends Component {
                 </a>
             </div>
         </x-slot>
-    </x-tkl-ui::table.livewire.filters>
+    </x-tkl-ui::table.filters>
 
-    <x-tkl-ui::table.livewire :table="$this"/>
+    <x-tkl-ui::table :table="$this"/>
 
 </div>

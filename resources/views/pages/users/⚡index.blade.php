@@ -27,23 +27,23 @@ class extends Component {
     {
         Breadcrumbs::push('Users');
 
-        $this->appendCell(new Cell('name'))
+        $this->appendCell('name')
             ->setSortable()
-            ->addClass('fw-bold')
+            ->addClass('fw-bold w-auto')
             ->setHtml(function (User $user, $cell) {
                 return sprintf('<a href="%s">%s</a>', route('admin.users.edit', $user->id), $cell->text($user));
             });
 
-        $this->appendCell(new Cell('email'))
+        $this->appendCell('email')
             ->setSortable();
 
-        $this->appendCell(new Cell('roles'))
+        $this->appendCell('roles')
             ->setText(function (User $user, $cell) {
                 return $user->roles->pluck('name')->implode(', ');
             });
 
         // alt method to add cells
-        $this->appendCell(new Cell('created_at'))
+        $this->appendCell('created_at')
             ->setHeader('Created')
             ->setSortable();
     }
@@ -58,8 +58,8 @@ class extends Component {
     {
         return User::with('roles')
             ->when($this->search, function (Builder $builder) {
-                $str = preg_replace("/[^a-zA-Z0-9' -]/", " ", $search);
-                $email = preg_replace("/[^a-zA-Z0-9@._-]/", "", $search);
+                $str = preg_replace("/[^a-zA-Z0-9' -]/", " ", $this->search);
+                $email = preg_replace("/[^a-zA-Z0-9@._-]/", "", $this->search);
                 return $builder->where('name', 'like', "%{$str}%")
                     ->orWhere('email', 'like', "%{$email}%")
                     ->tap($this->resetPage() ?? fn() => null);
@@ -79,9 +79,9 @@ class extends Component {
 <div>
     <h1>{{ $pageName }}</h1>
 
-    <x-tkl-ui::table.livewire.filters :table="$this">
+    <x-tkl-ui::table.filters :table="$this">
         <x-slot name="filters">
-            <x-tkl-ui::table.livewire.filters.select
+            <x-tkl-ui::table.filters.select
                 wire:model.live="roles"
                 :name="$this->tableKey('roles')"
                 :options="[ '' => '- All Roles -', 'test' => 'Test', 'admin' => 'Admin', 'staff' => 'Staff', 'member' => 'Member']"
@@ -106,8 +106,8 @@ class extends Component {
                 </a>
             </div>
         </x-slot>
-    </x-tkl-ui::table.livewire.filters>
+    </x-tkl-ui::table.filters>
 
-    <x-tkl-ui::table.livewire :table="$this"/>
+    <x-tkl-ui::table :table="$this"/>
 
 </div>
