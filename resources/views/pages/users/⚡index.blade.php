@@ -13,14 +13,12 @@ use Livewire\WithPagination;
 use Tk\Support\Facades\Breadcrumbs;
 use Tk\Table\Cell;
 use Tk\Table\IsLivewireTable;
+use Tk\Table\IsSearchable;
 
 new #[Layout('pages.main')]
 class extends Component {
 
-    use WithPagination, IsLivewireTable;
-
-    #[Url(except: '')]
-    public $roles = '';
+    use WithPagination, IsLivewireTable, IsSearchable;
 
 
     public function boot()
@@ -31,15 +29,18 @@ class extends Component {
         $this->appendCell('name')
             ->setSortable()
             ->addClass('fw-bold w-auto')
-            ->setHtml(function (User $user, Cell $cell) {
-                return $cell->makeLinkView(route('admin.users.edit', $user->id), $cell->text($user));
+            ->setView(function (User $user, Cell $cell) {
+                return view('tkl-ui::components.table.cells.a', [
+                    'href' => route('admin.users.edit', $user),
+                    'value' => $cell->value($user)
+                ]);
             });
 
         $this->appendCell('email')
             ->setSortable();
 
         $this->appendCell('roles')
-            ->setText(function (User $user, $cell) {
+            ->setValue(function (User $user, $cell) {
                 return $user->roles->pluck('name')->implode(', ');
             });
 
@@ -47,15 +48,13 @@ class extends Component {
         $this->appendCell('created_at')
             ->setHeader('Created')
             ->setSortable();
+
+        $this->appendFilter('roles')
+            ->setOptions(['admin' => 'Admin', 'staff' => 'Staff', 'member' => 'Member']);
     }
 
     #[Computed]
-    public function rows(): LengthAwarePaginator
-    {
-        return $this->paginateQuery($this->query());
-    }
-
-    protected function query(): Builder
+    protected function rows(): array|Builder
     {
         return User::with('roles')
             ->when($this->search, function (Builder $builder) {
@@ -65,8 +64,7 @@ class extends Component {
                     ->orWhere('email', 'like', "%{$email}%")
                     ->tap($this->resetPage() ?? fn() => null);
             })
-            ->when($this->roles, fn(Builder $query) => $query->role($this->roles))
-            ->orderBy($this->safeSort(), $this->dir);
+            ->when($this->filterVals['roles'] ?? null, fn(Builder $query) => $query->role($this->filterVals['roles']));
     }
 
     public function csv()
@@ -81,25 +79,6 @@ class extends Component {
     <h1>{{ $pageName }}</h1>
 
     <x-tkl-ui::table.tk-filters :table="$this">
-        <x-slot name="filters">
-            <x-tkl-ui::table.filters.select
-                wire:model.live="roles"
-                :name="$this->tableKey('roles')"
-                :options="[ '' => '- All Roles -', 'test' => 'Test', 'admin' => 'Admin', 'staff' => 'Staff', 'member' => 'Member']"
-                value="{{ $this->roles }}"
-            />
-        </x-slot>
-        <x-slot name="actions2">
-            <button
-                type="button"
-                class="btn btn-link btn-sm"
-                title="Download CSV"
-                wire:click="csv"
-            >
-                <i class="fa-regular fa-file-excel fa-lg"></i>
-            </button>
-        </x-slot>
-
         <x-slot name="actions">
             <div class="p-2 ps-0">
                 <a href="{{ route('admin.users.create') }}" class="btn btn-sm btn-outline-secondary">
@@ -107,8 +86,16 @@ class extends Component {
                 </a>
             </div>
         </x-slot>
+        <x-slot name="rightActions">
+            <div
+                class="p-2 text-primary clickable"
+                title="Download CSV"
+                wire:click="csv"
+            >
+                <i class="fa-regular fa-file-excel fa-lg align-middle"></i>
+            </div>
+        </x-slot>
     </x-tkl-ui::table.tk-filters>
-
     <x-tkl-ui::table :table="$this"/>
 
 </div>

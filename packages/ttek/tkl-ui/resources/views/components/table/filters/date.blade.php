@@ -8,30 +8,26 @@
 ])
 @php
     if ($table->isLivewire()) {
-        $value = $table->filterVals[$filter->getKey()] ?? $filter->getDefaultValue();
         $attributes = $attributes->merge([
             'wire:model.live' => "filterVals.{$filter->getKey()}",
             'wire:change' => "updateFilters('{$filter->getKey()}', \$event.target.value)",
+            'value' => $table->filterVals[$filter->getKey()] ?? $filter->getDefaultValue(),
         ]);
     } else {
         $key = $filter->getTable()->tableKey($filter->getKey());
-        $value = request()->input($key, $filter->getDefaultValue());
         $attributes = $attributes->merge([
-            'onChange' => 'this.form.submit()',
             'name' => $key,
+            'value' => request()->input($key, $filter->getDefaultValue()),
+            // todo mm: use on blur or something similar to trigger auto submit (alternatively add a submit button)
+            //'onChange' => 'this.form.submit()',
         ]);
     }
-    $attributes = $attributes->merge([
-        'class' => 'form-select form-select-sm w-auto',
-    ]);
     $attributes = $attributes->merge($filter->getAttrs()->all());
 @endphp
 
-<select {{ $attributes }}>
-    <option value="">{{ $filter->getLabel() }}</option>
-    @foreach($filter->getOptions() as $optVal => $label)
-        <option value="{{ $optVal }}" @selected((string)$value === (string)$optVal)>
-            {{ $label }}
-        </option>
-    @endforeach
-</select>
+<input {{ $attributes->merge([
+        'type' => 'date',
+        'class' => 'form-control form-control-sm w-auto',
+        'placeholder' => $filter->getLabel(),
+    ]) }}
+/>

@@ -2,69 +2,127 @@
 
 namespace Tk\Table;
 
-use Livewire\Attributes\Url;
-
 /**
- * Use this trait to when adding a table to a Livewire Component class
+ * Use this trait to add a table to a Livewire Component
  *
+ * Livewire Component methods:
  * @method void reset(...$properties)
- * @method void resetPage()
+ * @method void resetPage(string $pageName = 'page')
+ * @uses IsSearchable
+ * @property string $search
+ * @property string $searchPlaceholder
+ * @property array $searchClear
  */
 trait IsLivewireTable
 {
     use IsTable;
 
-    public string $search = '';
+    public array $filterVals = [];
 
+
+    /**
+     * provides alias to the query vals and hides the default value params
+     */
+    public function queryString(): array
+    {
+        // set the initial default limit value, called by the Livewire system
+        $this->setDefaultLimit(config('sis.default.pagination', 30));
+
+        return [
+            'limit' => [
+                'except' => 0,
+                'as' => $this->tableKey(self::QUERY_LIMIT)
+            ],
+            'sort' => [
+                'except' => '',
+                'as' => $this->tableKey(self::QUERY_SORT)
+            ],
+            'dir' => [
+                'except' => '',
+                'as' => $this->tableKey(self::QUERY_DIR)
+            ],
+            'filterVals' => [
+                'except' => [],
+                'as' => $this->tableKey(self::QUERY_FILTER)
+            ],
+            'search' => [
+                'except' => '',
+                'as' => $this->tableKey(self::QUERY_SEARCH)
+            ],
+        ];
+    }
 
     /**
      * Use this method to reset defaults and clear filters
      */
     public function clearFilters(): void
     {
-        $this->reset(['search']);
-        $this->limit = $this->defaultLimit;
-        $this->sort = $this->defaultSort;
-        $this->dir = $this->defaultDir;
-        $this->resetPage();
+        $reset = ['filterVals'];
+        if ($this->isSearchable()) {
+            $reset[] = 'search';
+        }
+        $this->reset($reset);
+
+        $this->limit = 0;
+        $this->sort = '';
+        $this->dir = '';
+
+        foreach ($this->getFilters() as $filter) {
+            if ($filter->getDefaultValue()) {
+                $this->filterVals[$filter->key] = $filter->getDefaultValue();
+            }
+        }
+
+        $this->resetPage($this->tableKey(self::QUERY_PAGE));
     }
 
-    public function queryString(): array
+    /**
+     * update filter dependencies
+     */
+    public function updateFilters(string $filterKey): void
     {
-        return [
-            'limit' => [
-                'except' => config('sis.default.pagination', 30),
-                'as' => $this->tableKey('l')
-            ],
-            'sort' => [
-                'except' => $this->defaultSort,
-                'as' => $this->tableKey('s')
-            ],
-            'dir' => [
-                'except' => $this->defaultDir,
-                'as' => $this->tableKey('d')
-            ],
-//            'filterVals' => [
-//                'except' => [],
-//                'as' => $this->tableKey('f')
-//            ],
-            'search' => [
-                'except' => '',
-                'as' => $this->tableKey('sr')
-            ],
-        ];
-    }
+        foreach ($this->getVisibleFilters() as $filter) {
+            if ($filter->getDependsOn() === $filterKey) {
+                unset($this->filterVals[$filter->getKey()]);
+            }
+        }
 
-    public function setLimit(int $limit): void
+        $this->resetPage($this->tableKey(self::QUERY_PAGE));
+    }
+    public function updatedSearch(): void
     {
-        if ($this->limit === $limit) return;
-        $this->limit = $limit;
-        $this->resetPage();
+        if ($this->isSearchable()) {
+            foreach ($this->searchClear as $filterKey) {
+                unset($this->filterVals[$filterKey]);
+            }
+        }
+
+        $this->resetPage($this->tableKey(self::QUERY_PAGE));
     }
 
     public function toggleDir(): void
     {
-        $this->dir = $this->dir === 'asc' ? 'desc' : 'asc';
+        $this->dir = $this->getDir() === self::SORT_DESC ? '' : self::SORT_DESC;
+    }
+
+    public function setSort(string $key): void
+    {
+        if (!in_array($key, $this->sortableKeys())) return;
+
+        if ($this->getSort() === $key) {
+            $this->dir = $this->getDir() === self::SORT_DESC ? '' : self::SORT_DESC;
+        } else {
+            $this->sort = $key;
+            $this->dir  = '';
+        }
+
+        $this->resetPage();
+    }
+
+    public function setLimit(int $limit): void
+    {
+        $this->limit = $limit;
+        $this->resetPage($this->tableKey('p'));
     }
 
     public function isLivewire(): bool

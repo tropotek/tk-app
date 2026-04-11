@@ -17,6 +17,10 @@ html {
     --bs-gutter-y: 0;
 }
 
+.clickable {
+    cursor: pointer;
+}
+
 /* collapsable card example */
 .card-header .fa {
     transition: .3s transform ease-in-out;

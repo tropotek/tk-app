@@ -15,11 +15,12 @@ use Livewire\WithPagination;
 use Tk\Support\Facades\Breadcrumbs;
 use Tk\Table\Cell;
 use Tk\Table\IsLivewireTable;
+use Tk\Table\IsSearchable;
 
 new #[Layout('pages.main')]
 class extends Component {
 
-    use WithPagination, IsLivewireTable;
+    use WithPagination, IsLivewireTable, IsSearchable;
 
     #[Url(except: '')]
     public $status = '';
@@ -31,13 +32,16 @@ class extends Component {
         $this->appendCell('title')
             ->setSortable()
             ->addClass('fw-bold')
-            ->setHtml(function (Idea $idea, $cell) {
-                return $cell->makeLinkView(route('examples.ideas.edit', $idea->id), $cell->text($idea));
+            ->setView(function (Idea $idea, Cell $cell) {
+                return view('tkl-ui::components.table.cells.a', [
+                    'href' => route('examples.ideas.edit', $idea->id),
+                    'value' => $cell->value($idea)
+                ]);
             });
 
         $this->appendCell('status')
             ->setSortable()
-            ->setText(function (Idea $idea, $cell) {
+            ->setValue(function (Idea $idea, $cell) {
                 return $idea->status->label();
             });
 
@@ -48,15 +52,14 @@ class extends Component {
         $this->appendCell('updated_at')
             ->setHeader('Updated')
             ->setSortable();
+
+        $this->appendFilter('status')
+            ->setOptions(IdeaStatus::getLabels());
+
     }
 
     #[Computed]
-    public function rows(): LengthAwarePaginator
-    {
-        return $this->paginateQuery($this->query());
-    }
-
-    protected function query(): Builder
+    protected function rows(): array|Builder
     {
         return Idea::query()
             ->when($this->search, function (Builder $builder) {
@@ -65,8 +68,7 @@ class extends Component {
                     ->orWhere('description', 'like', "%{$str}%")
                     ->tap($this->resetPage() ?? fn() => null);
             })
-            ->when($this->status, fn(Builder $query) => $query->where('status', $this->status))
-            ->orderBy($this->safeSort(), $this->dir);
+            ->when($this->filterVals['status'] ?? null, fn(Builder $query) => $query->where('status', $this->filterVals['status']));
     }
 
     public function csv()
@@ -81,15 +83,6 @@ class extends Component {
     <h1>{{ $pageName }}</h1>
 
     <x-tkl-ui::table.tk-filters :table="$this">
-        <x-slot name="filters">
-            <x-tkl-ui::table.filters.select
-                wire:model.live="status"
-                :name="$this->tableKey('status')"
-                :options="[ '' => '- All Statuses -'] + IdeaStatus::getLabels()"
-                value="{{ $this->status }}"
-            />
-        </x-slot>
-
         <x-slot name="actions">
             <div class="p-2 ps-0">
                 <a href="{{ route('examples.ideas.create') }}" class="btn btn-sm btn-outline-secondary">
@@ -97,8 +90,16 @@ class extends Component {
                 </a>
             </div>
         </x-slot>
+        <x-slot name="rightActions">
+            <div
+                class="p-2 text-primary clickable"
+                title="Download CSV"
+                wire:click="csv"
+            >
+                <i class="fa-regular fa-file-excel fa-lg align-middle"></i>
+            </div>
+        </x-slot>
     </x-tkl-ui::table.tk-filters>
-
     <x-tkl-ui::table :table="$this"/>
 
 </div>

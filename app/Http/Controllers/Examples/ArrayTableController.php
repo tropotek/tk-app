@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Examples;
 
 
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Tk\Support\Facades\Breadcrumbs;
 use Tk\Table\Cell;
+use Tk\Table\IsSearchable;
 use Tk\Table\IsTable;
 
 /**
@@ -17,9 +19,7 @@ use Tk\Table\IsTable;
  */
 class ArrayTableController extends Controller
 {
-    use IsTable;
-
-    protected LengthAwarePaginator $rows;
+    use IsTable, IsSearchable;
 
     public function index(Request $request)
     {
@@ -47,6 +47,7 @@ class ArrayTableController extends Controller
         ;
 
         $this->hydrateTableFromRequest();
+
         if (request()->has($this->tableKey('reset'))) {
             // remove all table query params
             return redirect(url()->current());
@@ -57,9 +58,8 @@ class ArrayTableController extends Controller
         ]);
     }
 
-    public function rows(): LengthAwarePaginator
+    public function rows(): array|Builder
     {
-        if (isset($this->rows)) return $this->rows;
 
         $rows = [
             (object)['id' => 1, 'name' => 'Test 1', 'email' => 'email1@example.com', 'roles' => 'admin', 'created_at' => '2021-01-01 12:23:33'],
@@ -81,13 +81,7 @@ class ArrayTableController extends Controller
             });
         }
 
-        // 2. sort results (todo: using Gregs sort method for now, review)
-        $sortCol = ($this->dir == 'desc' ? '-' : '') . $this->safeSort();
-        $rows = $this->sortArray($rows, $sortCol);
-
-        // 3. return/cache paginated results
-        $this->rows = $this->paginateArray($rows);
-        return $this->rows;
+        return $rows;
     }
 
 }

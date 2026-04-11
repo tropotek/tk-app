@@ -1,5 +1,5 @@
 @php
-    /** @var \Tk\Table\Table $table */
+    /** @var \Tk\Table\Cell $cell */
 @endphp
 @props([
     // required
@@ -8,10 +8,6 @@
 ])
 @if($cell->isVisible())
     <td {{ $attributes->merge($cell->getAttrs()->toArray()) }}>
-        @if (!empty($slot) && $slot->hasActualContent())
-            {{ $slot }}
-        @else
-            {!! $cell->html($row) !!}
-        @endif
+        {!! $cell->view($row) !!}
     </td>
 @endif

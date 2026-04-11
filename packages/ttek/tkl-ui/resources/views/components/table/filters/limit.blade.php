@@ -1,5 +1,5 @@
 @php
-    /** @var \Tk\Table\Table $table */
+    /** @var \Tk\Table\isTable $table */
 @endphp
 @aware(['table'])
 

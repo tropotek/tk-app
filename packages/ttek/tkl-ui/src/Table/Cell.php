@@ -13,18 +13,19 @@ class Cell
     public string $sort = '';
     public bool $visible = true;
 
-    protected mixed $text = null;   // null|callable
-    protected mixed $html = null;   // null|callable
+    protected mixed $value = null;   // null|string|callable
+    protected mixed $view = null;   // null|string|callable
     protected mixed $table = null;  // HasTable trait
     protected ComponentAttributeBag $attrs;
+    protected ComponentAttributeBag $headerAttrs;
 
 
     public function __construct(
         string $name,
         string $header = '',
         bool $sortable = false,
-        null|callable $text = null,
-        null|callable $html = null,
+        null|callable $value = null,
+        null|callable $view = null,
         string $sort = '',
         bool $visible = true
     )
@@ -34,13 +35,14 @@ class Cell
             $header = strval(preg_replace('/(Id|_id)$/', '', $name));
             $header = str_replace(['_', '-'], ' ', $header);
             $header = ucwords(strval(preg_replace('/[A-Z]/', ' $0', $header)));
+            $header = e($header);
         }
         $this->setHeader($header);
         $this->setSort($sort ?: $name);
         $this->setSortable($sortable);
         $this->setVisible($visible);
-        if (is_callable($text)) $this->text = $text;
-        if (is_callable($html)) $this->html = $html;
+        if (is_callable($value)) $this->value = $value;
+        if (is_callable($view)) $this->view = $view;
     }
 
     /**
@@ -94,7 +96,10 @@ class Cell
         return $this->header;
     }
 
-    public function setHeader(string $header): Cell
+    /**
+     * Headers can contain markup and text should be escaped.
+     */
+    public function setHeader(string $header): static
     {
         $this->header = $header;
         return $this;
@@ -116,7 +121,7 @@ class Cell
         return $this->sort;
     }
 
-    public function setSort(string $sort): Cell
+    public function setSort(string $sort): static
     {
         $this->sort = $sort;
         return $this;
@@ -127,65 +132,81 @@ class Cell
         return $this->visible;
     }
 
-    public function setVisible(bool $visible = true): Cell
+    public function setVisible(bool $visible = true): static
     {
         $this->visible = $visible;
         return $this;
     }
 
     /**
-     * Get the plain text value of the cell (for .txt or .csv)
+     * return the raw value from a row using the cell key name
      */
-    public function text(mixed $row): string
+    public function getRowValue(mixed $row): mixed
     {
-        if (!$this->isVisible()) return '';
-        if (is_callable($this->text)) {
-            return call_user_func($this->text, $row, $this);
-        }
-        $val = '';
-        if (is_array($row)) {
-            $val = $row[$this->name] ?? '';
-        }
-        if (is_object($row)) {
-            $val = $row->{$this->name} ?? '';
-        }
-        if (is_string($val) || $val instanceof \Stringable) {
-            return strval($val);
-        }
+        if (is_array($row)) return $row[$this->name] ?? '';
+        if (is_object($row)) return $row->{$this->name} ?? '';
         return '';
     }
 
     /**
-     * Set the callable that returns the text value of the cell
+     * Get the plain text value of the cell (useful for .txt or .csv)
+     */
+    public function value(mixed $row): mixed
+    {
+        if (!$this->isVisible()) return '';
+        if (is_callable($this->value)) {
+            $ret = call_user_func($this->value, $row, $this);
+            if (is_string($ret) || $ret instanceof \Stringable) {
+                return e($ret);
+            }
+        }
+
+        $value = $this->getRowValue($row);
+
+        if (is_string($value) || $value instanceof \Stringable) {
+            return e($value);
+        }
+
+        return '';
+    }
+
+    /**
+     * Set a callable or string that returns the text value of the cell
+     * Used for .txt, .csv exports and should not contain any HTML markup.
+     * Note: value will be escaped automatically.
      *
      * @callable function (mixed $row, Cell $cell): string { }
      */
-    public function setText(callable $text): Cell
+    public function setValue(string|callable $value): static
     {
-        $this->text = $text;
+        $this->value = $value;
         return $this;
     }
 
     /**
      * Get the HTML value of the cell
      */
-    public function html(mixed $row): string
+    public function view(mixed $row): mixed
     {
         if (!$this->isVisible()) return '';
-        if (is_callable($this->html)) {
-            return call_user_func($this->html, $row, $this);
+        if (is_callable($this->view)) {
+            $ret = call_user_func($this->view, $row, $this);
+            if (is_string($ret) || $ret instanceof \Stringable) {
+                return $ret;
+            }
         }
-        return e($this->text($row));
+        return $this->value($row);
     }
 
     /**
-     * Set the callable that returns the HTML value of the cell
+     * Set the callable that returns the HTML value of the cell.
+     * By default, `view()` returns `value()`.
      *
      * @callable function (mixed $row, Cell $cell): string { }
      */
-    public function setHtml(callable $html): Cell
+    public function setView(callable $view): static
     {
-        $this->html = $html;
+        $this->view = $view;
         return $this;
     }
 
@@ -210,30 +231,37 @@ class Cell
         return $this->attrs;
     }
 
-    /**
-     * create an anchor tag
-     * `<a href="{route}" title="{title}">{text}</a>`
-     */
-    public function makeLinkView(string $route, string $text, string $title = ''): string
+    public function mergeAttrs(array $attrs): static
     {
-        return view('tkl-ui::components.table.a', [
-            'href' => $route,
-            'text' => $text,
-            'title' => $title,
-        ]);
+        $this->attrs = $this->getAttrs()->merge($attrs);
+        return $this;
     }
 
     /**
-     * create an anchor tag with an icon
-     * `<a href="{route}" title="{title}"><i class="{icon}"></i></a>`
+     * Add a CSS class to the cell
      */
-    public  function makeActionView(string $route, string $icon, string $title = ''): string
+    public function addHeaderClass(string $class): static
     {
-        return view('tkl-ui::components.table.a', [
-            'href' => $route,
-            'text' => sprintf('<i class="%s"></i>', $icon),
-            'title' => $title,
-        ]);
+        $this->headerAttrs = $this->getHeaderAttrs()->class($class);
+        return $this;
+    }
+
+    public function addHeaderAttr(array $attrs): static
+    {
+        $this->headerAttrs = $this->getHeaderAttrs()->merge($attrs);
+        return $this;
+    }
+
+    public function getHeaderAttrs(): ComponentAttributeBag
+    {
+        $this->headerAttrs ??= new ComponentAttributeBag();
+        return $this->headerAttrs;
+    }
+
+    public function mergeHeaderAttrs(array $attrs): static
+    {
+        $this->headerAttrs = $this->getHeaderAttrs()->merge($attrs);
+        return $this;
     }
 
     public function getNextSortUrl(string $currentSort = '', string $currentDir = '', array $query = []): string

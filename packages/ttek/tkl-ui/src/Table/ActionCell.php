@@ -2,10 +2,6 @@
 
 namespace Tk\Table;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\View\ComponentAttributeBag;
-use Modules\Core\Table\Cell;
-
 class ActionCell extends Cell
 {
     public string $icon = '';
@@ -14,6 +10,7 @@ class ActionCell extends Cell
         string $name,
         string $icon,
         null|callable $route = null,
+        null|callable $view = null,
         bool $visible = true
     )
     {
@@ -21,24 +18,32 @@ class ActionCell extends Cell
         $this->icon = $icon;
         $this->setVisible($visible);
 
-        if (is_callable($route)) {
-            $this->text = $route;
-        }
+        if (is_callable($route)) $this->value = $route;
+        if (is_callable($view)) $this->view = $view;
     }
 
     public function getHeader(): string
     {
-        return sprintf('<i class="%s text-muted" title="%s"></i>', $this->icon, parent::getHeader());
+        return sprintf('<i class="%s text-muted" title="%s"></i>',
+            $this->icon,
+            parent::getHeader()
+        );
     }
 
-    public function html(mixed $row): string
+    public function view(mixed $row): mixed
     {
         if (!$this->isVisible()) return '';
-        if (is_callable($this->html)) {
-            return call_user_func($this->html, $row, $this);
+        if (is_callable($this->view)) {
+            $ret = call_user_func($this->view, $row, $this);
+            if (is_string($ret) || $ret instanceof \Stringable) {
+                return $ret;
+            }
         }
 
-        return $this->makeActionView($this->text($row), $this->icon, parent::getHeader());
+        return view('core::components.table.cells.a', [
+            'href' => $this->value($row),
+            'icon' => $this->icon
+        ]);
     }
 
     public function getIcon(): string
@@ -46,22 +51,9 @@ class ActionCell extends Cell
         return $this->icon;
     }
 
-    public function setIcon(string $icon): ActionCell
+    public function setIcon(string $icon): static
     {
         $this->icon = $icon;
         return $this;
     }
-
-    public function getRoute(): string
-    {
-        return $this->route;
-    }
-
-    public function setRoute(string $route): ActionCell
-    {
-        $this->route = $route;
-        return $this;
-    }
-
-
 }
