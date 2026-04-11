@@ -1,6 +1,6 @@
-<?php
-/** @var \Tk\Table\Table $table */
-?>
+@php
+    /** @var \Tk\Table\Table $table */
+@endphp
 @aware(['table'])
 
 @props([
@@ -15,6 +15,7 @@
     if (!$table->isLivewire()) {
         $attributes = $attributes->merge(['onChange' => 'this.form.submit()']);
     }
+    $attributes = $attributes->merge(['class' => 'form-select-sm w-auto']);
 @endphp
 <div class="p-2 pe-0">
     <x-tkl-ui::form.fields.select
@@ -23,7 +24,6 @@
         :$value
         :$label
         :withField="false"
-        class="form-select-sm w-auto"
         :attributes="$attributes"
     />
 </div>

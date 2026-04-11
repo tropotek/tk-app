@@ -1,10 +1,10 @@
-<?php
-/** @var \Tk\Table\Table $table */
-?>
+@php
+    /** @var \Tk\Table\Table $table */
+@endphp
 @aware(['table'])
 
 @if($table->isLivewire())
-    <div x-data="{ q: '' }">
+    <div x-data="{ q: @entangle('search') }">
         <input type="text" class="form-control form-control-sm"
                placeholder="&#x1F50D; Search"
                x-model="q"

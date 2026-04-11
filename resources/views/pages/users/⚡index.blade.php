@@ -27,11 +27,12 @@ class extends Component {
     {
         Breadcrumbs::push('Users');
 
+
         $this->appendCell('name')
             ->setSortable()
             ->addClass('fw-bold w-auto')
-            ->setHtml(function (User $user, $cell) {
-                return sprintf('<a href="%s">%s</a>', route('admin.users.edit', $user->id), $cell->text($user));
+            ->setHtml(function (User $user, Cell $cell) {
+                return $cell->makeLinkView(route('admin.users.edit', $user->id), $cell->text($user));
             });
 
         $this->appendCell('email')
@@ -51,7 +52,7 @@ class extends Component {
     #[Computed]
     public function rows(): LengthAwarePaginator
     {
-        return $this->query()->paginate($this->limit ?: null);
+        return $this->paginateQuery($this->query());
     }
 
     protected function query(): Builder
@@ -79,7 +80,7 @@ class extends Component {
 <div>
     <h1>{{ $pageName }}</h1>
 
-    <x-tkl-ui::table.filters :table="$this">
+    <x-tkl-ui::table.tk-filters :table="$this">
         <x-slot name="filters">
             <x-tkl-ui::table.filters.select
                 wire:model.live="roles"
@@ -106,7 +107,7 @@ class extends Component {
                 </a>
             </div>
         </x-slot>
-    </x-tkl-ui::table.filters>
+    </x-tkl-ui::table.tk-filters>
 
     <x-tkl-ui::table :table="$this"/>
 

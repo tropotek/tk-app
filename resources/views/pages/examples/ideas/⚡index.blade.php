@@ -32,7 +32,7 @@ class extends Component {
             ->setSortable()
             ->addClass('fw-bold')
             ->setHtml(function (Idea $idea, $cell) {
-                return sprintf('<a href="%s">%s</a>', route('examples.ideas.edit', $idea->id), $cell->text($idea));
+                return $cell->makeLinkView(route('examples.ideas.edit', $idea->id), $cell->text($idea));
             });
 
         $this->appendCell('status')
@@ -53,7 +53,7 @@ class extends Component {
     #[Computed]
     public function rows(): LengthAwarePaginator
     {
-        return $this->query()->paginate($this->limit);
+        return $this->paginateQuery($this->query());
     }
 
     protected function query(): Builder
@@ -80,7 +80,7 @@ class extends Component {
 <div>
     <h1>{{ $pageName }}</h1>
 
-    <x-tkl-ui::table.filters :table="$this">
+    <x-tkl-ui::table.tk-filters :table="$this">
         <x-slot name="filters">
             <x-tkl-ui::table.filters.select
                 wire:model.live="status"
@@ -97,7 +97,7 @@ class extends Component {
                 </a>
             </div>
         </x-slot>
-    </x-tkl-ui::table.filters>
+    </x-tkl-ui::table.tk-filters>
 
     <x-tkl-ui::table :table="$this"/>
 

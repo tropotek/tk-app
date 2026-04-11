@@ -1,6 +1,6 @@
-<?php
-/** @var \Tk\Table\Table $table */
-?>
+@php
+    /** @var \Tk\Table\Table $table */
+@endphp
 @props([
     // required
     'table',
@@ -10,33 +10,28 @@
 ])
 
 <div {{ $attributes }}>
-    <form method="get" action="{{ request()->fullUrl() }}">
+{{--    <form method="get" action="{{ request()->fullUrl() }}">--}}
+    <form method="get">
 
         @if (!empty($filters) && $filters->hasActualContent())
             <div class="d-flex">
                 <div class="py-2">
-                    @if($table->isLivewire())
-                        <button
-                            type="button"
-                            class="btn btn-link p-0"
-                            title="Clear Filters & Search"
+                    <button
+                        type="{{ $table->isLivewire() ? 'button' : 'submit' }}"
+                        class="btn btn-link p-0"
+                        title="Clear Filters & Search"
+                        @if($table->isLivewire())
                             wire:click="clearFilters"
-                        >
-                            <i class="fa-solid fa-filter align-middle"></i>
-                        </button>
-                    @else
-                        {{-- TODO --}}
-                        {{-- <button type="submit" class="btn btn-primary" name="{{ $table->tableKey('reset') }}" value="1"><i class="fa-solid fa-filter align-middle"></i></button> --}}
-                        <a title="Click to reset table filters"
-                           href="{{ request()->fullUrlWithQuery([$table->tableKey('reset') => '1']) }}">
-                            <i class="fa-solid fa-filter align-middle"></i>
-                        </a>
-                    @endif
-
+                        @else
+                            name="{{ $table->tableKey('reset') }}"
+                            value="1"
+                        @endif
+                    >
+                        <i class="fa-solid fa-filter align-middle"></i>
+                    </button>
                 </div>
 
                 {{ $filters }}
-
 
                 <button
                     type="{{ $table->isLivewire() ? 'button' : 'submit' }}"

@@ -18,6 +18,7 @@ trait IsTable
     public int $limit = 30;
     public string $sort = '';
     public string $dir = 'asc';
+    public ?int $totalRows = null;
 
     protected int $defaultLimit = 30;
     protected string $defaultSort = '';
@@ -34,7 +35,7 @@ trait IsTable
     /**
      * Controller function
      */
-    protected function hydrateTableFromRequest(): void
+    public function hydrateTableFromRequest(): void
     {
         $this->limit = request()->input($this->tableKey('limit'), $this->defaultLimit);
         $this->sort = request()->input($this->tableKey('sort'), $this->defaultSort);
@@ -44,13 +45,22 @@ trait IsTable
     /**
      * Return a validated sort column
      */
-    protected function safeSort(): string
+    public function safeSort(): string
     {
-        $sortables = $this->cells->pluck('sort')->filter()->all();
-        if (!in_array($this->sort, $sortables)) {
-            return $this->defaultSort;
-        }
-        return $this->sort;
+        return in_array($this->sort, $this->sortableKeys())
+            ? $this->sort
+            : $this->defaultSort;
+    }
+
+    /**
+     * Allowed sort keys. Defaults to all sortable cell keys.
+     */
+    public function sortableKeys(): array
+    {
+        return $this->getCells()
+            ->pluck('sort')
+            ->filter()
+            ->all();
     }
 
     public function setDefaultLimit(int $limit): static
@@ -74,70 +84,66 @@ trait IsTable
      */
     public function getCells(): Collection
     {
-        return $this->cells;
+        return $this->cells ??= collect();
     }
 
-    protected function getCell(string $name): ?Cell
+    public function getCell(string $name): ?Cell
     {
-        if (empty($this->cells)) return null;
-        return $this->cells->get($name);
+        return $this->getCells()->get($name);
     }
 
-    protected function removeCell(string $name): static
+    public function removeCell(string $name): static
     {
-        if (empty($this->cells)) return $this;
-        $this->cells->forget([$name]);
+        $this->getCells()->forget([$name]);
         return $this;
     }
 
-    protected function appendCell(string|Cell $cell, ?string $after = null): Cell
+    public function appendCell(string|Cell $cell, ?string $after = null): Cell
     {
-        $this->cells ??= collect();
         $cell = is_string($cell) ? new Cell($cell) : $cell;
-
-        if ($this->cells->has($cell->name)) {
-            throw new \Exception("Cell with name '{$cell->name}' already exists.");
-        }
         $cell->setTable($this);
-
-        if (is_null($after)) {
-            $this->cells->put($cell->name, $cell);
-            return $cell;
-        }
-
-        $index = $this->cells->keys()->search($after);
-        if ($index === false) {
-            $this->cells->put($cell->name, $cell);
-            return $cell;
-        }
-
-        $this->cells = $this->insertAt($this->cells, $index+1, $cell);
-
-        return $cell;
-    }
-
-    protected function prependCell(string|Cell $cell, ?string $before = null): Cell
-    {
-        $this->cells ??= collect();
-        $cell = is_string($cell) ? new Cell($cell) : $cell;
 
         if ($this->getCells()->has($cell->name)) {
             throw new \Exception("Cell with name '{$cell->name}' already exists.");
         }
+
+        if (is_null($after)) {
+            $this->getCells()->put($cell->name, $cell);
+            return $cell;
+        }
+
+        $index = $this->getCells()->keys()->search($after);
+        if ($index === false) {
+            $this->getCells()->put($cell->name, $cell);
+            return $cell;
+        }
+
+        $this->cells = $this->insertAt($this->getCells(), $index+1, $cell);
+
+        return $cell;
+    }
+
+    public function prependCell(string|Cell $cell, ?string $before = null): Cell
+    {
+        $cell = is_string($cell) ? new Cell($cell) : $cell;
         $cell->setTable($this);
 
+        if ($this->getCells()->has($cell->name)) {
+            throw new \Exception("Cell with name '{$cell->name}' already exists.");
+        }
+
         if (is_null($before)) {
-            $this->cells->prepend($cell, $cell->name);
+            $this->getCells()->prepend($cell, $cell->name);
             return $cell;
         }
 
-        $index = $this->cells->keys()->search($before);
+        $index = $this->getCells()->keys()->search($before);
         if ($index === false) {
-            $this->cells->prepend($cell, $cell->name);
+            $this->getCells()->prepend($cell, $cell->name);
             return $cell;
         }
 
-        $this->cells = $this->insertAt($this->cells, $index, $cell);
+        $this->cells = $this->insertAt($this->getCells(), $index, $cell);
 
         return $cell;
     }
@@ -176,22 +182,28 @@ trait IsTable
         return $tableId.'_'.$key;
     }
 
+    public function paginateQuery(Builder $query): LengthAwarePaginator
+    {
+        $path = '/' . ltrim(Paginator::resolveCurrentPath(), '/');
+        return $query->paginate(
+            perPage: $this->limit ?: $this->totalRows,
+            pageName: $this->tableKey('p'),
+        )->withPath($path);
+    }
+
     /**
      * return the paginated results of an array of rows
      */
-    protected function paginateArray(array $rows, $pageName = 'page', $currentPage = null): LengthAwarePaginator
+    public function paginateArray(array $rows, $pageName = 'page', $currentPage = null): LengthAwarePaginator
     {
         $currentPage = $currentPage ?: Paginator::resolveCurrentPage($pageName);
         $total = count($rows);
         $perPage = $this->limit ?: $total;
         $pageName = $this->tableKey($pageName);
 
-        if ($this->limit > 0) {
-            $offset = ($currentPage - 1) * $this->limit;
-            $items = array_slice($rows, $offset, $this->limit);
-        } else {
-            $items = $rows;
-        }
+        // get the current page of items
+        $offset = ($currentPage - 1) * $perPage;
+        $items = array_slice($rows, $offset, $perPage);
 
         $options = [
             'path' => Paginator::resolveCurrentPath(),
@@ -209,7 +221,7 @@ trait IsTable
         return false;
     }
 
-    protected function buildCsv(array|Collection|Builder $rows, string $fileName = 'unknown.csv')
+    public function buildCsv(array|Collection|Builder $rows, string $fileName = 'unknown.csv')
     {
         $callback = function () use ($rows) {
             $handle = fopen('php://output', 'w');
@@ -260,7 +272,7 @@ trait IsTable
      * @param array<K, T> $rows
      * @return array<K, T>
      */
-    protected function sortArray(array $rows, string ...$columns): array
+    public function sortArray(array $rows, string ...$columns): array
     {
         if (count($rows) < 2) return $rows;
 

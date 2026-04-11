@@ -1,6 +1,6 @@
-<?php
-/** @var \Tk\Table\Cell $cell */
-?>
+@php
+    /** @var \Tk\Table\Table $table */
+@endphp
 @props([
     // required
     'cell',

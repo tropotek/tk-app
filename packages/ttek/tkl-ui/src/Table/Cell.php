@@ -16,7 +16,6 @@ class Cell
     protected mixed $text = null;   // null|callable
     protected mixed $html = null;   // null|callable
     protected mixed $table = null;  // HasTable trait
-
     protected ComponentAttributeBag $attrs;
 
 
@@ -30,34 +29,22 @@ class Cell
         bool $visible = true
     )
     {
-        $this->attrs = new ComponentAttributeBag();
         $this->name = $name;
-
         if (empty($header)) {
             $header = strval(preg_replace('/(Id|_id)$/', '', $name));
             $header = str_replace(['_', '-'], ' ', $header);
             $header = ucwords(strval(preg_replace('/[A-Z]/', ' $0', $header)));
         }
-        $this->header = $header;
-
-        if (empty($sort)) $sort = $name;
-        $this->sort = $sort;
-
-        $this->sortable = $sortable;
-
-        if (is_callable($text)) {
-            $this->text = $text;
-        }
-
-        if (is_callable($html)) {
-            $this->html = $html;
-        }
-
-        $this->visible = $visible;
+        $this->setHeader($header);
+        $this->setSort($sort ?: $name);
+        $this->setSortable($sortable);
+        $this->setVisible($visible);
+        if (is_callable($text)) $this->text = $text;
+        if (is_callable($html)) $this->html = $html;
     }
 
     /**
-     * get the rows primary key value
+     * get the row primary key value
      */
     public static function getKey(mixed $row, string $key = 'id'): string
     {
@@ -78,39 +65,8 @@ class Cell
     }
 
     /**
-     * Get the plain text value of the cell (for .txt or .csv)
+     * @return IsTable
      */
-    public function text(mixed $row): string
-    {
-        if (!$this->isVisible()) return '';
-        if (is_callable($this->text)) {
-            return call_user_func($this->text, $row, $this);
-        }
-        $val = '';
-        if (is_array($row)) {
-            $val = $row[$this->name] ?? '';
-        }
-        if (is_object($row)) {
-            $val = $row->{$this->name} ?? '';
-        }
-        if (is_string($val) || $val instanceof \Stringable) {
-            return strval($val);
-        }
-        return '';
-    }
-
-    /**
-     * Get the HTML value of the cell
-     */
-    public function html(mixed $row): string
-    {
-        if (!$this->isVisible()) return '';
-        if (is_callable($this->html)) {
-            return call_user_func($this->html, $row, $this);
-        }
-        return e($this->text($row));
-    }
-
     public function getTable(): mixed
     {
         return $this->table;
@@ -178,7 +134,31 @@ class Cell
     }
 
     /**
+     * Get the plain text value of the cell (for .txt or .csv)
+     */
+    public function text(mixed $row): string
+    {
+        if (!$this->isVisible()) return '';
+        if (is_callable($this->text)) {
+            return call_user_func($this->text, $row, $this);
+        }
+        $val = '';
+        if (is_array($row)) {
+            $val = $row[$this->name] ?? '';
+        }
+        if (is_object($row)) {
+            $val = $row->{$this->name} ?? '';
+        }
+        if (is_string($val) || $val instanceof \Stringable) {
+            return strval($val);
+        }
+        return '';
+    }
+
+    /**
      * Set the callable that returns the text value of the cell
+     *
+     * @callable function (mixed $row, Cell $cell): string { }
      */
     public function setText(callable $text): Cell
     {
@@ -187,7 +167,21 @@ class Cell
     }
 
     /**
+     * Get the HTML value of the cell
+     */
+    public function html(mixed $row): string
+    {
+        if (!$this->isVisible()) return '';
+        if (is_callable($this->html)) {
+            return call_user_func($this->html, $row, $this);
+        }
+        return e($this->text($row));
+    }
+
+    /**
      * Set the callable that returns the HTML value of the cell
+     *
+     * @callable function (mixed $row, Cell $cell): string { }
      */
     public function setHtml(callable $html): Cell
     {
@@ -200,19 +194,46 @@ class Cell
      */
     public function addClass(string $class): static
     {
-        $this->attrs = $this->attrs->class($class);
+        $this->attrs = $this->getAttrs()->class($class);
         return $this;
     }
 
     public function addAttr(array $attrs): static
     {
-        $this->attrs = $this->attrs->merge($attrs);
+        $this->attrs = $this->getAttrs()->merge($attrs);
         return $this;
     }
 
     public function getAttrs(): ComponentAttributeBag
     {
+        $this->attrs ??= new ComponentAttributeBag();
         return $this->attrs;
+    }
+
+    /**
+     * create an anchor tag
+     * `<a href="{route}" title="{title}">{text}</a>`
+     */
+    public function makeLinkView(string $route, string $text, string $title = ''): string
+    {
+        return view('tkl-ui::components.table.a', [
+            'href' => $route,
+            'text' => $text,
+            'title' => $title,
+        ]);
+    }
+
+    /**
+     * create an anchor tag with an icon
+     * `<a href="{route}" title="{title}"><i class="{icon}"></i></a>`
+     */
+    public  function makeActionView(string $route, string $icon, string $title = ''): string
+    {
+        return view('tkl-ui::components.table.a', [
+            'href' => $route,
+            'text' => sprintf('<i class="%s"></i>', $icon),
+            'title' => $title,
+        ]);
     }
 
     public function getNextSortUrl(string $currentSort = '', string $currentDir = '', array $query = []): string

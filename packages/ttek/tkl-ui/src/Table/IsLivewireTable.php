@@ -7,26 +7,13 @@ use Livewire\Attributes\Url;
 /**
  * Use this trait to when adding a table to a Livewire Component class
  *
- * @method void reset()
+ * @method void reset(...$properties)
  * @method void resetPage()
  */
 trait IsLivewireTable
 {
     use IsTable;
 
-    #[Url(except: 'tbl')]
-    public string $tableId = 'tbl';
-
-    #[Url(except: 30)]
-    public int $limit = 30;
-
-    #[Url(except: '')]
-    public string $sort = '';
-
-    #[Url(except: 'asc')]
-    public string $dir = 'asc';
-
-    #[Url(except: '')]
     public string $search = '';
 
 
@@ -35,11 +22,37 @@ trait IsLivewireTable
      */
     public function clearFilters(): void
     {
-        $this->reset();
+        $this->reset(['search']);
         $this->limit = $this->defaultLimit;
         $this->sort = $this->defaultSort;
         $this->dir = $this->defaultDir;
         $this->resetPage();
+    }
+
+    public function queryString(): array
+    {
+        return [
+            'limit' => [
+                'except' => config('sis.default.pagination', 30),
+                'as' => $this->tableKey('l')
+            ],
+            'sort' => [
+                'except' => $this->defaultSort,
+                'as' => $this->tableKey('s')
+            ],
+            'dir' => [
+                'except' => $this->defaultDir,
+                'as' => $this->tableKey('d')
+            ],
+//            'filterVals' => [
+//                'except' => [],
+//                'as' => $this->tableKey('f')
+//            ],
+            'search' => [
+                'except' => '',
+                'as' => $this->tableKey('sr')
+            ],
+        ];
     }
 
     public function setLimit(int $limit): void

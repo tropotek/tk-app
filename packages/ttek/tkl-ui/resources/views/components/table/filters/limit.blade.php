@@ -1,6 +1,6 @@
-<?php
-/** @var \Tk\Table\Table $table */
-?>
+@php
+    /** @var \Tk\Table\Table $table */
+@endphp
 @aware(['table'])
 
 <div class="p-2 pe-0">

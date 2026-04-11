@@ -1,15 +1,17 @@
-<?php
-/** @var \Tk\Table\Table $table */
-
-?>
+@php
+    use Tk\Table\Cell;
+    /** @var \Tk\Table\Table $table */
+@endphp
 @props([
     // required
-    'table'
+    'table',
+    // optional
+    'showPaginator' => true,
 ])
 
 <div class="table-responsive">
     <table class="tk-table table table-hover">
-        <thead class="table-light">
+        <thead>
             <tr>
                 {{-- x-prepend-head --}}
                 @foreach ($table->getCells()->filter(fn($r) => $r->isVisible()) as $cell)
@@ -22,7 +24,7 @@
         <tbody class="table-group-divider">
             @foreach ($table->rows() as $i => $row)
                 @php
-                    $keyVal = \Tk\Table\Cell::getKey($row) ?: $i;
+                    $keyVal = Cell::getKey($row) ?: $i;
                     $keyAttr = $cell->getTable()->isLivewire() ? sprintf('wire:key="%s"', $keyVal) : sprintf('data-id="%s"', $keyVal);
                 @endphp
                 <tr {{ $keyAttr }}>

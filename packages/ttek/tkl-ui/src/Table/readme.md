@@ -1,706 +1,666 @@
 
+# `Modules\Core\Table` — Developer Guide
 
-# TODO: get the AI to write a a tutorial.
+This guide walks through building table pages using the Core Table system.
 
-Write me a tutorial readme.md showing developers to implement the `\Tk\Table` system.
-Start with how to use the `\Tk\Table\IsLivewireTable` within a Livewire single file page component.
-You can use reference the implementation in the resources folder `/resources/views/pages/ideas/index.blade.php`.
-Then move on to the `\Tk\Table\IsTable` and show how to create a table within a Controller. 
-You can use `\App\Http\Controllers\Examples\ArrayTableController` for a reference implementation.
-It needs to include how to use the table components (search, filters, etc.).
-I want the document to walk a developer step by step through both the Livewire and Controller implementations.
-It needs to include how to use the table components (search, filters, etc.).
-I want the document to walk a developer step by step through both the Livewire and Controller based implementations.
+Two implementations are supported:
 
-
-------------------------------------------------------------
-
-# `\Tk\Table` Tutorial
-
-This guide shows how to implement the `\Tk\Table` system in two ways:
-
-1. **Livewire single-file page component** using `\Tk\Table\IsLivewireTable`
-2. **Controller-based table page** using `\Tk\Table\IsTable`
-
-It walks through:
-
-- defining columns
-- enabling sorting
-- adding search and filters
-- rendering the table UI
-- handling pagination
-- resetting table state
+1. **Livewire** — reactive, URL-synced, single-file page component using `IsLivewireTable`
+2. **Controller** — classic request-driven page using `IsTable`
 
 ---
 
-## Table of contents
+## Table of Contents
 
-- [1. Livewire table with `\Tk\Table\IsLivewireTable`](#1-livewire-table-with-tktableislivewiretable)
-- [2. Controller table with `\Tk\Table\IsTable`](#2-controller-table-with-tktableistable)
-- [3. Search, filters, sorting, and pagination](#3-search-filters-sorting-and-pagination)
-- [4. Common patterns](#4-common-patterns)
-- [5. Recommended implementation order](#5-recommended-implementation-order)
+1. [Livewire table](#1-livewire-table)
+    - [Traits](#11-traits)
+    - [Configuring the table with `Builder::build()`](#12-configuring-the-table-with-builderbuild)
+    - [Defining cells](#13-defining-cells)
+    - [Defining action cells](#14-defining-action-cells)
+    - [Defining filters](#15-defining-filters)
+    - [Enabling search](#16-enabling-search)
+    - [The `query()` and `rows()` methods](#17-the-query-and-rows-methods)
+    - [Rendering the table](#18-rendering-the-table)
+    - [Full Livewire example](#19-full-livewire-example)
+2. [Controller table](#2-controller-table)
+3. [Cell & Filter API reference](#3-cell--filter-api-reference)
+4. [Common patterns](#4-common-patterns)
 
 ---
 
-## 1. Livewire table with `\Tk\Table\IsLivewireTable`
+## 1. Livewire Table
 
-Use `\Tk\Table\IsLivewireTable` when the table lives inside a **Livewire single-file page component** and you want:
+### 1.1 Traits
 
-- reactive filters
-- URL-synced table state
-- built-in pagination behavior
-- easy sorting support
-
-A useful reference is the Livewire page implementation in:
-
-- `/resources/views/pages/ideas/index.blade.php`
-
-### Step 1: Create a Livewire single-file page component
-
-A Livewire single-file page component puts the PHP class and Blade markup in the same file.
-
-A typical structure looks like this:
+Add these three traits to your Livewire component:
 
 ```php
-<?php
-
-use Livewire\Component;
 use Livewire\WithPagination;
-use Tk\Table\Cell;
-use Tk\Table\IsLivewireTable;
+use Modules\Core\Table\IsLivewireTable;
+use Modules\Core\Table\IsSearchable;
 
-new class extends Component
-{
-    use WithPagination, IsLivewireTable;
-
-    public $search = '';
-    public $status = '';
-
-    public function boot()
-    {
-        // Define columns here.
-    }
-
-    public function rows()
-    {
-        // Return paginated data here.
-    }
-};
-?>
-
-<div>
-    <!-- Page content -->
-</div>
-```
-
-
----
-
-### Step 2: Add the table trait
-
-The trait gives you table behavior such as:
-
-- `tableId`
-- `limit`
-- `sort`
-- `dir`
-- `clearFilters()`
-- `setLimit()`
-- `toggleDir()`
-
-Because `IsLivewireTable` builds on top of `IsTable`, you get the same table configuration patterns in both Livewire and controller-driven pages.
-
----
-
-### Step 3: Define table cells in `boot()`
-
-Register your columns in the `boot()` method using `appendCell()`.
-
-Example:
-
-```php
-<?php
-
-public function boot()
-{
-    $this->appendCell(new Cell('title'))
-        ->setSortable()
-        ->addClass('fw-bold');
-
-    $this->appendCell(new Cell('status'))
-        ->setSortable();
-
-    $this->appendCell(new Cell('created_at'))
-        ->setHeader('Created')
-        ->setSortable();
-
-    $this->appendCell(new Cell('updated_at'))
-        ->setHeader('Updated')
-        ->setSortable();
+class extends Component {
+    use WithPagination, IsLivewireTable, IsSearchable;
 }
 ```
 
+| Trait | Purpose |
+|---|---|
+| `WithPagination` | Laravel/Livewire pagination |
+| `IsLivewireTable` | Table state (sort, dir, limit, filterVals), URL sync, helpers |
+| `IsSearchable` | Adds `$search`, `$searchPlaceholder`, `$searchClear` properties |
 
-### What this does
-
-Each `Cell` describes a column in the table. You can configure it to:
-
-- be sortable
-- have a custom header
-- have extra CSS classes
-- render custom text or HTML
+`IsSearchable` is optional — omit it if the table does not need a search input.
 
 ---
 
-### Step 4: Add search and filter properties
+### 1.2 Configuring the table with `Builder::build()`
 
-In Livewire, table filters are usually public properties.
-
-Example:
+Call `Builder::build($this, [...])` inside `boot()`. This is the primary way to define the entire table configuration in one place.
 
 ```php
-<?php
+use Modules\Core\Table\Builder;
 
-use Livewire\Attributes\Url;
-
-#[Url(except: '')]
-public $search = '';
-
-#[Url(except: '')]
-public $status = '';
+public function boot(): void
+{
+    Builder::build($this, [
+        'defaultSort'  => 'family_name',       // default sort column (DB key)
+        'defaultDir'   => 'asc',               // 'asc' (default) or 'desc'
+        'tableId'      => 'tbl',               // optional; used to prefix URL params
+        'rowAttrs'     => fn($row, $table) => [
+            'data-url' => route('staff.show', $row->id),
+        ],
+        'cells'        => [ ... ],
+        'actions'      => [ ... ],
+        'filters'      => [ ... ],
+        'search'       => [ ... ],
+        'export'       => [ ... ],
+    ]);
+}
 ```
 
-
-This keeps filter state in the URL, which is helpful for:
-
-- page refreshes
-- bookmarking
-- sharing filtered views
+`rowAttrs` is an optional callable that returns an array of HTML attributes applied to each `<tr>`. Clicking a row with a `data-url` attribute navigates to that URL (handled by Alpine.js in the table component).
 
 ---
 
-### Step 5: Build the `rows()` method
+### 1.3 Defining cells
 
-Your `rows()` method should return a `LengthAwarePaginator`.
-
-A typical flow is:
-
-1. start with a query
-2. apply search
-3. apply filters
-4. sort
-5. paginate
-
-Example:
+Each entry in `'cells'` is keyed by the column name (used to read the value from the row object by default).
 
 ```php
-<?php
+'cells' => [
+    'name_last_first' => [
+        'header'      => 'Name',           // column heading (auto-generated from key if omitted)
+        'sortable'    => true,             // enables sort click on header
+        'sort'        => 'family_name',    // DB column to ORDER BY (defaults to key name)
+        'text'        => fn($row, $cell) => $row->family_name . ', ' . $row->given_name,
+        'html'        => fn($row, $cell) => Cell::makeLinkView(
+                             route('staff.show', $row->id),
+                             $cell->text($row)
+                         ),
+        'class'       => 'fw-bold',        // CSS class on <td>
+        'headerClass' => 'text-nowrap',    // CSS class on <th>
+        'attrs'       => ['data-foo' => 'bar'],        // extra <td> attributes
+        'headerAttrs' => ['title' => 'Sort by name'], // extra <th> attributes
+        'visible'     => true,             // hide the column when false
+    ],
 
-use Illuminate\Database\Eloquent\Builder;
+    // Minimal cell — header and value derived from the key name automatically
+    'email' => [],
+
+    // Sortable with a custom text renderer
+    'created_at' => [
+        'header'   => 'Created',
+        'sortable' => true,
+        'text'     => fn($row) => Carbon::parse($row->created_at)->format('d M Y'),
+    ],
+],
+```
+
+**`text` vs `html`**
+
+- `text($row, $cell)` — plain text value, used in CSV exports and as the fallback for `html`.
+- `html($row, $cell)` — HTML markup rendered in the table cell. Falls back to `text()` when not set.
+
+Both are callables with signature `fn(mixed $row, Cell $cell): string`.
+
+**Auto-generated headers**
+
+If `header` is omitted, the column name is converted automatically:
+`family_name` → `Family Name`, `created_at_id` → `Created At`.
+
+**`Cell::makeLinkView()`**
+
+A static helper to render an anchor tag:
+
+```php
+Cell::makeLinkView(string $route, string $text, array $attrs = []): string
+```
+
+---
+
+### 1.4 Defining action cells
+
+Action columns render icon links. They use `ActionCell` internally.
+
+```php
+'actions' => [
+    'view' => [
+        'icon'    => 'fa fa-fw fa-eye',
+        'route'   => fn($row, $cell) => route('staff.show', $row),  // href for the link
+        'visible' => true,                                           // optional
+        'attrs'   => ['class' => 'text-primary'],                    // extra <td> attributes
+    ],
+
+    'edit' => [
+        'icon'    => 'fa fa-fw fa-pen-to-square',
+        'route'   => fn($row, $cell) => route('staff.edit', $row),
+        'visible' => auth()->user()->can('change-staff'),            // hides column when false
+    ],
+
+    // Custom HTML renderer — returning null falls back to the default icon link
+    'delete' => [
+        'icon'  => 'fa fa-fw fa-trash',
+        'route' => fn($row) => route('staff.destroy', $row),
+        'html'  => function ($row, $cell) {
+            if (!$row->can_delete) {
+                return '<span class="text-muted"><i class="fa fa-fw fa-trash"></i></span>';
+            }
+            return null; // falls back to default icon link using 'route'
+        },
+    ],
+],
+```
+
+`route` is a callable that returns the URL for the default icon link.
+`html` is an optional callable for complete control over the cell output. Return `null` or a non-string to fall back to the default icon link.
+
+---
+
+### 1.5 Defining filters
+
+Filters are rendered as form controls above the table. Their values are stored in `$this->filterVals[key]`.
+
+```php
+'filters' => [
+    'country' => [
+        'label'   => 'Country',               // shown as the default/empty option label
+        'type'    => 'select',                // 'select' (default) | 'text' | 'checkbox' | 'date'
+        'options' => fn() => Country::orderBy('name')->pluck('name', 'code')->toArray(),
+        'visible' => true,
+    ],
+
+    'given_name' => [
+        'options' => fn() => Staff::distinct()->orderBy('given_name')->pluck('given_name', 'given_name')->toArray(),
+    ],
+
+    // Dependent filter — options reload when the parent changes
+    'family_name' => [
+        'dependsOn' => 'given_name',          // key of the parent filter
+        'options'   => fn($parentKey) => Staff::query()
+            ->when($this->filterVals[$parentKey] ?? null,
+                fn($q, $v) => $q->where($parentKey, $v))
+            ->distinct()
+            ->orderBy('family_name')
+            ->pluck('family_name', 'family_name')
+            ->toArray(),
+    ],
+],
+```
+
+**Filter types**
+
+| Type | Component rendered |
+|---|---|
+| `select` (default) | `<select>` dropdown |
+| `text` | `<input type="text">` |
+| `checkbox` | Toggle switch |
+| `date` | `<input type="date">` |
+
+**Dependent filters**
+
+Set `dependsOn` to the key of another filter. When the parent filter changes, the child filter value is cleared automatically via `updateFilters()`.
+
+The `options` callable receives the `$parentKey` string (the value of `dependsOn`). Access the parent's current value via `$this->filterVals[$parentKey]`.
+
+**Reading filter values in `query()`**
+
+```php
+$this->filterVals['country'] ?? null
+```
+
+**Default values**
+
+```php
+'status' => [
+    'type'         => 'select',
+    'options'      => ['active' => 'Active', 'inactive' => 'Inactive'],
+    'defaultValue' => 'active',
+],
+```
+
+---
+
+### 1.6 Enabling search
+
+Add `IsSearchable` to your traits, then configure search in the builder:
+
+```php
+'search' => [
+    'placeholder'  => 'Search name, email...',
+    'clearFilters' => ['given_name', 'family_name'], // filter keys to clear when search changes
+],
+```
+
+The search input value is available as `$this->search`.
+
+---
+
+### 1.7 The `query()` and `rows()` methods
+
+Split data retrieval into two methods:
+
+**`query(): Builder`** — builds and returns the filtered (unpaginated) Eloquent query.
+
+```php
+protected function query(): Builder
+{
+    $query = Staff::with('country');
+
+    if ($this->isSearchable()) {
+        $query->when($this->search, function (Builder $q) {
+            $str = preg_replace("/[^a-zA-Z0-9' -]/", ' ', $this->search);
+            return $q->where('name', 'like', "%{$str}%")
+                     ->orWhere('email', 'like', "%{$str}%");
+        });
+    }
+
+    $query->when($this->filterVals['country'] ?? null,     fn($q, $v) => $q->where('country', $v))
+          ->when($this->filterVals['given_name'] ?? null,  fn($q, $v) => $q->where('given_name', $v))
+          ->when($this->filterVals['family_name'] ?? null, fn($q, $v) => $q->where('family_name', $v));
+
+    return $query;
+}
+```
+
+**`rows(): LengthAwarePaginator`** — paginates and sorts using the table helpers. Mark it `#[Computed]` so Livewire caches the result within a single render cycle.
+
+```php
+use Livewire\Attributes\Computed;
 use Illuminate\Pagination\LengthAwarePaginator;
 
+#[Computed]
 public function rows(): LengthAwarePaginator
 {
-    return Idea::query()
-        ->when($this->search, function (Builder $builder) {
-            $str = preg_replace("/[^a-zA-Z0-9' -]/", " ", $this->search);
-
-            return $builder
-                ->where('title', 'like', "%{$str}%")
-                ->orWhere('description', 'like', "%{$str}%")
-                ->tap($this->resetPage() ?? fn () => null);
-        })
-        ->when($this->status, fn (Builder $query) => $query->where('status', $this->status))
-        ->orderBy($this->safeSort(), $this->dir)
-        ->paginate($this->limit);
+    return $this->paginateQuery($this->query());
 }
 ```
 
-
-### Notes
-
-- `safeSort()` protects the sort column selection.
-- `dir` controls ascending or descending order.
-- `paginate($this->limit)` uses the current page size.
+`paginateQuery()` applies `sortQuery()` internally (using `safeSort()` and `getDir()`), then paginates with the correct page name.
 
 ---
 
-### Step 6: Render filters and actions
+### 1.8 Rendering the table
 
-The table UI includes a filter wrapper component with slots for filters and actions.
-
-Example:
+Use two Blade components in your view:
 
 ```blade
-<x-tkl-ui::table.livewire.filters :table="$this">
-    <x-slot name="filters">
-        <x-tkl-ui::table.livewire.filters.select
-            wire:model.live="status"
-            :name="$this->tableKey('status')"
-            :options="[ '' => '- All Statuses -'] + IdeaStatus::getLabels()"
-            value="{{ $this->status }}"
-        />
-    </x-slot>
+<div>
+    {{-- Filter bar: search input, filter controls, row count, and optional actions slot --}}
+    <x-core::table.filters :table="$this">
+        <x-slot name="actions">
+            @can('add-staff')
+                <a href="{{ route('staff.create') }}" class="btn btn-sm btn-primary">+ New Staff</a>
+            @endcan
+        </x-slot>
+    </x-core::table.filters>
 
-    <x-slot name="actions">
-        <div class="p-2 ps-0">
-            <a href="{{ route('examples.ideas.create') }}" class="btn btn-sm btn-outline-secondary">
-                <i class="fa fa-plus-circle"></i> Create
-            </a>
-        </div>
-    </x-slot>
-</x-tkl-ui::table.livewire.filters>
+    {{-- Table: headers, rows, pagination --}}
+    <x-core::table :table="$this"/>
+</div>
 ```
 
+The `actions` slot is optional. Use it for buttons placed in the filter bar (e.g. "New" / "Export").
 
-### Step 7: Render the table itself
+**Row click navigation**
 
-Use the Livewire table component:
-
-```blade
-<x-tkl-ui::table.livewire :table="$this" />
-```
-
-
-This component handles the table rendering for you, including:
-
-- headers
-- sorting UI
-- pagination
-- rows and cells
+If `rowAttrs` returns a `data-url` attribute, clicking anywhere on the row (except links and buttons) navigates to that URL. This is handled by Alpine.js in the table component.
 
 ---
 
-### Step 8: Use `clearFilters()` when needed
-
-If you want to reset the table back to its defaults, call:
-
-```php
-$this->clearFilters();
-```
-
-
-This resets the component state, restores default paging and sorting, and resets pagination.
-
----
-
-### Livewire example summary
-
-A typical Livewire table page includes:
-
-- `use WithPagination, IsLivewireTable;`
-- column setup in `boot()`
-- search/filter properties
-- a `rows()` method returning `LengthAwarePaginator`
-- `<x-tkl-ui::table.livewire.filters>`
-- `<x-tkl-ui::table.livewire>`
-
----
-
-### Livewire example
+### 1.9 Full Livewire example
 
 ```php
 <?php
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Tk\Table\Cell;
-use Tk\Table\IsLivewireTable;
+use Modules\Core\Table\Builder as TableBuilder;
+use Modules\Core\Table\Cell;
+use Modules\Core\Table\IsLivewireTable;
+use Modules\Core\Table\IsSearchable;
+use Modules\Staff\Models\Staff;
 
-new class extends Component
-{
-    use WithPagination, IsLivewireTable;
+new #[Layout('layouts.main')]
+class extends Component {
 
-    public $search = '';
+    use WithPagination, IsLivewireTable, IsSearchable;
 
-    public function boot()
+    public function boot(): void
     {
-        $this->appendCell(new Cell('name'))->setSortable();
-        $this->appendCell(new Cell('email'))->setSortable();
+        TableBuilder::build($this, [
+            'defaultSort' => 'family_name',
+            'rowAttrs'    => fn($row) => ['data-url' => route('staff.show', $row->id)],
+            'cells' => [
+                'name_last_first' => [
+                    'header'   => 'Name',
+                    'sortable' => true,
+                    'sort'     => 'family_name',
+                    'text'     => fn($row) => $row->family_name . ', ' . $row->given_name,
+                    'html'     => fn($row, $cell) => Cell::makeLinkView(
+                                      route('staff.show', $row->id), $cell->text($row)
+                                  ),
+                ],
+                'email'      => [],
+                'created_at' => [
+                    'header'   => 'Created',
+                    'sortable' => true,
+                    'text'     => fn($row) => Carbon::parse($row->created_at)->format('d M Y'),
+                ],
+            ],
+            'actions' => [
+                'view' => [
+                    'icon'  => 'fa fa-fw fa-eye',
+                    'route' => fn($row) => route('staff.show', $row),
+                ],
+                'edit' => [
+                    'icon'    => 'fa fa-fw fa-pen-to-square',
+                    'route'   => fn($row) => route('staff.edit', $row),
+                    'visible' => auth()->user()->can('change-staff'),
+                ],
+            ],
+            'filters' => [
+                'country' => [
+                    'options' => fn() => Staff::distinct()->orderBy('country')->pluck('country', 'country')->toArray(),
+                ],
+                'given_name' => [
+                    'options' => fn() => Staff::distinct()->orderBy('given_name')->pluck('given_name', 'given_name')->toArray(),
+                ],
+                'family_name' => [
+                    'dependsOn' => 'given_name',
+                    'options'   => fn($k) => Staff::query()
+                        ->when($this->filterVals[$k] ?? null, fn($q, $v) => $q->where($k, $v))
+                        ->distinct()->orderBy('family_name')
+                        ->pluck('family_name', 'family_name')->toArray(),
+                ],
+            ],
+            'search' => [
+                'placeholder'  => 'Search name, email...',
+                'clearFilters' => ['given_name', 'family_name'],
+            ],
+        ]);
     }
 
-    public function rows()
+    protected function query(): Builder
     {
-        return User::query()
-            ->when($this->search, fn ($query) => $query->where('name', 'like', "%{$this->search}%"))
-            ->orderBy($this->safeSort(), $this->dir)
-            ->paginate($this->limit);
+        $query = Staff::query();
+
+        $query->when($this->search, function (Builder $q) {
+            $str = preg_replace("/[^a-zA-Z0-9' -]/", ' ', $this->search);
+            return $q->where('name', 'like', "%{$str}%")
+                     ->orWhere('email', 'like', "%{$str}%");
+        });
+
+        $query->when($this->filterVals['country'] ?? null,     fn($q, $v) => $q->where('country', $v))
+              ->when($this->filterVals['given_name'] ?? null,  fn($q, $v) => $q->where('given_name', $v))
+              ->when($this->filterVals['family_name'] ?? null, fn($q, $v) => $q->where('family_name', $v));
+
+        return $query;
+    }
+
+    #[Computed]
+    public function rows(): LengthAwarePaginator
+    {
+        return $this->paginateQuery($this->query());
     }
 };
 ?>
-
 <div>
-    <x-tkl-ui::table.livewire.filters :table="$this" />
-    <x-tkl-ui::table.livewire :table="$this" />
+    <x-core::table.filters :table="$this">
+        <x-slot name="actions">
+            <a href="{{ route('staff.create') }}" class="btn btn-sm btn-primary">+ New Staff</a>
+        </x-slot>
+    </x-core::table.filters>
+
+    <x-core::table :table="$this"/>
 </div>
 ```
 
 ---
 
-## 2. Controller table with `\Tk\Table\IsTable`
+## 2. Controller Table
 
-Use `\Tk\Table\IsTable` when you want a **traditional controller + Blade view** flow.
-
-This is a good choice when:
-
-- the table is not Livewire-based
-- your page is request-driven
-- you want to render from a controller action
-
-A useful reference is:
-
-- `\App\Http\Controllers\Examples\ArrayTableController`
-
----
-
-### Step 1: Add the trait to your controller
-
-Example:
+Use `IsTable` when the page is request-driven (no Livewire).
 
 ```php
 <?php
 
-namespace App\Http\Controllers\Examples;
+namespace Modules\Staff\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Tk\Table\IsTable;
-
-class ArrayTableController extends Controller
-{
-    use IsTable;
-}
-```
-
-
----
-
-### Step 2: Define columns with `appendCell()`
-
-Set up your table columns before hydrating request state.
-
-Example:
-
-```php
-$this->appendCell(new Cell(
-    name: 'name',
-    sortable: true,
-))->addClass('fw-bold');
-
-$this->appendCell(new Cell(
-    name: 'email',
-    sortable: true,
-));
-
-$this->appendCell(new Cell(
-    name: 'roles',
-    sortable: false,
-));
-
-$this->appendCell(new Cell('created_at'), 'roles')
-    ->setHeader('Created')
-    ->setSortable();
-```
-
-
-### What this means
-
-- `name`, `email`, `roles`, etc. are your column keys
-- `sortable: true` enables sorting
-- `setHeader()` changes what appears in the table header
-- `addClass()` adds styling to the column
-
----
-
-### Step 3: Hydrate table state from the request
-
-Inside your controller action, call:
-
-```php
-$this->hydrateTableFromRequest();
-```
-
-
-This reads table state from the request query string so the table can keep track of:
-
-- search
-- sort
-- direction
-- limit
-- other table-specific parameters
-
----
-
-### Step 4: Handle reset behavior
-
-If you want a reset action to clear all table query parameters, check for the reset key and redirect to the current URL:
-
-```php
-if (request()->has($this->tableKey('reset'))) {
-    return redirect(url()->current());
-}
-```
-
-
-This gives the user a quick way to return to the default table state.
-
----
-
-### Step 5: Return the view and pass the table instance
-
-Example:
-
-```php
-return view('pages.examples.tables.table-array', [
-    'table' => $this,
-]);
-```
-
-
-Your Blade view can then render the table using the passed table object.
-
----
-
-## 3. Search, filters, sorting, and pagination
-
-The table system is designed to make these pieces work together consistently.
-
----
-
-### Search
-
-#### Livewire
-Use a public property, such as:
-
-```php
-public $search = '';
-```
-
-
-Then filter inside `rows()`.
-
-#### Controller
-Read the value from the request:
-
-```php
-$search = request()->input($this->tableKey('search'), '');
-```
-
-
-Then filter the rows before sorting and paginating.
-
----
-
-### Filters
-
-Filters are extra inputs that narrow down the result set, such as:
-
-- status
-- role
-- category
-- date range
-
-#### Livewire filters
-
-Example:
-
-```blade
-<x-tkl-ui::table.livewire.filters.select
-    wire:model.live="roles"
-    :name="$this->tableKey('roles')"
-    :options="[ '' => '- All Roles -', 'admin' => 'Admin', 'staff' => 'Staff', 'member' => 'Member']"
-    value="{{ $this->roles }}"
-/>
-```
-
-
-#### Controller filters
-
-Read filter values from the request and apply them inside `rows()`:
-
-```php
-$roles = request()->input($this->tableKey('roles'), '');
-
-if ($roles) {
-    $rows = array_filter($rows, function ($row) use ($roles) {
-        return str_contains(strtolower($row->roles), strtolower($roles));
-    });
-}
-```
-
-
----
-
-### Sorting
-
-Use the table sorting helpers instead of trusting raw user input.
-
-#### Livewire
-
-```php
-->orderBy($this->safeSort(), $this->dir)
-```
-
-
-#### Controller
-
-```php
-$sortCol = ($this->dir == 'desc' ? '-' : '') . $this->safeSort();
-$rows = $this->sortRows($rows, $sortCol);
-```
-
-
----
-
-### Pagination
-
-#### Livewire
-
-Use Eloquent pagination:
-
-```php
-->paginate($this->limit)
-```
-
-
-#### Controller
-
-Use the table helper for arrays:
-
-```php
-$this->rows = $this->paginateArray($rows);
-return $this->rows;
-```
-
-
----
-
-## 4. Common patterns
-
-### Livewire pattern
-
-Use Livewire when you want:
-
-- reactive search and filters
-- state in the URL
-- a single-file page component
-- minimal controller code
-
-Main pieces:
-
-- `IsLivewireTable`
-- `boot()`
-- `rows()`
-- public filter/search properties
-- table filter component
-- table render component
-
----
-
-### Controller pattern
-
-Use a controller when you want:
-
-- a request-driven page
-- a classic Laravel controller flow
-- non-Livewire rendering
-- array, collection, or custom data sources
-
-Main pieces:
-
-- `IsTable`
-- `appendCell()`
-- `hydrateTableFromRequest()`
-- `rows()`
-- a Blade view that receives `$table`
-
----
-
-## 5. Recommended implementation order
-
-When creating a new table, follow this order:
-
-1. **Choose the implementation style**
-    - Livewire for reactive UI
-    - Controller for classic request-based pages
-
-2. **Define the columns**
-    - add cells
-    - set headers
-    - mark sortable fields
-    - add classes or custom renderers if needed
-
-3. **Add search and filters**
-    - Livewire: public properties + bound inputs
-    - Controller: request values + filtering logic
-
-4. **Apply sorting**
-    - use `safeSort()`
-    - use `dir` for direction
-
-5. **Paginate**
-    - use `paginate()` for database queries
-    - use `paginateArray()` for arrays
-
-6. **Render the table**
-    - Livewire table component for Livewire pages
-    - normal view for controller pages
-
----
-
-## 6. Practical tips
-
-- Define columns before rendering the table.
-- Keep filter names consistent with `tableKey(...)`.
-- Use `safeSort()` instead of raw input for sorting.
-- Reset pagination when search or filter values change.
-- Use `#[Url]` in Livewire to preserve table state in the query string.
-- Call `hydrateTableFromRequest()` early in controller actions.
-- Use `clearFilters()` to restore the default Livewire table state.
-
----
-
-### Controller example
-
-```php
-<?php
-
-class ArrayTableController extends Controller
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Modules\Core\Table\Builder as TableBuilder;
+use Modules\Core\Table\IsTable;
+use Modules\Staff\Models\Staff;
+
+class StaffController extends Controller
 {
     use IsTable;
 
     public function index(Request $request)
     {
-        $this->appendCell(new Cell('name'))->setSortable();
-        $this->appendCell(new Cell('email'))->setSortable();
+        // Handle clear/reset — redirect to strip all table query params
+        if ($request->has($this->tableKey('reset'))) {
+            return redirect(url()->current());
+        }
 
+        TableBuilder::build($this, [
+            'defaultSort' => 'family_name',
+            'cells' => [
+                'name_last_first' => [
+                    'header'   => 'Name',
+                    'sortable' => true,
+                    'sort'     => 'family_name',
+                ],
+                'email'      => ['sortable' => true],
+                'created_at' => ['header' => 'Created', 'sortable' => true],
+            ],
+        ]);
+
+        // Hydrate sort/limit/dir from the request query string
         $this->hydrateTableFromRequest();
 
-        return view('pages.examples.tables.table-array', [
-            'table' => $this,
-        ]);
+        return view('staff.index', ['table' => $this]);
+    }
+
+    public function rows(): LengthAwarePaginator
+    {
+        return $this->paginateQuery(Staff::query());
     }
 }
 ```
 
+In the Blade view:
+
+```blade
+<x-core::table.filters :table="$table"/>
+<x-core::table :table="$table"/>
+```
+
+**Note:** Controller-based tables do not yet support reactive filters. Filter values must be read from the request manually and applied inside `rows()`. Dependent filter dropdowns require a JavaScript/Alpine approach for dynamic option reloading.
 
 ---
 
-## 8. Final note
+## 3. Cell & Filter API Reference
 
-` \Tk\Table` gives you a consistent table experience across both Livewire and controller-based pages.
+### `Builder::build()` — full schema
 
-If you follow the patterns above, you can quickly build tables that support:
+```php
+Builder::build($this, [
+    'tableId'     => 'tbl',           // string; 'tbl' = no URL prefix (default)
+    'defaultSort' => 'column_name',   // string
+    'defaultDir'  => 'asc',           // 'asc' (default) | 'desc'
+    'rowAttrs'    => fn($row, $table): array => [],
 
-- search
-- filters
-- sorting
-- pagination
-- reset behavior
-- reusable UI components
+    'cells' => [
+        'column_key' => [
+            'header'      => string,
+            'sortable'    => bool,
+            'sort'        => string,    // DB column for ORDER BY; defaults to key
+            'text'        => callable,  // fn($row, $cell): string
+            'html'        => callable,  // fn($row, $cell): string
+            'class'       => string,    // CSS class on <td>
+            'headerClass' => string,    // CSS class on <th>
+            'attrs'       => array,     // extra <td> attributes
+            'headerAttrs' => array,     // extra <th> attributes
+            'visible'     => bool,
+        ],
+    ],
 
-If you want, I can also turn this into a **more polished project README** with:
-- a short intro
-- examples tailored to your app
-- a troubleshooting section
-- and copy-paste ready Livewire and controller templates.
+    'actions' => [
+        'action_key' => [
+            'icon'        => string,    // font icon class e.g. 'fa fa-fw fa-eye'
+            'route'       => callable,  // fn($row, $cell): string — href for default icon link
+            'html'        => callable,  // fn($row, $cell): string — full override; return null to use default
+            'header'      => string,    // optional label (shown as icon title tooltip by default)
+            'class'       => string,
+            'headerClass' => string,
+            'attrs'       => array,
+            'headerAttrs' => array,
+            'visible'     => bool,
+        ],
+    ],
+
+    'filters' => [
+        'filter_key' => [
+            'label'        => string,
+            'type'         => 'select' | 'text' | 'checkbox' | 'date',
+            'options'      => array | callable, // fn(string $parentKey): array
+            'dependsOn'    => string,   // key of the parent filter
+            'defaultValue' => string,
+            'visible'      => bool,
+        ],
+    ],
+
+    'search' => [
+        'placeholder'  => string,
+        'clearFilters' => array,  // filter keys to clear when search changes
+    ],
+]);
+```
+
+---
+
+### Fluent cell API (without Builder)
+
+Cells and filters can also be added individually using the fluent API:
+
+```php
+// Append a cell
+$cell = $this->appendCell(new Cell('email'));
+$cell->setSortable()
+     ->setHeader('Email Address')
+     ->addClass('text-lowercase')
+     ->setHtml(fn($row, $cell) => Cell::makeLinkView('mailto:'.$row->email, $row->email));
+
+// Insert a cell after another
+$this->appendCell(new Cell('phone'), after: 'email');
+
+// Prepend a cell before another
+$this->prependCell(new Cell('id'), before: 'email');
+
+// Remove a cell
+$this->removeCell('phone');
+
+// Append a filter
+$this->appendFilter(new Filter('status', type: Filter::TYPE_SELECT, options: [
+    'active'   => 'Active',
+    'inactive' => 'Inactive',
+]));
+```
+
+---
+
+### Useful table helpers
+
+| Method | Description |
+|---|---|
+| `safeSort()` | Returns the validated sort column (falls back to `defaultSort`) |
+| `getDir()` | Returns `'asc'` or `'desc'` |
+| `getLimit()` | Returns the current per-page limit |
+| `paginateQuery(Builder $query)` | Sorts and paginates a query; returns `LengthAwarePaginator` |
+| `paginateArray(array $rows)` | Paginates a plain array |
+| `buildCsv($rows, $fileName)` | Returns a CSV stream download response |
+| `isSearchable()` | Returns true if `IsSearchable` trait is in use |
+| `isLivewire()` | Returns true when using `IsLivewireTable` |
+| `tableKey(string $key)` | Prefixes a URL param key with the `tableId` |
+
+---
+
+## 4. Common Patterns
+
+### Conditional cell visibility
+
+```php
+'visible' => auth()->user()->can('view-salary'),
+```
+
+### Modifying a cell after build
+
+```php
+Builder::build($this, [...]);
+
+$this->getCell('email')->addClass('text-danger');
+$this->removeCell('phone');
+```
+
+### Custom sort key
+
+When the column key and the DB sort column differ:
+
+```php
+'name_last_first' => [
+    'sortable' => true,
+    'sort'     => 'family_name',  // ORDER BY family_name
+],
+```
+
+### Multiple tables on one page
+
+Set a unique `tableId` on each table to avoid URL key conflicts:
+
+```php
+// Table 1
+Builder::build($this->staffTable, ['tableId' => 'staff', ...]);
+
+// Table 2
+Builder::build($this->leaveTable, ['tableId' => 'leave', ...]);
+```
+
+URL params become `staff_s`, `staff_f`, `leave_s`, `leave_f`, etc.
+
+### Row click navigation
+
+Return `data-url` from `rowAttrs` to make the whole row clickable:
+
+```php
+'rowAttrs' => fn($row) => ['data-url' => route('staff.show', $row->id)],
+```
+
+Clicking a link or button inside the row does not trigger navigation.
