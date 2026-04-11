@@ -27,6 +27,14 @@ npm run build
 
 Default dev credentials: `admin@example.com` / `password`
 
+```bash
+# Reset and reseed database
+php artisan migrate:fresh --seed
+
+# Tinker REPL
+php artisan tinker
+```
+
 ## Architecture
 
 **Laravel 12** app using **FrankenPHP** in Docker, **SQLite** database, and a local `ttek/tkl-ui` package for UI components.
@@ -88,4 +96,19 @@ Cell `html()` and `text()` accept callables for custom rendering. For array-back
 
 ### Auth & Permissions
 
-Uses **Spatie Laravel Permission** (`spatie/laravel-permission`) with a `Roles` enum in `app/Enum/Roles.php`. Admin routes are gated with `role:admin` middleware.
+Uses **Spatie Laravel Permission** (`spatie/laravel-permission`) with a `Roles` enum in `app/Enum/Roles.php`. Admin routes are gated with `role:admin` middleware. Roles: `Admin`, `Staff`, `Member`. Policies live in `app/Policies/`.
+
+### Menu System
+
+Menus are registered in `AppServiceProvider` using `MenuBuilder` facade. Implement `MenuBuilderInterface` (see `app/Menus/NavBar.php` and `UserNav.php`) to add nav items. Menu items support icons, dropdowns, separators, and visibility conditions.
+
+### Docker & Local Dev
+
+- SQLite database: `database/storage/database.sqlite`
+- Mailpit (email testing): port 8025 (web UI port 8080)
+- `DOCKER_TARGET=local` enables debug routes: `/admin/phpinfo`, `/admin/user`, `/admin/session`
+- HMR configured for Docker networking via `VITE_PORT` env var
+
+### Testing Notes
+
+Test database isolation via `RefreshDatabase` trait. Note: `phpunit.xml` intentionally does not override the database path — tests run against the dev SQLite file by default.
