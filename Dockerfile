@@ -36,13 +36,9 @@ RUN node -v && npm -v
 
 # Install required PHP extensions for Moodle
 RUN install-php-extensions \
-    curl \
     date \
     intl \
-    json \
-    mbstring \
     pcntl \
-    pdo_sqlite \
     gd \
     tidy \
     sockets \

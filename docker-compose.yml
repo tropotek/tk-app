@@ -25,6 +25,7 @@ services:
     environment:
       SERVER_NAME: "${SERVER_NAME:-localhost}"
       VITE_PORT: "${VITE_PORT:-5173}"
+      APP_ENV: "${APP_ENV:-production}"
     networks:
       - network
 
