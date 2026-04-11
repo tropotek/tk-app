@@ -151,7 +151,7 @@ view('core::components.table.cells.icon', [
 
 **Accessing raw row values inside a `view` callback**
 
-Inside a `view` callback, use `$cell->rawValue($row)` to get the unformatted row value (bypassing any `value` callable). Use `$cell->value($row)` to get the formatted/escaped text value.
+Inside a `view` callback, use `$cell->getRowValue($row)` to get the unformatted row value (bypassing any `value` callable). Use `$cell->value($row)` to get the formatted/escaped text value.
 
 ```php
 'view' => function ($row, $cell) {
@@ -663,7 +663,7 @@ $this->appendFilter(new Filter('status', type: Filter::TYPE_SELECT, options: [
 | `addHeaderAttr(array)` | Merge attributes onto `<th>` |
 | `value(mixed $row)` | Get the formatted/escaped text value for a row |
 | `view(mixed $row)` | Get the HTML value for a row (falls back to `value()`) |
-| `rawValue(mixed $row)` | Get the unformatted raw value from the row (bypasses any `value` callable) |
+| `getRowValue(mixed $row)` | Get the unformatted raw value from the row (bypasses any `value` callable) |
 
 ---
 
