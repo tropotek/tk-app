@@ -20,7 +20,7 @@ use Tk\Table\IsSearchable;
 new #[Layout('pages.main')]
 class extends Component {
 
-    use WithPagination, IsLivewireTable, IsSearchable;
+    use WithPagination, IsLivewireTable;
 
     #[Url(except: '')]
     public $status = '';
@@ -62,7 +62,7 @@ class extends Component {
     protected function rows(): array|Builder
     {
         return Idea::query()
-            ->when($this->search, function (Builder $builder) {
+            ->when($this->search ?? null, function (Builder $builder) {
                 $str = preg_replace("/[^a-zA-Z0-9' -]/", " ", $this->search);
                 return $builder->where('title', 'like', "%{$str}%")
                     ->orWhere('description', 'like', "%{$str}%")
