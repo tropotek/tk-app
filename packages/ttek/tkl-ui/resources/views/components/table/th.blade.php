@@ -28,9 +28,9 @@
         @endif
     >
         <span>{!! $cell->getHeader() !!}</span>
-        @if($cell->getTable()->getSort() === $cell->getSort())
-            <i class="fa {{ $cell->getTable()->getDir() === 'asc' ? 'fa-sort-up' : 'fa-sort-down' }}"></i>
-        @endif
+{{--        @if($cell->getTable()->getSort() === $cell->getSort())--}}
+{{--            <i class="fa {{ $cell->getTable()->getDir() === 'asc' ? 'fa-sort-up' : 'fa-sort-down' }}"></i>--}}
+{{--        @endif--}}
     </th>
 
 @endif

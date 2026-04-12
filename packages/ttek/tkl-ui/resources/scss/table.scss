@@ -30,14 +30,14 @@ table thead th.col-sort {
     }
     &.asc {
         span, a {
-            &::after {
+            &::before {
                 opacity: 1;                     /* When sorting, set full opacity on the direction */
             }
         }
     }
     &.desc {
         span, a {
-            &::before {
+            &::after {
                 opacity: 1;                     /* When sorting, set full opacity on the direction */
             }
         }

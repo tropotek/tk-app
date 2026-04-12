@@ -13,6 +13,8 @@ final class NavBar implements MenuBuilderInterface
 
     public function build(Menu $menu): void
     {
+        $isLocal = app()->environment('local');
+
         $menu->addChildren([
             MenuItem::make('Home', route('home'))
                 ->setVisible(!auth()->check()),
@@ -32,9 +34,14 @@ final class NavBar implements MenuBuilderInterface
                 MenuItem::make('Page Layout Example', route('examples.index')),
             ]),
 
+
             MenuItem::make('Admin')->addChildren([
                 MenuItem::make('Settings', route('dashboard'))->setDisabled(),
                 MenuItem::make('Users', route('admin.users.index')),
+                MenuItem::makeSeparator()->setVisible($isLocal),
+                MenuItem::make('Phpinfo', route('admin.phpinfo'))->setVisible($isLocal),
+                MenuItem::make('User', route('admin.dump-user'))->setVisible($isLocal),
+                MenuItem::make('Session', route('admin.dump-session'))->setVisible($isLocal),
             ])->setVisible(auth()->check() && auth()->user()->hasRole(Roles::Admin->value)),
 
             MenuItem::make('Logout', route('logout'))
