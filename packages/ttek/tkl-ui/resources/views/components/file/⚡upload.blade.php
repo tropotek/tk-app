@@ -1,5 +1,7 @@
 <?php
 
+use Tk\Events\FileDeletedEvent;
+use Tk\Events\FileUploadedEvent;
 use Tk\Models\File;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
@@ -8,6 +10,7 @@ use Livewire\Attributes\Locked;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
+use Tk\Dto\FileUploadDto;
 use Tk\Table\Cell;
 use Tk\Table\IsLivewireTable;
 use Tk\Utils\File as TkFile;
@@ -34,8 +37,8 @@ new class extends Component {
             ->addClass('fw-bold align-middle')
             ->setSortable()
             ->setView(fn(File $file, Cell $cell) => view('tkl-ui::components.table.cells.a', [
-                'href'   => route('files.view', $file->id),
-                'text'   => $cell->value($file),
+                'href' => route('files.view', $file->id),
+                'text' => $cell->value($file),
                 'target' => '_blank',
             ]));
 
@@ -84,15 +87,17 @@ new class extends Component {
         $path = $this->upload->store('documents/' . $this->fid, 'local');
         $size = Storage::disk('local')->size($path);
 
-        File::create([
-            'fkey'          => $this->fkey,
-            'fid'           => $this->fid,
+        $file = File::create([
+            'fkey' => $this->fkey,
+            'fid' => $this->fid,
             'original_name' => $originalName,
-            'filename'      => basename($path),
-            'path'          => $path,
-            'mime_type'     => $mimeType,
-            'size'          => $size,
+            'filename' => basename($path),
+            'path' => $path,
+            'mime_type' => $mimeType,
+            'size' => $size,
         ]);
+
+        event(new FileUploadedEvent(FileUploadDto::fromArray($file->toArray())));
 
         $this->reset('upload');
         $this->clearPaginatedRows();
@@ -108,6 +113,8 @@ new class extends Component {
 
         Storage::disk('local')->delete($file->path);
         $file->delete();
+
+        event(new FileDeletedEvent(FileUploadDto::fromArray($file->toArray())));
     }
 
     #[Computed]
@@ -123,7 +130,7 @@ new class extends Component {
     <div class="card-header text-bg-info">
         <h6 class="mb-0">
             <a href="#collapse-myDocuments" id="heading-myDocuments" role="button"
-                class="d-block text-decoration-none text-white" data-bs-toggle="collapse">
+               class="d-block text-decoration-none text-white" data-bs-toggle="collapse">
                 <i class="fa fa-chevron-down text-white-50 float-end"></i>
                 My Documents
             </a>
@@ -208,7 +215,8 @@ new class extends Component {
                     <template x-if="!previewName">
                         <div>
                             <i class="fa fa-cloud-upload-alt fa-2x text-muted mb-2"></i>
-                            <p class="mb-1 text-muted">Drag &amp; drop a file here or <span class="text-primary">browse</span></p>
+                            <p class="mb-1 text-muted">Drag &amp; drop a file here or <span
+                                    class="text-primary">browse</span></p>
                             <small class="text-muted">
                                 Allowed: txt, md, pdf, zip, tar, gz, doc, docx, xls, xlsx, jpg, jpeg, png, gif
                                 &mdash; Max: {{ \Tk\Utils\File::bytes2String(\Tk\Utils\File::getMaxUploadBytes()) }}
@@ -218,7 +226,8 @@ new class extends Component {
                     <template x-if="previewName">
                         <div>
                             <template x-if="isImage && previewSrc">
-                                <img :src="previewSrc" class="img-thumbnail mb-2" style="max-height: 150px; max-width: 100%;">
+                                <img :src="previewSrc" class="img-thumbnail mb-2"
+                                     style="max-height: 150px; max-width: 100%;" alt="preview">
                             </template>
                             <template x-if="!isImage">
                                 <div class="mb-2">
@@ -257,9 +266,9 @@ new class extends Component {
 
                 {{-- Validation Error --}}
                 @error('upload')
-                    <div class="alert alert-danger py-2 mb-2">
-                        <i class="fa fa-exclamation-circle"></i> {{ $message }}
-                    </div>
+                <div class="alert alert-danger py-2 mb-2">
+                    <i class="fa fa-exclamation-circle"></i> {{ $message }}
+                </div>
                 @enderror
 
                 {{-- Saving indicator --}}
