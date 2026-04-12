@@ -32,7 +32,7 @@ class extends Component {
             ->setView(function (User $user, Cell $cell) {
                 return view('tkl-ui::components.table.cells.a', [
                     'href' => route('admin.users.edit', $user),
-                    'value' => $cell->value($user)
+                    'text' => $cell->value($user)
                 ]);
             });
 
