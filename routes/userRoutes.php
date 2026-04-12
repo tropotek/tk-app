@@ -3,7 +3,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\User\AuthController;
-use App\Models\File;
+use Tk\Models\File;
 use Illuminate\Support\Facades\Storage;
 
 Route::middleware(['auth'])->group(function() {

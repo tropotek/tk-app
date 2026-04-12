@@ -1,10 +1,10 @@
 <?php
 
-use App\Models\File;
-use App\Models\User;
+use Tk\Models\File;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
@@ -15,9 +15,13 @@ use Tk\Utils\File as TkFile;
 new class extends Component {
     use WithFileUploads, WithPagination, IsLivewireTable;
 
-    public $upload = null;
+    #[Locked]
+    public string $fkey = '';
 
-    protected string $fkey = User::class;
+    #[Locked]
+    public int $fid = 0;
+
+    public $upload = null;
 
     public function boot(): void
     {
@@ -76,12 +80,12 @@ new class extends Component {
         $originalName = $this->upload->getClientOriginalName();
         $mimeType = $this->upload->getMimeType();
 
-        $path = $this->upload->store('documents/' . auth()->id(), 'local');
+        $path = $this->upload->store('documents/' . $this->fid, 'local');
         $size = Storage::disk('local')->size($path);
 
         File::create([
             'fkey'          => $this->fkey,
-            'fid'           => auth()->id(),
+            'fid'           => $this->fid,
             'original_name' => $originalName,
             'filename'      => basename($path),
             'path'          => $path,
@@ -97,7 +101,7 @@ new class extends Component {
     {
         $file = File::where('id', $id)
             ->where('fkey', $this->fkey)
-            ->where('fid', auth()->id())
+            ->where('fid', $this->fid)
             ->firstOrFail();
 
         Storage::disk('local')->delete($file->path);
@@ -109,7 +113,7 @@ new class extends Component {
     {
         return File::query()
             ->where('fkey', $this->fkey)
-            ->where('fid', auth()->id());
+            ->where('fid', $this->fid);
     }
 };
 ?>
@@ -204,7 +208,7 @@ new class extends Component {
                             <i class="fa fa-cloud-upload-alt fa-2x text-muted mb-2"></i>
                             <p class="mb-1 text-muted">Drag &amp; drop a file here or <span class="text-primary">browse</span></p>
                             <small class="text-muted">
-                                Allowed: txt, md, pdf, zip, doc, docx, xls, xlsx, jpg, jpeg, png, gif
+                                Allowed: txt, md, pdf, zip, tar, gz, doc, docx, xls, xlsx, jpg, jpeg, png, gif
                                 &mdash; Max: {{ \Tk\Utils\File::bytes2String(\Tk\Utils\File::getMaxUploadBytes()) }}
                             </small>
                         </div>

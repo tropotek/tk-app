@@ -51,10 +51,15 @@ class TkBaseServiceProvider extends ServiceProvider
         // set a default controller TITLE if none set
         View::composer('*', DefaultPageName::class);
 
+        // Register Livewire components
+        if (class_exists(\Livewire\Livewire::class)) {
+            \Livewire\Livewire::addComponent('tkl-file-upload', viewPath: __DIR__ . '/../resources/views/livewire/⚡file-upload.blade.php');
+        }
+
         // Load routes (optional)
         // $this->loadRoutesFrom(__DIR__.'/routes/web.php');
 
-        // Load migrations (optional)
-        // $this->loadMigrationsFrom(__DIR__.'/migrations');
+        // Load migrations
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
     }
 }
