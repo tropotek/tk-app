@@ -59,6 +59,9 @@
         </tbody>
     </table>
 
+@php
+vd($rows->perPage(), $rows->lastPage(), $table->getLimit(), $table->defaultLimit);
+@endphp
     @if ($rows->perPage() > 0 && $rows->lastPage() > 1)
         <div class="mt-4">
             {{ $rows->links() }}

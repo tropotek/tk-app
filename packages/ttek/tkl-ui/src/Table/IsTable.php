@@ -153,11 +153,7 @@ trait IsTable
 
     public function getLimit(): int
     {
-        return $this->limit
-            // if limit is set to 0, use the default limit or the total rows
-            ?: min($this->totalRows, $this->defaultLimit)
-                // use the max possible limit as the paginator does not work with 0
-                ?: PHP_INT_MAX;
+        return $this->limit ?: $this->defaultLimit;
     }
 
     public function getSort(): string
@@ -400,7 +396,7 @@ trait IsTable
         }
 
         return $query->paginate(
-            perPage: $this->getLimit(),
+            perPage: $this->getLimit() ?: PHP_INT_MAX,
             pageName: $this->tableKey(self::QUERY_PAGE),
         )->withPath($path);
     }
@@ -414,7 +410,7 @@ trait IsTable
 
         $currentPage = $currentPage ?: Paginator::resolveCurrentPage($pageName);
         $total = $this->totalRows = count($rows);
-        $perPage = $this->getLimit();
+        $perPage = $this->getLimit() ?: PHP_INT_MAX;
         $pageName = $this->tableKey($pageName);
 
         // get the current page of items

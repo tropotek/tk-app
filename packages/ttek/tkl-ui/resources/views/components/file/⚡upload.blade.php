@@ -113,9 +113,11 @@ new class extends Component {
     #[Computed]
     public function rows(): array|Builder
     {
-        return File::query()
+        $q = File::query()
             ->where('fkey', $this->fkey)
             ->where('fid', $this->fid);
+        vd($q->count());
+        return $q;
     }
 };
 ?>
