@@ -25,7 +25,8 @@ new class extends Component {
 
     public function boot(): void
     {
-        $this->setDefaultLimit(0);
+        $this->setDefaultLimit(15);
+        $this->setDefaultSort('created_at', self::SORT_DESC);
         $this->setRowAttrs(fn($r) => ['style' => 'font-size: 0.9em;']);
 
         $this->appendCell('original_name')
@@ -94,6 +95,7 @@ new class extends Component {
         ]);
 
         $this->reset('upload');
+        $this->clearPaginatedRows();
         $this->dispatch('upload-complete');
     }
 
@@ -225,6 +227,21 @@ new class extends Component {
                             </template>
                             <p class="mb-1 fw-semibold" x-text="previewName"></p>
                             <small class="text-muted"><i class="fa fa-spinner fa-spin"></i> Uploading...</small>
+
+                            {{-- Progress Bar --}}
+                            <div x-show="uploading" x-cloak class="mb-2">
+                                <div class="progress" style="height: 6px;">
+                                    <div
+                                        class="progress-bar progress-bar-striped progress-bar-animated"
+                                        role="progressbar"
+                                        :style="'width: ' + progress + '%'"
+                                        :aria-valuenow="progress"
+                                        aria-valuemin="0"
+                                        aria-valuemax="100"
+                                    ></div>
+                                </div>
+                                <small class="text-muted">Uploading... <span x-text="progress"></span>%</small>
+                            </div>
                         </div>
                     </template>
                 </div>
@@ -237,21 +254,6 @@ new class extends Component {
                     accept=".txt,.md,.pdf,.zip,.tar,.gz,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif"
                     @change="handleChange($event)"
                 >
-
-                {{-- Progress Bar --}}
-                <div x-show="uploading" x-cloak class="mb-2">
-                    <div class="progress" style="height: 6px;">
-                        <div
-                            class="progress-bar progress-bar-striped progress-bar-animated"
-                            role="progressbar"
-                            :style="'width: ' + progress + '%'"
-                            :aria-valuenow="progress"
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                        ></div>
-                    </div>
-                    <small class="text-muted">Uploading... <span x-text="progress"></span>%</small>
-                </div>
 
                 {{-- Validation Error --}}
                 @error('upload')

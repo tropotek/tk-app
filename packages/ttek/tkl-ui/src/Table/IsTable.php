@@ -75,20 +75,19 @@ trait IsTable
 
         $rows = $this->rows();
         if (is_array($rows)) {
-            if (is_null($this->totalRows)) {
-                $this->totalRows = count($rows);
-            }
             $rows = $this->sortArray($rows, ($this->getDir() === self::SORT_DESC ? '-' : '') . $this->safeSort());
             $this->paginatedRows = $this->paginateArray($rows);
         } else {
-            if (is_null($this->totalRows)) {
-                $this->totalRows = $rows->count();
-            }
             $rows = $this->sortQuery($rows);
             $this->paginatedRows = $this->paginateQuery($rows);
         }
 
         return $this->paginatedRows;
+    }
+
+    public function clearPaginatedRows(): void
+    {
+        $this->paginatedRows = null;
     }
 
     /**
