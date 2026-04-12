@@ -35,7 +35,7 @@ class extends Component {
             ->setView(function (Idea $idea, Cell $cell) {
                 return view('tkl-ui::components.table.cells.a', [
                     'href' => route('examples.ideas.edit', $idea->id),
-                    'value' => $cell->value($idea)
+                    'text' => $cell->value($idea)
                 ]);
             });
 
