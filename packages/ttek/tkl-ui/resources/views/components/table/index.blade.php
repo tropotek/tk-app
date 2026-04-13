@@ -10,11 +10,17 @@
 ])
 @php
     $rows = $table->paginatedRows();
-    $attributes = $attributes->merge($table->getAttrs()->all());
+    // if the calling view sets a class attribute do not apply the default table css
+    $tableAttrs = $table->getAttrs()->except('class')->all();
+    if (!$attributes->has('class')) {
+        $tableAttrs['class'] = 'table table-striped table-hover ';
+    }
+    // still apply any css contained in the $table
+    $attributes = $attributes->merge($tableAttrs)->merge(['class' => $table->getAttrs()->get('class')]);
 @endphp
 
 <div class="table-responsive">
-    <table {{ $attributes->merge(['id' => $table->tableId(), 'class' => 'table table-striped table-hover']) }}>
+    <table {{ $attributes }}>
         <thead>
             <tr>
                 @foreach ($table->getVisibleCells() as $cell)

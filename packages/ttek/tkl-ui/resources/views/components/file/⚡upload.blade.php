@@ -45,12 +45,13 @@ new class extends Component {
 
         $this->appendCell('size')
             ->setSortable()
-            ->addClass('align-middle')
+            ->addClass('align-middle text-nowrap')
             ->setValue(fn(File $file) => TkFile::bytes2String($file->size));
 
         $this->appendCell('created_at')
             ->setHeader('Uploaded')
-            ->addClass('align-middle')
+            ->addClass('align-middle text-nowrap')
+            ->setValue([\Tk\Table\Formats::class, 'date'])
             ->setSortable();
 
         $this->appendCell('_actions')
@@ -286,7 +287,7 @@ new class extends Component {
 
             {{-- Files Table --}}
             <div class="mt-3">
-                <x-tkl-ui::table :table="$this"/>
+                <x-tkl-ui::table :table="$this" class="table table-sm table-hover" style="font-size: 0.8rem;"/>
             </div>
 
         </div>

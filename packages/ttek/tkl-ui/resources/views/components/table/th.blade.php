@@ -28,9 +28,11 @@
         @endif
     >
         @if($cell->isSortable() && !$cell->getTable()->isLivewire())
-            <a href="{{ $cell->getTable()->isLivewire() ? 'javascript:' : $cell->getNextSortUrl() }}">{!! $cell->getHeader() !!}</a>
+            <a class="sort-btn" href="{{ $cell->getTable()->isLivewire() ? 'javascript:' : $cell->getNextSortUrl() }}">{!! $cell->getHeader() !!}</a>
         @else
-            <span>{!! $cell->getHeader() !!}</span>
+            <span
+                @if($cell->isSortable() && $cell->getTable()->isLivewire()) class="sort-btn" @endif
+            >{!! $cell->getHeader() !!}</span>
         @endif
 
     </th>
