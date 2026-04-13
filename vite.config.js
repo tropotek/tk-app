@@ -34,7 +34,8 @@ export default defineConfig(({ mode }) => {
             laravel({
                 //refresh: true,
                 refresh: [
-                    'modules/**/Resources/**',
+                    'resources/**',
+                    'vendor/ttek/**/resources/**',
                 ],
                 input: [
                     'resources/scss/app.scss',
