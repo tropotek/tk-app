@@ -76,7 +76,7 @@ class Builder
         $defaultSort = $tableMeta['defaultSort'] ?? '';
         $defaultDir  = $tableMeta['defaultDir'] ?? '';
         if ($defaultSort !== '' || $defaultDir !== '') {
-            $table->setDefaultSort($defaultSort, $defaultDir);
+            $table->setDefaultSort($defaultSort, $defaultDir ?: $table::SORT_ASC);
         }
 
         foreach ($tableMeta as $key => $meta) {

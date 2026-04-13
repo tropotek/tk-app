@@ -269,10 +269,10 @@ class Cell
 
             if ($this->getSort() === $this->getTable()->getSort()) {
                 $dir = $this->getTable()->getDir() === $this->getTable()::SORT_DESC
-                    ? ''
+                    ? $this->getTable()::SORT_ASC
                     : $this->getTable()::SORT_DESC;
             } else {
-                $dir  = '';
+                $dir  = $this->getTable()::SORT_ASC;
             }
 
             $query[$this->getTable()->tableKey($this->getTable()::QUERY_SORT)] = $this->getSort();

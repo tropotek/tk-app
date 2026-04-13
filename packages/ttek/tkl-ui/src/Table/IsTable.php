@@ -30,7 +30,7 @@ trait IsTable
 
     public int $limit = 0;
     public string $sort = '';
-    public string $dir = '';
+    public string $dir = self::SORT_ASC;
     public array $filterVals = [];
     public ?int $totalRows = null;
 
@@ -177,7 +177,7 @@ trait IsTable
         return $this;
     }
 
-    public function setDefaultSort(string $sort, string $dir = ''): static
+    public function setDefaultSort(string $sort, string $dir = self::SORT_ASC): static
     {
         $this->defaultSort = $sort;
         $this->defaultDir = ($dir === self::SORT_DESC) ? self::SORT_DESC : self::SORT_ASC;

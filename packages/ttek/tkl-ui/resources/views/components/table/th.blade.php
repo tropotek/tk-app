@@ -27,7 +27,7 @@
             wire:click="{{ $wireClick }}"
         @endif
     >
-        @if($cell->isSortable())
+        @if($cell->isSortable() && !$cell->getTable()->isLivewire())
             <a href="{{ $cell->getTable()->isLivewire() ? 'javascript:' : $cell->getNextSortUrl() }}">{!! $cell->getHeader() !!}</a>
         @else
             <span>{!! $cell->getHeader() !!}</span>

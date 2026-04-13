@@ -26,6 +26,7 @@ new class extends Component {
 
     public $upload = null;
 
+
     public function boot(): void
     {
         $this->setDefaultLimit(15);
@@ -123,7 +124,7 @@ new class extends Component {
         $q = File::query()
             ->where('fkey', $this->fkey)
             ->where('fid', $this->fid);
-        vd($q->count());
+
         return $q;
     }
 };

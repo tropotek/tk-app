@@ -35,7 +35,7 @@ trait IsLivewireTable
                 'as' => $this->tableKey(self::QUERY_SORT)
             ],
             'dir' => [
-                'except' => '',
+                'except' => self::SORT_ASC,
                 'as' => $this->tableKey(self::QUERY_DIR)
             ],
             'filterVals' => [
@@ -67,7 +67,7 @@ trait IsLivewireTable
 
         $this->limit = 0;
         $this->sort = '';
-        $this->dir = '';
+        $this->dir = self::SORT_ASC;
 
         foreach ($this->getFilters() as $filter) {
             if ($filter->getDefaultValue()) {
@@ -104,7 +104,7 @@ trait IsLivewireTable
 
     public function toggleDir(): void
     {
-        $this->dir = $this->getDir() === self::SORT_DESC ? '' : self::SORT_DESC;
+        $this->dir = $this->getDir() === self::SORT_DESC ? self::SORT_ASC : self::SORT_DESC;
     }
 
     public function setSort(string $key): void
@@ -112,10 +112,10 @@ trait IsLivewireTable
         if (!in_array($key, $this->sortableKeys())) return;
 
         if ($this->getSort() === $key) {
-            $this->dir = $this->getDir() === self::SORT_DESC ? '' : self::SORT_DESC;
+            $this->dir = $this->getDir() === self::SORT_DESC ? self::SORT_ASC : self::SORT_DESC;
         } else {
             $this->sort = $key;
-            $this->dir  = '';
+            $this->dir  = self::SORT_ASC;
         }
 
         $this->resetPage($this->tableKey(self::QUERY_PAGE));
