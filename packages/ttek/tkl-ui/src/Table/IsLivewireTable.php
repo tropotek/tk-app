@@ -17,9 +17,6 @@ trait IsLivewireTable
 {
     use IsTable;
 
-    public array $filterVals = [];
-
-
     /**
      * provides alias to the query vals and hides the default value params
      */
@@ -28,7 +25,7 @@ trait IsLivewireTable
         // set the initial default limit value, called by the Livewire system
         $this->setDefaultLimit(config('sis.default.pagination', 30));
 
-        return [
+        $qs = [
             'limit' => [
                 'except' => 0,
                 'as' => $this->tableKey(self::QUERY_LIMIT)
@@ -45,11 +42,16 @@ trait IsLivewireTable
                 'except' => [],
                 'as' => $this->tableKey(self::QUERY_FILTER)
             ],
-            'search' => [
+        ];
+
+        if ($this->isSearchable()) {
+            $qs['search'] = [
                 'except' => '',
                 'as' => $this->tableKey(self::QUERY_SEARCH)
-            ],
-        ];
+            ];
+        }
+
+        return $qs;
     }
 
     /**
@@ -116,13 +118,13 @@ trait IsLivewireTable
             $this->dir  = '';
         }
 
-        $this->resetPage();
+        $this->resetPage($this->tableKey(self::QUERY_PAGE));
     }
 
     public function setLimit(int $limit): void
     {
         $this->limit = $limit;
-        $this->resetPage($this->tableKey('p'));
+        $this->resetPage($this->tableKey(self::QUERY_PAGE));
     }
 
     public function isLivewire(): bool

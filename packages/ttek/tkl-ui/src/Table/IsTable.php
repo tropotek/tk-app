@@ -23,19 +23,15 @@ trait IsTable
     const string QUERY_DIR      = 'd';
     const string QUERY_SEARCH   = 'sr';
     const string QUERY_FILTER   = 'f';
+    const string QUERY_RESET    = 'rst';
 
     const string SORT_ASC = 'asc';
     const string SORT_DESC = 'desc';
 
-    // properties are public for compatibility with Livewire
-    // use the getters to read the values
-    public string $tableId = self::DEFAULT_TABLE_ID;
-    /**
-     * rows per page
-     */
     public int $limit = 0;
     public string $sort = '';
     public string $dir = '';
+    public array $filterVals = [];
     public ?int $totalRows = null;
 
     protected int $defaultLimit = 30;
@@ -50,6 +46,7 @@ trait IsTable
      * @var Collection<int, Filter>
      */
     protected Collection $filters;
+    protected ComponentAttributeBag $attrs;
     protected mixed $rowAttrs = null;   // null|callable
     protected mixed $paginatedRows = null;
 
@@ -61,6 +58,14 @@ trait IsTable
      * @return array<string,mixed>|Builder
      */
     abstract public function rows(): array|Builder;
+
+    /**
+     * Override this method to change your table ID
+     */
+    public function tableId(): string
+    {
+        return self::DEFAULT_TABLE_ID;
+    }
 
     /**
      * Return a sorted and paginated object of rows
@@ -120,9 +125,9 @@ trait IsTable
     {
         $this->setDefaultLimit(config('sis.default.pagination', 30));
 
-        $this->limit = request()->input($this->tableKey(self::QUERY_LIMIT), 0);
-        $this->sort = request()->input($this->tableKey(self::QUERY_SORT), '');
-        $this->dir = request()->input($this->tableKey(self::QUERY_DIR), '');
+        $this->limit = (int)request()->input($this->tableKey(self::QUERY_LIMIT), 0);
+        $this->sort = (string)request()->input($this->tableKey(self::QUERY_SORT), '');
+        $this->dir = (string)request()->input($this->tableKey(self::QUERY_DIR), '');
 
         // TODO: Add filter hydration
         //       I have not looked into how we will implement filters and their dependants within controllers yet.
@@ -166,11 +171,6 @@ trait IsTable
         return $this->dir ?: $this->defaultDir ?: self::SORT_ASC;
     }
 
-    public function getTableId(): string
-    {
-        return $this->tableId;
-    }
-
     public function setDefaultLimit(int $limit): static
     {
         $this->defaultLimit = $limit;
@@ -181,6 +181,30 @@ trait IsTable
     {
         $this->defaultSort = $sort;
         $this->defaultDir = ($dir === self::SORT_DESC) ? self::SORT_DESC : self::SORT_ASC;
+        return $this;
+    }
+
+    public function addClass(string $class): static
+    {
+        $this->attrs = $this->getAttrs()->class($class);
+        return $this;
+    }
+
+    public function addAttr(array $attrs): static
+    {
+        $this->attrs = $this->getAttrs()->merge($attrs);
+        return $this;
+    }
+
+    public function getAttrs(): ComponentAttributeBag
+    {
+        $this->attrs ??= new ComponentAttributeBag();
+        return $this->attrs;
+    }
+
+    public function mergeAttrs(array $attrs): static
+    {
+        $this->attrs = $this->getAttrs()->merge($attrs);
         return $this;
     }
 
@@ -362,7 +386,7 @@ trait IsTable
      */
     public function tableKey(string $key): string
     {
-        return self::makeTableKey($key, $this->tableId);
+        return self::makeTableKey($key, $this->tableId());
     }
 
     /**
@@ -387,18 +411,21 @@ trait IsTable
 
     public function paginateQuery(Builder $query): LengthAwarePaginator
     {
-        // normalizes the URL path to avoid errors
-        $path = '/' . ltrim(Paginator::resolveCurrentPath(), '/');
-
         // only apply sort order if not already ordered
         if (empty($query->getQuery()->orders)) {
             $this->sortQuery($query);
         }
 
-        return $query->paginate(
+        $paginator = $query->paginate(
             perPage: $this->getLimit() ?: PHP_INT_MAX,
             pageName: $this->tableKey(self::QUERY_PAGE),
-        )->withPath($path);
+        )->withPath(Paginator::resolveCurrentPath());
+
+        if (! $this->isLivewire()) {
+            $paginator->appends(request()->except($this->tableKey(self::QUERY_PAGE)));
+        }
+
+        return $paginator;
     }
 
     /**
@@ -406,12 +433,12 @@ trait IsTable
      */
     public function paginateArray(array $rows, $pageName = self::QUERY_PAGE, $currentPage = null): LengthAwarePaginator
     {
-        $path = '/' . ltrim(Paginator::resolveCurrentPath(), '/');
+        $path = Paginator::resolveCurrentPath();
+        $pageName = $this->tableKey($pageName);
 
         $currentPage = $currentPage ?: Paginator::resolveCurrentPage($pageName);
         $total = $this->totalRows = count($rows);
         $perPage = $this->getLimit() ?: PHP_INT_MAX;
-        $pageName = $this->tableKey($pageName);
 
         // get the current page of items
         $offset = ($currentPage - 1) * $perPage;
@@ -419,55 +446,42 @@ trait IsTable
 
         $options = compact('path', 'pageName');
 
-        return Container::getInstance()->makeWith(
+        $paginator = Container::getInstance()->makeWith(
             LengthAwarePaginator::class,
             compact('items', 'total', 'perPage', 'currentPage', 'options')
         );
+
+        if (! $this->isLivewire()) {
+            $paginator->appends(request()->except($pageName));
+        }
+
+        return $paginator;
     }
 
-    public function buildCsv(array|Collection|Builder $rows, string $fileName = 'unknown.csv')
+    /**
+     * remove all table query keys and any extra keys from the $params array
+     */
+    public function urlWithoutTableParams(array $params = []): string
     {
-        $callback = function () use ($rows) {
-            $handle = fopen('php://output', 'w');
+        $remainingParams = collect(request()->query())->reject(
+            $this->tableId() !== self::DEFAULT_TABLE_ID
+                ? fn($v, $k) => str_starts_with($k, $this->tableId() . '_') || in_array($k, $params)
+                : fn($v, $k) => in_array($k, array_merge([
+                self::QUERY_PAGE, self::QUERY_SORT, self::QUERY_DIR,
+                self::QUERY_LIMIT, self::QUERY_FILTER, self::QUERY_SEARCH, self::QUERY_RESET
+            ], $params))
+        )->all();
 
-            $headers = $this->getCells()->pluck('header')->all();
-            fputcsv($handle, $headers);
-
-            if (is_array($rows)) {
-                $rows = collect($rows);
-            }
-
-            if ($rows instanceof Collection) {
-                foreach ($rows as $row) {
-                    $row = $this->getCells()
-                        ->map(fn(Cell $cell) => $cell->value($row))
-                        ->all();
-                    fputcsv($handle, $row);
-                }
-            } else {
-                $rows->chunk(500, function ($rows) use ($handle) {
-                    foreach ($rows as $row) {
-                        $row = $this->getCells()
-                            ->map(fn(Cell $cell) => $cell->value($row))
-                            ->all();
-                        fputcsv($handle, $row);
-                    }
-                });
-            }
-
-            fclose($handle);
-        };
-
-        // todo mm need a way for bothLivewire and controller csv downloads
-        return response()->streamDownload($callback, $fileName, [
-            'Content-Type' => 'text/csv',
-        ]);
+        return $remainingParams
+            ? url()->current() . '?' . http_build_query($remainingParams)
+            : url()->current();
     }
 
     public function isLivewire(): bool
     {
         return false;
     }
+
 
     // todo mm: Refactor the below array sort method, this is just copied from sisV1 for now,
     //          It needs to be refactored to cater for the new `sort` and `dir` properties
@@ -540,5 +554,45 @@ trait IsTable
         }
         return $row->{$col} ?? null;
     }
+
+    public function buildCsv(array|Collection|Builder $rows, string $fileName = 'unknown.csv')
+    {
+        $callback = function () use ($rows) {
+            $handle = fopen('php://output', 'w');
+
+            $headers = $this->getCells()->pluck('header')->all();
+            fputcsv($handle, $headers);
+
+            if (is_array($rows)) {
+                $rows = collect($rows);
+            }
+
+            if ($rows instanceof Collection) {
+                foreach ($rows as $row) {
+                    $row = $this->getCells()
+                        ->map(fn(Cell $cell) => $cell->value($row))
+                        ->all();
+                    fputcsv($handle, $row);
+                }
+            } else {
+                $rows->chunk(500, function ($rows) use ($handle) {
+                    foreach ($rows as $row) {
+                        $row = $this->getCells()
+                            ->map(fn(Cell $cell) => $cell->value($row))
+                            ->all();
+                        fputcsv($handle, $row);
+                    }
+                });
+            }
+
+            fclose($handle);
+        };
+
+        // todo mm need a way for bothLivewire and controller csv downloads
+        return response()->streamDownload($callback, $fileName, [
+            'Content-Type' => 'text/csv',
+        ]);
+    }
+
 
 }

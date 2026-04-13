@@ -10,16 +10,17 @@
 ])
 @php
     $rows = $table->paginatedRows();
+    $attributes = $attributes->merge($table->getAttrs()->all());
 @endphp
 
 <div class="table-responsive">
-    <table id="{{ $table->tableId }}" class="table table-striped table-hover">
+    <table {{ $attributes->merge(['id' => $table->tableId(), 'class' => 'table table-striped table-hover']) }}>
         <thead>
-        <tr>
-            @foreach ($table->getVisibleCells() as $cell)
-                <x-tkl-ui::table.th :cell="$cell"/>
-            @endforeach
-        </tr>
+            <tr>
+                @foreach ($table->getVisibleCells() as $cell)
+                    <x-tkl-ui::table.th :cell="$cell"/>
+                @endforeach
+            </tr>
         </thead>
 
         <tbody class="table-group-divider">
@@ -59,9 +60,6 @@
         </tbody>
     </table>
 
-@php
-vd($rows->perPage(), $rows->lastPage(), $table->getLimit(), $table->defaultLimit);
-@endphp
     @if ($rows->perPage() > 0 && $rows->lastPage() > 1)
         <div class="mt-4">
             {{ $rows->links() }}

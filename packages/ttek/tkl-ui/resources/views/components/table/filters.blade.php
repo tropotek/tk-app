@@ -13,7 +13,31 @@
     $rows = $table->paginatedRows();
 @endphp
 
-<form method="get">
+<form method="get" @if(!$table->isLivewire()) action="{{ url()->current() }}" @endif>
+    @if(!$table->isLivewire())
+        @php
+            // Preserve all query params that this form does not own as hidden inputs.
+            // The form submits its own filter/search inputs, so exclude those to avoid duplicates.
+            // Also drop the page param so filtering resets to page 1.
+            $skipKeys = [
+                $table->tableKey($table::QUERY_FILTER),
+                $table->tableKey($table::QUERY_SEARCH),
+                $table->tableKey($table::QUERY_PAGE),
+                $table->tableKey($table::QUERY_RESET),
+            ];
+            $preserved = collect(request()->query())->except($skipKeys)->all();
+        @endphp
+        @foreach($preserved as $key => $value)
+            @if(is_array($value))
+                @foreach($value as $subKey => $subValue)
+                    <input type="hidden" name="{{ $key }}[{{ $subKey }}]" value="{{ $subValue }}">
+                @endforeach
+            @else
+                <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+            @endif
+        @endforeach
+    @endif
+
     <div {{ $attributes->merge(['class' => 'd-flex flex-wrap gap-2 align-items-center my-2']) }}>
 
         @if($table->isSearchable())
@@ -51,8 +75,8 @@
                 @if($table->isLivewire())
                     wire:click="clearFilters"
                 @else
-                    name="{{ $table->tableKey('reset') }}"
-                value="1"
+                    name="{{ $table->tableKey($table::QUERY_RESET) }}"
+                    value="1"
                 @endif
             >
                 <i class="fa fa-circle-xmark fa-lg"></i>

@@ -10,18 +10,29 @@ Two implementations are supported:
 
 ---
 
+> ### Do not mix Livewire and controller tables on the same page
+>
+> A Livewire table updates the browser URL via `history.pushState` without a full page reload
+> (sort clicks, pagination, filter changes). A controller table's links are static hrefs baked at
+> render time, so they become stale the moment a Livewire component changes the URL. There is no
+> viable way to keep controller links in sync with a Livewire-driven URL without a full reload.
+>
+> **Rule:** every page must use either all-Livewire tables or all-controller tables — never both.
+
+---
+
 ## Table of Contents
 
 1. [Livewire table](#1-livewire-table)
-   - [Traits](#11-traits)
-   - [Configuring the table with `Builder::build()`](#12-configuring-the-table-with-builderbuild)
-   - [Defining cells](#13-defining-cells)
-   - [Defining action cells](#14-defining-action-cells)
-   - [Defining filters](#15-defining-filters)
-   - [Enabling search](#16-enabling-search)
-   - [The `rows()` method](#17-the-rows-method)
-   - [Rendering the table](#18-rendering-the-table)
-   - [Full Livewire example](#19-full-livewire-example)
+    - [Traits](#11-traits)
+    - [Configuring the table with `Builder::build()`](#12-configuring-the-table-with-builderbuild)
+    - [Defining cells](#13-defining-cells)
+    - [Defining action cells](#14-defining-action-cells)
+    - [Defining filters](#15-defining-filters)
+    - [Enabling search](#16-enabling-search)
+    - [The `rows()` method](#17-the-rows-method)
+    - [Rendering the table](#18-rendering-the-table)
+    - [Full Livewire example](#19-full-livewire-example)
 2. [Controller table](#2-controller-table)
 3. [Cell & Filter API reference](#3-cell--filter-api-reference)
 4. [Common patterns](#4-common-patterns)
@@ -51,6 +62,35 @@ class extends Component {
 | `IsSearchable` | Adds `$search`, `$searchPlaceholder`, `$searchClear` properties |
 
 `IsSearchable` is optional — omit it if the table does not need a search input.
+
+#### `tableId()` — isolating multiple Livewire tables on one page
+
+When more than one Livewire table component lives on the same page, each must return a unique string from `tableId()` so their URL query parameters don't collide:
+
+```php
+class extends Component {
+    use WithPagination, IsLivewireTable;
+
+    // Override tableId() to namespace this component's URL params.
+    // URL params become: t2_p, t2_s, t2_d, t2_f, t2_l
+    public function tableId(): string
+    {
+        return 't2';
+    }
+
+    public function boot(): void
+    {
+        $this->setDefaultLimit(15);
+        Builder::build($this, [...]);
+    }
+}
+```
+
+The default `tableId()` (defined in `IsTable`) returns `'tbl'` (`DEFAULT_TABLE_ID`), whose URL params have no prefix (`p`, `s`, `d`, `f`, `l`). Any other return value adds a prefix — returning `'t2'` gives `t2_p`, `t2_s`, etc.
+
+**Why override a method rather than a property?**
+
+`IsLivewireTable::queryString()` is called by Livewire *before* `boot()` runs on initial component mount. Assigning `$this->tableId = 'xxx'` inside `boot()` would be too late — `queryString()` would have already read the default value. Overriding `tableId()` as a method works because the method is available immediately, regardless of lifecycle order. An additional constraint: PHP does not allow trait-declared properties to be redeclared with a different default value; attempting this raises a fatal composition error at runtime.
 
 ---
 
@@ -357,7 +397,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Modules\Auth\Enums\Ability;
-use Modules\Core\Support\Facades\Breadcrumbs;
+use Tk\Support\Facades\Breadcrumbs;
 use Tk\Table\Builder as TableBuilder;
 use Tk\Table\IsLivewireTable;
 use Tk\Table\IsSearchable;
@@ -556,7 +596,6 @@ In the Blade view, pass `$table` explicitly:
 
 ```php
 Builder::build($this, [
-    'tableId'     => 'tbl',           // string; 'tbl' = no URL prefix (default)
     'defaultSort' => 'column_name',   // string
     'defaultDir'  => 'asc',           // 'asc' (default) | 'desc'
     'rowAttrs'    => fn($row, $table): array => [],
@@ -742,11 +781,24 @@ Clicking a link or button inside the row does not trigger navigation.
 
 ### Multiple tables on one page
 
-Set a unique `tableId` on each table to avoid URL key conflicts:
+**Livewire:** each table is its own component class. Override `tableId()` in each component (see [section 1.1](#11-traits)):
 
 ```php
-Builder::build($this->staffTable, ['tableId' => 'staff', ...]);
-Builder::build($this->leaveTable, ['tableId' => 'leave', ...]);
+// First table component (default — no prefix)
+class StaffTable extends Component {
+    use WithPagination, IsLivewireTable;
+    // tableId() not overridden → uses DEFAULT_TABLE_ID → params: p, s, d, f, l
+}
+
+// Second table component
+class LeaveTable extends Component {
+    use WithPagination, IsLivewireTable;
+
+    public function tableId(): string { 
+        return 'lv'; 
+    }
+    // params: lv_p, lv_s, lv_d, lv_f, lv_l
+}
 ```
 
 URL params become `staff_s`, `staff_d`, `staff_f`, `leave_s`, `leave_d`, `leave_f`, etc.

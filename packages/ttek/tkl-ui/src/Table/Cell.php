@@ -210,9 +210,6 @@ class Cell
         return $this;
     }
 
-    /**
-     * Add a CSS class to the cell
-     */
     public function addClass(string $class): static
     {
         $this->attrs = $this->getAttrs()->class($class);
@@ -264,33 +261,35 @@ class Cell
         return $this;
     }
 
-    public function getNextSortUrl(string $currentSort = '', string $currentDir = '', array $query = []): string
+    public function getNextSortUrl(array $query = []): string
     {
         $url = request()->fullUrl();
+
         if ($this->isSortable()) {
-            if ($currentSort == $this->getSort() && $currentDir == 'desc') {
-                $query[$this->getTable()->tableKey('sort')] = null;
-                $query[$this->getTable()->tableKey('dir')] = null;
+
+            if ($this->getSort() === $this->getTable()->getSort()) {
+                $dir = $this->getTable()->getDir() === $this->getTable()::SORT_DESC
+                    ? ''
+                    : $this->getTable()::SORT_DESC;
             } else {
-                $query[$this->getTable()->tableKey('sort')] = $this->getSort();
-                $query[$this->getTable()->tableKey('dir')] = $this->getNextDir($currentSort, $currentDir);
+                $dir  = '';
             }
+
+            $query[$this->getTable()->tableKey($this->getTable()::QUERY_SORT)] = $this->getSort();
+            $query[$this->getTable()->tableKey($this->getTable()::QUERY_DIR)] = $dir ?: null;
         }
+
         return url()->query($url, $query);
     }
 
     /**
      * get the next sort direction
      */
-    protected function getNextDir(string $currentSort = '', string $currentDir = ''): string
+    protected function getNextDir(): string
     {
-        if ($currentSort == $this->getSort()) {
-            if ($currentDir == 'desc') {
-                return '';
-            }
-            return empty($currentDir) ? 'asc' : 'desc';
-        }
-        return 'asc';
+        return (empty($this->getTable()->getDir()) || $this->getTable()::SORT_DESC)
+            ? $this->getTable()::SORT_ASC
+            : $this->getTable()::SORT_DESC;
     }
 
 }

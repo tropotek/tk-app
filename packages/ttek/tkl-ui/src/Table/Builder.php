@@ -2,6 +2,7 @@
 
 namespace Tk\Table;
 
+
 class Builder
 {
     /**
@@ -14,9 +15,9 @@ class Builder
      * tableMeta structure:
      *
      * [
-     *     'tableId'      => string,    // (optional) table id; used for url key prefixing
      *     'defaultSort'  => string,    // (optional) default sort column
      *     'defaultDir'   => string,    // (optional) default sort direction ('asc'|'desc')
+     *     'attrs'        => array,     // (optional) table attrs
      *     'rowAttrs'     => callable,  // (optional) fn($row, $table): array|ComponentAttributeBag
      *     'cells'        => [
      *         'cell_name' => [
@@ -80,7 +81,7 @@ class Builder
 
         foreach ($tableMeta as $key => $meta) {
             match ($key) {
-                'tableId'  => $table->tableId = $meta,
+                'attrs'    => $table->setAttrs($meta),
                 'rowAttrs' => $table->setRowAttrs($meta),
                 'cells'    => self::buildCells($table, $meta),
                 'actions'  => self::buildActions($table, $meta),

@@ -8,7 +8,7 @@ table thead th.col-sort {
     padding-left: 0.5em;
     cursor: pointer;
 
-    span, a {
+    a {
         position: relative; /* This is needed for the absolute positioning. */
         margin: 0;
         padding: 0 0 0 0.8em;
@@ -29,14 +29,14 @@ table thead th.col-sort {
         }
     }
     &.asc {
-        span, a {
+        a {
             &::before {
                 opacity: 1;                     /* When sorting, set full opacity on the direction */
             }
         }
     }
     &.desc {
-        span, a {
+        a {
             &::after {
                 opacity: 1;                     /* When sorting, set full opacity on the direction */
             }

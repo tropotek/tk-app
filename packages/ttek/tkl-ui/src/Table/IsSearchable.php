@@ -4,7 +4,7 @@ namespace Tk\Table;
 
 trait IsSearchable
 {
-    public string $search = '';
+    public ?string $search = '';
 
     public string $searchPlaceholder = 'Search...';
 
