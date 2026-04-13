@@ -36,7 +36,6 @@ trait IsTable
 
     protected int $defaultLimit = 30;
     protected string $defaultSort = '';
-    protected string $defaultDir = self::SORT_ASC;
 
     /**
      * @var Collection<int, Cell>
@@ -168,7 +167,7 @@ trait IsTable
 
     public function getDir(): string
     {
-        return $this->dir ?: $this->defaultDir ?: self::SORT_ASC;
+        return $this->dir ?: self::SORT_ASC;
     }
 
     public function setDefaultLimit(int $limit): static
@@ -177,10 +176,18 @@ trait IsTable
         return $this;
     }
 
-    public function setDefaultSort(string $sort, string $dir = self::SORT_ASC): static
+    public function setDefaultSort(string $sort, ?string $dir = null): static
     {
         $this->defaultSort = $sort;
-        $this->defaultDir = ($dir === self::SORT_DESC) ? self::SORT_DESC : self::SORT_ASC;
+        if ($dir) {
+            $this->setDefaultDir($dir);
+        }
+        return $this;
+    }
+
+    public function setDefaultDir(string $dir = self::SORT_ASC): static
+    {
+        $this->dir = in_array($dir, [self::SORT_ASC, self::SORT_DESC]) ? $dir : self::SORT_ASC;
         return $this;
     }
 
