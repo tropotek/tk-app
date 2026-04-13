@@ -151,23 +151,18 @@ class Cell
     /**
      * Get the plain text value of the cell (useful for .txt or .csv)
      */
-    public function value(mixed $row): mixed
+    public function value(mixed $row): string
     {
         if (!$this->isVisible()) return '';
         if (is_callable($this->value)) {
             $ret = call_user_func($this->value, $row, $this);
             if (is_string($ret) || $ret instanceof \Stringable) {
-                return e($ret);
+                return is_scalar($ret) || $ret instanceof \Stringable ? e((string) $ret) : '';
             }
         }
 
         $value = $this->getRowValue($row);
-
-        if (is_string($value) || $value instanceof \Stringable) {
-            return e($value);
-        }
-
-        return '';
+        return is_scalar($value) || $value instanceof \Stringable ? e((string) $value) : '';
     }
 
     /**
@@ -216,7 +211,7 @@ class Cell
         return $this;
     }
 
-    public function addAttr(array $attrs): static
+    public function addAttrs(array $attrs): static
     {
         $this->attrs = $this->getAttrs()->merge($attrs);
         return $this;
@@ -228,12 +223,6 @@ class Cell
         return $this->attrs;
     }
 
-    public function mergeAttrs(array $attrs): static
-    {
-        $this->attrs = $this->getAttrs()->merge($attrs);
-        return $this;
-    }
-
     /**
      * Add a CSS class to the cell
      */
@@ -243,7 +232,7 @@ class Cell
         return $this;
     }
 
-    public function addHeaderAttr(array $attrs): static
+    public function addHeaderAttrs(array $attrs): static
     {
         $this->headerAttrs = $this->getHeaderAttrs()->merge($attrs);
         return $this;
@@ -253,12 +242,6 @@ class Cell
     {
         $this->headerAttrs ??= new ComponentAttributeBag();
         return $this->headerAttrs;
-    }
-
-    public function mergeHeaderAttrs(array $attrs): static
-    {
-        $this->headerAttrs = $this->getHeaderAttrs()->merge($attrs);
-        return $this;
     }
 
     public function getNextSortUrl(array $query = []): string
@@ -280,16 +263,6 @@ class Cell
         }
 
         return url()->query($url, $query);
-    }
-
-    /**
-     * get the next sort direction
-     */
-    protected function getNextDir(): string
-    {
-        return (empty($this->getTable()->getDir()) || $this->getTable()::SORT_DESC)
-            ? $this->getTable()::SORT_ASC
-            : $this->getTable()::SORT_DESC;
     }
 
 }

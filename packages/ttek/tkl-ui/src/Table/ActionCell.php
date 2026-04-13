@@ -26,7 +26,7 @@ class ActionCell extends Cell
     {
         return sprintf('<i class="%s text-muted" title="%s"></i>',
             $this->icon,
-            parent::getHeader()
+            e(parent::getHeader())
         );
     }
 

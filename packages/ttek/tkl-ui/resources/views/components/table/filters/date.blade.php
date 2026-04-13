@@ -14,10 +14,13 @@
             'value' => $table->filterVals[$filter->getKey()] ?? $filter->getDefaultValue(),
         ]);
     } else {
-        $key = $filter->getTable()->tableKey($filter->getKey());
+        $filterKey = $filter->getTable()->tableKey($filter->getTable()::QUERY_FILTER);
+        $filterVals = request()->input($filterKey) ?? [];
+        $value = $filterVals[$filter->getKey()] ?? $filter->getDefaultValue();
+
         $attributes = $attributes->merge([
-            'name' => $key,
-            'value' => request()->input($key, $filter->getDefaultValue()),
+            'name' => sprintf('%s[%s]', $filterKey, $filter->getKey()),
+            'value' => $value,
             // todo mm: use on blur or something similar to trigger auto submit (alternatively add a submit button)
             //'onChange' => 'this.form.submit()',
         ]);

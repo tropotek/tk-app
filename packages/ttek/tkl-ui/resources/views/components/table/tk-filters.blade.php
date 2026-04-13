@@ -16,7 +16,7 @@
 <div {{ $attributes }}>
     <form method="get">
 
-        @if($showFilters && $table->getFilters()->count())
+        @if($showFilters && $table->getVisibleFilters()->count())
             <div class="d-flex">
                 <div class="py-2">
                     <button
@@ -80,7 +80,7 @@
             @endif
 
             <div class="py-2 flex-grow-1">
-                @if($table->isSearchable())
+                @if($table->searchable())
                     <x-tkl-ui::table.filters.search :table="$table" />
                 @endif
             </div>
@@ -89,6 +89,31 @@
                 {{ $rightActions }}
             @endif
 
+                @if($table->exportable())
+                    @php $exportRoute = $table->exportRoute(); @endphp
+                    @if(\Illuminate\Support\Facades\Route::has($exportRoute))
+                        <div class="p-2">
+                            <a
+                                href="{{ route($exportRoute) }}"
+                                target="_blank"
+                                class="text-primary clickable align-middle"
+                                title="Export CSV"
+                            >
+                                <i class="fa-regular fa-file-excel fa-lg"></i>
+                            </a>
+                        </div>
+                    @else
+                        @if($table->isLivewire() && method_exists($table, 'export'))
+                            <div
+                                class="p-2 text-primary clickable"
+                                title="Export CSV"
+                                wire:click="export"
+                            >
+                                <i class="fa-regular fa-file-excel fa-lg align-middle"></i>
+                            </div>
+                        @endif
+                    @endif
+                @endif
             @if($showLimit)
                 <x-tkl-ui::table.filters.limit />
             @endif

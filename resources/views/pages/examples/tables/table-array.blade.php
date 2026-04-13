@@ -12,15 +12,6 @@
                 </a>
             </div>
         </x-slot>
-        <x-slot name="rightActions">
-            <div
-                class="p-2 text-primary clickable"
-                title="Download CSV"
-                wire:click="csv"
-            >
-                <i class="fa-regular fa-file-excel fa-lg align-middle"></i>
-            </div>
-        </x-slot>
     </x-tkl-ui::table.tk-filters>
     <x-tkl-ui::table :table="$table"/>
 

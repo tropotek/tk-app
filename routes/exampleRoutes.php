@@ -34,6 +34,8 @@ Route::middleware('auth')->name('examples.')->prefix('/examples')->group(functio
 
     // Table Examples
     Route::get('/tableArray', [ArrayTableController::class, 'index'])->name('tableArray');
+    Route::get('/tableArrayExport', [ArrayTableController::class, 'export'])->name('tableArray.export');
+
     Route::livewire('/tableArray2', 'pages::examples.tables.table-array-live')->name('tableArray2');
 
 });

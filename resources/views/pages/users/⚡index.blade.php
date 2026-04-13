@@ -10,6 +10,7 @@ use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Tk\Support\Facades\Breadcrumbs;
 use Tk\Table\Cell;
 use Tk\Table\IsLivewireTable;
@@ -67,9 +68,9 @@ class extends Component {
             ->when($this->filterVals['roles'] ?? null, fn(Builder $query) => $query->role($this->filterVals['roles']));
     }
 
-    public function csv()
+    public function export(): StreamedResponse
     {
-        return $this->buildCsv($this->query(), 'users.csv');
+        return $this->exportCsv($this->rows()->get(), 'users.csv');
     }
 
 };
@@ -84,15 +85,6 @@ class extends Component {
                 <a href="{{ route('admin.users.create') }}" class="btn btn-sm btn-outline-secondary">
                     <i class="fa fa-plus-circle"></i> Create
                 </a>
-            </div>
-        </x-slot>
-        <x-slot name="rightActions">
-            <div
-                class="p-2 text-primary clickable"
-                title="Download CSV"
-                wire:click="csv"
-            >
-                <i class="fa-regular fa-file-excel fa-lg align-middle"></i>
             </div>
         </x-slot>
     </x-tkl-ui::table.tk-filters>

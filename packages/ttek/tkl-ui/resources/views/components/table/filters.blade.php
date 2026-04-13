@@ -40,11 +40,11 @@
 
     <div {{ $attributes->merge(['class' => 'd-flex flex-wrap gap-2 align-items-center my-2']) }}>
 
-        @if($table->isSearchable())
+        @if($table->searchable())
             <x-tkl-ui::table.filters.search :table="$table"/>
         @endif
 
-        @if($showFilters && $table->getFilters()->count())
+        @if($showFilters && $table->getVisibleFilters()->count())
             <div class="text-nowrap text-primary"><small>Filter By:</small></div>
 
             @foreach($table->getVisibleFilters() as $filter)
@@ -66,7 +66,7 @@
 
         @endif
 
-        @if(($showFilters && $table->getFilters()->count()) || $showSearch)
+        @if(($showFilters && $table->getVisibleFilters()->count()) || $showSearch)
             {{-- Clear --}}
             <button
                 type="{{ $table->isLivewire() ? 'button' : 'submit' }}"
@@ -92,20 +92,30 @@
         <div class="flex-grow-1 text-end small">
 
             @if($rows->total() > 0)
-                {{-- todo mm: add the csv export functionality --}}
-                {{--                @if($this->exportable())--}}
-                {{--                    @php $exportRoute = $this->exportRoute(); @endphp--}}
-                {{--                    @if(\Illuminate\Support\Facades\Route::has($exportRoute))--}}
-                <a
-                    {{--                            href="{{ route($exportRoute, request()->query()) }}"--}}
-                    href="#"
-                    class="btn btn-link btn-sm"
-                    title="Download CSV"
-                >
-                    <i class="fa-regular fa-file-excel fa-lg"></i>
-                </a>
-                {{--                    @endif--}}
-                {{--                @endif--}}
+                @if($table->exportable())
+                    @php $exportRoute = $table->exportRoute(); @endphp
+                    @if(\Illuminate\Support\Facades\Route::has($exportRoute))
+                        <a
+                            href="{{ route($exportRoute) }}"
+                            target="_blank"
+                            class="btn btn-link btn-sm"
+                            title="Download CSV"
+                        >
+                            <i class="fa-regular fa-file-excel fa-lg"></i>
+                        </a>
+                    @else
+                        @if($table->isLivewire() && method_exists($table, 'export'))
+                            <button
+                                type="button"
+                                class="btn btn-link btn-sm"
+                                title="Download CSV"
+                                wire:click="export"
+                            >
+                                <i class="fa-regular fa-file-excel fa-lg"></i>
+                            </button>
+                        @endif
+                    @endif
+                @endif
                 <span class="text-secondary">
                     Showing
                     <span class="fw-semibold">{{ $rows->firstItem() }}</span>

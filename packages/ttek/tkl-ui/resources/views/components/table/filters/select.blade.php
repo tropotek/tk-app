@@ -14,11 +14,13 @@
             'wire:change' => "updateFilters('{$filter->getKey()}', \$event.target.value)",
         ]);
     } else {
-        $key = $filter->getTable()->tableKey($filter->getKey());
-        $value = request()->input($key, $filter->getDefaultValue());
+        $filterKey = $filter->getTable()->tableKey($filter->getTable()::QUERY_FILTER);
+        $filterVals = request()->input($filterKey) ?? [];
+        $value = $filterVals[$filter->getKey()] ?? $filter->getDefaultValue();
+
         $attributes = $attributes->merge([
             'onChange' => 'this.form.submit()',
-            'name' => $key,
+            'name' => sprintf('%s[%s]', $filterKey, $filter->getKey()),
         ]);
     }
     $attributes = $attributes->merge([

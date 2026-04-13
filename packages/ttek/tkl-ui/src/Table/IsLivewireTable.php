@@ -35,7 +35,7 @@ trait IsLivewireTable
                 'as' => $this->tableKey(self::QUERY_SORT)
             ],
             'dir' => [
-                'except' => self::SORT_ASC,
+                'except' => '',
                 'as' => $this->tableKey(self::QUERY_DIR)
             ],
             'filterVals' => [
@@ -44,7 +44,7 @@ trait IsLivewireTable
             ],
         ];
 
-        if ($this->isSearchable()) {
+        if ($this->searchable()) {
             $qs['search'] = [
                 'except' => '',
                 'as' => $this->tableKey(self::QUERY_SEARCH)
@@ -55,19 +55,19 @@ trait IsLivewireTable
     }
 
     /**
-     * Use this method to reset defaults and clear filters
+     * reset defaults and clear filters
      */
     public function clearFilters(): void
     {
         $reset = ['filterVals'];
-        if ($this->isSearchable()) {
+        if ($this->searchable()) {
             $reset[] = 'search';
         }
         $this->reset($reset);
 
         $this->limit = 0;
         $this->sort = '';
-        $this->dir = self::SORT_ASC;
+        $this->dir = '';
 
         foreach ($this->getFilters() as $filter) {
             if ($filter->getDefaultValue()) {
@@ -93,7 +93,7 @@ trait IsLivewireTable
     }
     public function updatedSearch(): void
     {
-        if ($this->isSearchable()) {
+        if ($this->searchable()) {
             foreach ($this->searchClear as $filterKey) {
                 unset($this->filterVals[$filterKey]);
             }

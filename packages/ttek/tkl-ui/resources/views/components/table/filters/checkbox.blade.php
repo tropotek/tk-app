@@ -14,10 +14,12 @@
             'wire:change' => "updateFilters('{$filter->getKey()}', \$event.target.value)",
         ]);
     } else {
-        $key = $filter->getTable()->tableKey($filter->getKey());
-        $value = request()->input($key, '') ??$filter->getDefaultValue();
+        $filterKey = $filter->getTable()->tableKey($filter->getTable()::QUERY_FILTER);
+        $filterVals = request()->input($filterKey) ?? [];
+        $value = $filterVals[$filter->getKey()] ?? $filter->getDefaultValue();
+
         $attributes = $attributes->merge([
-            'name' => $key,
+            'name' => sprintf('%s[%s]', $filterKey, $filter->getKey()),
             // todo mm: use on change/onclick to trigger auto submit
             'onChange' => 'this.form.submit()',
         ]);
@@ -31,7 +33,7 @@
             'class' => 'form-check-input',
             'name' => $filter->getTable()->tableKey($filter->getKey()),
             'placeholder' => $filter->getLabel(),
-            'checked' => in_array($value, [1, '1', true, 'true', 'on'], true) ? true : null,,
+            'checked' => in_array($value, [1, '1', true, 'true', 'on'], true) ? true : null,
         ]) }}
     />
     <label class="form-check-label small">{{ $filter->getLabel() }}</label>

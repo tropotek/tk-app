@@ -6,7 +6,7 @@
 {{--
     todo mm: combine these into a single element using attributes
 --}}
-@if($table->isSearchable())
+@if($table->searchable())
     @if($table->isLivewire())
         <div x-data="{ q: @entangle('search') }">
             <div class="input-group input-group-sm">

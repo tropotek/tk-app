@@ -150,7 +150,7 @@ class Filter
         return $this;
     }
 
-    public function addAttr(array $attrs): static
+    public function addAttrs(array $attrs): static
     {
         $this->attrs = $this->getAttrs()->merge($attrs);
         return $this;
@@ -160,12 +160,6 @@ class Filter
     {
         $this->attrs ??= new ComponentAttributeBag();
         return $this->attrs;
-    }
-
-    public function mergeAttrs(array $attrs): static
-    {
-        $this->attrs = $this->getAttrs()->merge($attrs);
-        return $this;
     }
 
     public function getDefaultValue(): string

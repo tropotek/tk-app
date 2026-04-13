@@ -2,7 +2,6 @@
 
 namespace Tk\Table;
 
-
 class Builder
 {
     /**
@@ -27,10 +26,10 @@ class Builder
      *             'value'       => string|callable,  // (optional) fn($row, $cell): string
      *             'view'        => string|callable,  // (optional) fn($row, $cell): string
      *             'class'       => string,    // (optional) td CSS class
-     *             'headerClass' => string,    // (optional) th CSS class
-     *             'visible'     => bool,      // (optional) visibility flag
      *             'attrs'       => array,     // (optional) td attrs
+     *             'headerClass' => string,    // (optional) th CSS class
      *             'headerAttrs' => array,     // (optional) th attrs
+     *             'visible'     => bool,      // (optional) visibility flag
      *         ],
      *     ],
      *     'actions'      => [
@@ -39,29 +38,27 @@ class Builder
      *             'route'       => string|callable,  // (optional) fn($row, $cell): string (alias for value callback)
      *             'view'        => string|callable,  // (optional) fn($row, $cell): string
      *             'class'       => string,    // (optional) td CSS class
+     *             'attrs'       => array,     // (optional) td attrs
      *             'headerClass' => string,    // (optional) th CSS class
      *             'visible'     => bool,      // (optional) visibility flag
-     *             'attrs'       => array,     // (optional) td attrs
      *             'headerAttrs' => array,     // (optional) th attrs
      *         ],
      *     ],
      *     'filters'      => [
      *         'filter_key' => [
-     *             'label'     => string,         // (optional) filter label
-     *             'type'      => string,         // (optional) select|text|checkbox|date
-     *             'options'   => array|callable, // (optional) fn(?string $parentValue): array
-     *             'dependsOn' => string,         // (optional) parent filter key
-     *             'defaultValue' => mixed,       // (optional) default value
-     *             'visible'   => bool,           // (optional) visibility flag
+     *             'label'        => string,         // (optional) filter label
+     *             'type'         => string,         // (optional) select|text|checkbox|date
+     *             'options'      => array|callable, // (optional) fn(?string $parentValue): array
+     *             'dependsOn'    => string,         // (optional) parent filter key
+     *             'defaultValue' => mixed,          // (optional) default value
+     *             'class'        => string,         // (optional) td CSS class
+     *             'attrs'        => array,          // (optional) td attrs
+     *             'visible'      => bool,           // (optional) visibility flag
      *         ],
      *     ],
      *     'search' => [
-     *         'enabled' => true,                 // (optional) enable search
      *         'placeholder' => 'Search...',      // (optional) placeholder text
      *         'clearFilters' => [],              // (optional) array of filter keys to clear on search
-     *     ],
-     *     'export'       => [
-     *         // export configuration, if supported
      *     ],
      * ]
      *
@@ -76,18 +73,18 @@ class Builder
         $defaultSort = $tableMeta['defaultSort'] ?? '';
         $defaultDir  = $tableMeta['defaultDir'] ?? '';
         if ($defaultSort !== '' || $defaultDir !== '') {
-            $table->setDefaultSort($defaultSort, $defaultDir ?: $table::SORT_ASC);
+            $table->setDefaultSort($defaultSort, $defaultDir);
         }
 
         foreach ($tableMeta as $key => $meta) {
             match ($key) {
-                'attrs'    => $table->setAttrs($meta),
+                'class'    => $table->addClass($meta),
+                'attrs'    => $table->addAttrs($meta),
                 'rowAttrs' => $table->setRowAttrs($meta),
                 'cells'    => self::buildCells($table, $meta),
                 'actions'  => self::buildActions($table, $meta),
                 'filters'  => self::buildFilters($table, $meta),
                 'search'   => self::buildSearch($table, $meta),
-                'export'   => self::buildExport($meta),
                 default    => null,
             };
         }
@@ -117,10 +114,10 @@ class Builder
         );
 
         $cell->addClass($meta['class'] ?? '');
-        $cell->mergeAttrs($meta['attrs'] ?? []);
+        $cell->addAttrs($meta['attrs'] ?? []);
 
         $cell->addHeaderClass($meta['headerClass'] ?? '');
-        $cell->mergeHeaderAttrs($meta['headerAttrs'] ?? []);
+        $cell->addHeaderAttrs($meta['headerAttrs'] ?? []);
 
         return $cell;
     }
@@ -151,10 +148,10 @@ class Builder
         }
 
         $cell->addClass($meta['class'] ?? '');
-        $cell->mergeAttrs($meta['attrs'] ?? []);
+        $cell->addAttrs($meta['attrs'] ?? []);
 
         $cell->addHeaderClass($meta['headerClass'] ?? '');
-        $cell->mergeHeaderAttrs($meta['headerAttrs'] ?? []);
+        $cell->addHeaderAttrs($meta['headerAttrs'] ?? []);
 
         return $cell;
     }
@@ -182,24 +179,20 @@ class Builder
             defaultValue: $meta['defaultValue'] ?? '',
         );
 
-        $filter->mergeAttrs($meta['attrs'] ?? []);
+        $filter->addClass($meta['class'] ?? '');
+        $filter->addAttrs($meta['attrs'] ?? []);
 
         return $filter;
     }
 
     protected static function buildSearch(mixed $table, array $meta): void
     {
-        if (!$table->isSearchable()) {
+        if (!$table->searchable()) {
             throw new \InvalidArgumentException("Use the 'IsSearchable' trait to enable search.");
         }
 
         $table->searchPlaceholder = $meta['placeholder'] ?? '';
         $table->searchClear = $meta['clearFilters'] ?? [];
-    }
-
-    protected static function buildExport(array $meta): void
-    {
-        // todo mm To implement later
     }
 
 }

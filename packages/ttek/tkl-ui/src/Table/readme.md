@@ -1,5 +1,5 @@
 
-# `Tk\Table` — Developer Guide
+# `Modules\Core\Table` — Developer Guide
 
 This guide walks through building table pages using the Core Table system.
 
@@ -34,8 +34,13 @@ Two implementations are supported:
     - [Rendering the table](#18-rendering-the-table)
     - [Full Livewire example](#19-full-livewire-example)
 2. [Controller table](#2-controller-table)
-3. [Cell & Filter API reference](#3-cell--filter-api-reference)
-4. [Common patterns](#4-common-patterns)
+3. [CSV export](#3-csv-export)
+    - [Default column mapping](#31-default-column-mapping)
+    - [Customising export columns](#32-customising-export-columns)
+    - [Livewire export](#33-livewire-export)
+    - [Route-driven export](#34-route-driven-export)
+4. [Cell & Filter API reference](#4-cell--filter-api-reference)
+5. [Common patterns](#5-common-patterns)
 
 ---
 
@@ -47,8 +52,8 @@ Add these traits to your Livewire component:
 
 ```php
 use Livewire\WithPagination;
-use Tk\Table\IsLivewireTable;
-use Tk\Table\IsSearchable;
+use Modules\Core\Table\IsLivewireTable;
+use Modules\Core\Table\IsSearchable;
 
 class extends Component {
     use WithPagination, IsLivewireTable, IsSearchable;
@@ -99,14 +104,13 @@ The default `tableId()` (defined in `IsTable`) returns `'tbl'` (`DEFAULT_TABLE_I
 Call `Builder::build($this, [...])` inside `boot()`. This is the primary way to define the entire table configuration in one place.
 
 ```php
-use Tk\Table\Builder;
+use Modules\Core\Table\Builder;
 
 public function boot(): void
 {
     Builder::build($this, [
         'defaultSort' => 'family_name',        // default sort column (DB key)
         'defaultDir'  => 'asc',                // 'asc' (default) or 'desc'
-        'tableId'     => 'tbl',                // optional; used to prefix URL params
         'rowAttrs'    => fn($row, $table) => [
             'data-url' => route('staff.show', $row->id),
         ],
@@ -151,7 +155,7 @@ Each entry in `'cells'` is keyed by the column name (used to read the value from
     'created_at' => [
         'header'   => 'Created',
         'sortable' => true,
-        'value'    => '\Tk\Table\Formats::date',
+        'value'    => '\Modules\Core\Table\Formats::date',
     ],
 ],
 ```
@@ -337,7 +341,7 @@ public function rows(): array|Builder
     // Set total before filtering so the count reflects the full dataset
     $this->totalRows = $query->count();
 
-    if ($this->isSearchable()) {
+    if ($this->searchable()) {
         $query->when($this->search, function (Builder $q) {
             $str   = preg_replace("/[^a-zA-Z0-9' -]/", ' ', $this->search);
             $email = preg_replace("/[^a-zA-Z0-9@._-]/", '', $this->search);
@@ -397,10 +401,10 @@ use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Modules\Auth\Enums\Ability;
-use Tk\Support\Facades\Breadcrumbs;
-use Tk\Table\Builder as TableBuilder;
-use Tk\Table\IsLivewireTable;
-use Tk\Table\IsSearchable;
+use Modules\Core\Support\Facades\Breadcrumbs;
+use Modules\Core\Table\Builder as TableBuilder;
+use Modules\Core\Table\IsLivewireTable;
+use Modules\Core\Table\IsSearchable;
 use Modules\Staff\Models\Staff;
 
 new #[Layout('layouts.main')]
@@ -435,11 +439,11 @@ class extends Component {
                 'email'      => [],
                 'city'       => ['sortable' => true],
                 'country'    => ['sortable' => true],
-                'phone'      => ['value' => '\Tk\Table\Formats::phone'],
+                'phone'      => ['value' => '\Modules\Core\Table\Formats::phone'],
                 'created_at' => [
                     'header'   => 'Created',
                     'sortable' => true,
-                    'value'    => '\Tk\Table\Formats::date',
+                    'value'    => '\Modules\Core\Table\Formats::date',
                 ],
             ],
 
@@ -492,7 +496,7 @@ class extends Component {
 
         $this->totalRows = $query->count();
 
-        if ($this->isSearchable()) {
+        if ($this->searchable()) {
             $query->when($this->search, function (Builder $q) {
                 $str   = preg_replace("/[^a-zA-Z0-9' -]/", ' ', $this->search);
                 $email = preg_replace("/[^a-zA-Z0-9@._-]/", '', $this->search);
@@ -538,8 +542,8 @@ namespace Modules\Staff\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
-use Tk\Table\Builder as TableBuilder;
-use Tk\Table\IsTable;
+use Modules\Core\Table\Builder as TableBuilder;
+use Modules\Core\Table\IsTable;
 use Modules\Staff\Models\Staff;
 
 class StaffController extends Controller
@@ -590,7 +594,194 @@ In the Blade view, pass `$table` explicitly:
 
 ---
 
-## 3. Cell & Filter API Reference
+## 3. CSV Export
+
+`exportCsv()` streams a CSV download response. It uses `exportColumns()` to determine which columns appear in the file and how each cell value is resolved — completely independent of any HTML `view` callables.
+
+### 3.1 Default column mapping
+
+By default `exportColumns()` maps every visible non-action cell to its `header` label and `value()` callable:
+
+```php
+// IsTable default — no override needed for the basic case
+public function exportColumns(): Collection
+{
+    return $this->getVisibleCells()
+        ->filter(fn($cell) => !($cell instanceof ActionCell))
+        ->map(fn(Cell $cell) => [
+            'label' => $cell->header,
+            'value' => fn($row) => $cell->value($row),
+        ]);
+}
+```
+
+This means any `value` callable (including `Formats::date`, `Formats::phone`, etc.) is automatically used in the CSV output.
+
+### 3.2 Customising export columns
+
+Override `exportColumns()` on the component or controller to change the columns, labels, or value logic independently of the rendered table:
+
+```php
+public function exportColumns(): Collection
+{
+    return collect([
+        ['label' => 'Name',    'value' => fn($row) => $row->name_last_first],
+        ['label' => 'Email',   'value' => fn($row) => $row->email],
+        ['label' => 'City',    'value' => fn($row) => $row->city],
+        ['label' => 'Country', 'value' => fn($row) => $row->country],
+        ['label' => 'Phone',   'value' => fn($row) => $row->phone],
+        ['label' => 'Created', 'value' => fn($row) => Carbon::parse($row->created_at)->format('d M Y')],
+    ]);
+}
+```
+
+Each entry must be an array with a `label` string and a `value` callable with signature `fn(mixed $row): string`.
+
+### 3.3 Livewire export
+
+Livewire 4 supports returning an HTTP response directly from a component action — it detects the `StreamedResponse` and triggers a browser download without a full page reload.
+
+Define an `export()` method on the component and return the result of `exportCsv()`. `exportable()` defaults to `true` whenever an `export()` method exists, which signals the table UI to show the export button.
+
+```php
+use Symfony\Component\HttpFoundation\StreamedResponse;
+
+public function export(): StreamedResponse
+{
+    return $this->exportCsv($this->rows()->get(), 'staff.csv');
+}
+```
+
+The `rows()` method is `#[Computed]`, so calling `$this->rows()` re-uses the already-filtered query builder. Call `.get()` to materialise the collection before passing it to `exportCsv()`.
+
+To limit export columns independently of the rendered table, override `exportColumns()` on the same component (see [section 3.2](#32-customising-export-columns)).
+
+### 3.4 Route-driven export
+
+#### 3.4.1 Livewire Route-driven export
+
+For Livewire pages, the component is an anonymous Volt class that cannot be instantiated from a route. Create a dedicated controller instead. Name the route `{page-route-name}.export` — this matches what `exportRoute()` returns and allows the table UI to generate the correct export link automatically.
+
+**Controller:**
+
+```php
+<?php
+
+use Illuminate\Database\Eloquent\Builder;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+
+class StaffExportController extends Controller
+{
+    use IsTable;
+
+    public function __invoke(): StreamedResponse
+    {
+        $this->appendCell('name_last_first')->setHeader('Name');
+        $this->appendCell('email');
+        $this->appendCell('city');
+        $this->appendCell('country');
+        $this->appendCell('phone');
+        $this->appendCell('created_at')->setHeader('Created');
+
+        return $this->exportCsv($this->rows(), 'staff.csv');
+    }
+
+    public function rows(): Builder
+    {
+        return Staff::query();
+    }
+}
+```
+
+**Route** (named with `.export` suffix to match the Livewire page route):
+
+```php
+Route::prefix('staff')->group(function () {
+    Route::livewire('/',        'staff::index')->name('staff.index');
+    Route::get('/export', StaffExportController::class)->name('staff.index.export');
+});
+```
+
+**On the Livewire component**, override `exportable()` to return `true` so the table UI shows the export button and links it to `exportRoute()`:
+
+```php
+public function exportable(): bool
+{
+    return true;
+}
+```
+
+`exportRoute()` defaults to `request()->route()->getName() . '.export'`, so on the `staff.index` page it automatically resolves to `staff.index.export`.
+
+#### 3.4.2 Controller Route-driven export
+
+```php
+
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+
+class TableQueryController extends Controller
+{
+    use IsTable, IsSearchable;
+
+    public function __construct()
+    {
+        $this->setDefaultSort('family_name');
+        $this->appendCell('name_last_first')
+            ->setHeader('Name')
+            ->setSortable()
+            ->addClass('fw-bold');
+
+        $this->appendCell('created_at')
+            ->setHeader('Created')
+            ->setSortable();
+
+        $this->appendCell('email', 'name')
+            ->setSortable();
+    }
+
+    public function index(Request $request)
+    {
+        $this->hydrateTableFromRequest();
+        // ...
+        return view('demo::pages.tables.controller-query', [
+            'table' => $this,
+            'table2' => new ArrayTable(),
+        ]);
+    }
+
+    public function rows(): array|Builder
+    {
+        $query = Applicant::query();
+        // ...
+        return $query;
+    }
+
+    // 
+    public function export(Request $request): StreamedResponse
+    {
+        $this->hydrateTableFromRequest();
+        return $this->exportCsv($this->rows()->get(), 'demo-controller-table.csv');
+    }
+    
+}
+```
+
+**Route** (named with `.export` suffix to match the Controller page route):
+
+```php
+Route::prefix('staff')->group(function () {
+    Route::get('/table', [TableQueryController::class, 'index'])->name('demo::table-query');
+    Route::get('/table-export', [TableQueryController::class, 'export'])->name('demo::table.export');
+});
+```
+
+
+
+---
+
+## 4. Cell & Filter API Reference
 
 ### `Builder::build()` — full schema
 
@@ -654,8 +845,8 @@ Builder::build($this, [
 Cells and filters can also be built individually using the fluent API:
 
 ```php
-use Tk\Table\Cell;
-use Tk\Table\Filter;
+use Modules\Core\Table\Cell;
+use Modules\Core\Table\Filter;
 
 // Append a cell to the end
 $cell = $this->appendCell(new Cell('email'));
@@ -688,32 +879,32 @@ $this->appendFilter(new Filter('status', type: Filter::TYPE_SELECT, options: [
 
 **`Cell` fluent methods**
 
-| Method | Description |
-|---|---|
-| `setHeader(string)` | Set the column heading (may contain HTML) |
-| `setSortable(bool)` | Enable/disable sort click |
-| `setSort(string)` | Set the DB column for ORDER BY |
-| `setVisible(bool)` | Show/hide the column |
+| Method                       | Description |
+|------------------------------|---|
+| `setHeader(string)`          | Set the column heading (may contain HTML) |
+| `setSortable(bool)`          | Enable/disable sort click |
+| `setSort(string)`            | Set the DB column for ORDER BY |
+| `setVisible(bool)`           | Show/hide the column |
 | `setValue(callable\|string)` | Set the plain text / CSV value callable |
-| `setView(callable)` | Set the HTML view callable |
-| `addClass(string)` | Add a CSS class to `<td>` |
-| `addAttr(array)` | Merge attributes onto `<td>` |
-| `addHeaderClass(string)` | Add a CSS class to `<th>` |
-| `addHeaderAttr(array)` | Merge attributes onto `<th>` |
-| `value(mixed $row)` | Get the formatted/escaped text value for a row |
-| `view(mixed $row)` | Get the HTML value for a row (falls back to `value()`) |
-| `getRowValue(mixed $row)` | Get the unformatted raw value from the row (bypasses any `value` callable) |
+| `setView(callable)`          | Set the HTML view callable |
+| `addClass(string)`           | Add a CSS class to `<td>` |
+| `addAttrs(array)`            | Merge attributes onto `<td>` |
+| `addHeaderClass(string)`     | Add a CSS class to `<th>` |
+| `addHeaderAttr(array)`       | Merge attributes onto `<th>` |
+| `value(mixed $row)`          | Get the formatted/escaped text value for a row |
+| `view(mixed $row)`           | Get the HTML value for a row (falls back to `value()`) |
+| `getRowValue(mixed $row)`    | Get the unformatted raw value from the row (bypasses any `value` callable) |
 
 ---
 
 ### `Formats` — built-in value formatters
 
-`Tk\Table\Formats` provides static formatters for common cell value types. Pass them as a string callable to `value`:
+`Modules\Core\Table\Formats` provides static formatters for common cell value types. Pass them as a string callable to `value`:
 
 ```php
-'phone'      => ['value' => '\Tk\Table\Formats::phone'],
-'created_at' => ['value' => '\Tk\Table\Formats::date'],
-'is_active'  => ['value' => '\Tk\Table\Formats::yesNo'],
+'phone'      => ['value' => '\Modules\Core\Table\Formats::phone'],
+'created_at' => ['value' => '\Modules\Core\Table\Formats::date'],
+'is_active'  => ['value' => '\Modules\Core\Table\Formats::yesNo'],
 ```
 
 | Formatter | Output |
@@ -726,22 +917,25 @@ $this->appendFilter(new Filter('status', type: Filter::TYPE_SELECT, options: [
 
 ### Useful table helpers
 
-| Method | Description |
-|---|---|
-| `safeSort()` | Validated sort column (falls back to `defaultSort`) |
-| `getDir()` | Returns `'asc'` or `'desc'` |
-| `getLimit()` | Current per-page limit |
-| `paginatedRows()` | Sorts and paginates the result of `rows()`; called by the Blade component |
-| `buildCsv($rows, $fileName)` | Returns a CSV stream download response |
-| `isSearchable()` | `true` if `IsSearchable` trait is in use |
-| `isLivewire()` | `true` when using `IsLivewireTable` |
-| `tableKey(string $key)` | Prefixes a URL param key with the `tableId` |
-| `setDefaultLimit(int)` | Override the default per-page limit |
-| `setDefaultSort(string, string)` | Set the default sort column and direction |
+| Method                           | Description                                                                   |
+|----------------------------------|-------------------------------------------------------------------------------|
+| `safeSort()`                     | Validated sort column (falls back to `defaultSort`)                           |
+| `getDir()`                       | Returns `'asc'` or `'desc'`                                                   |
+| `getLimit()`                     | Current per-page limit                                                        |
+| `paginatedRows()`                | Sorts and paginates the result of `rows()`; called by the Blade component     |
+| `exportCsv($rows, $fileName)`    | Streams a CSV download response                                               |
+| `exportColumns()`                | Returns the column map used by `exportCsv()`; override to customise           |
+| `exportable()`                   | Returns `true` when an `export()` method exists, or when overridden to `true` |
+| `exportRoute()`                  | Returns the export route name (`current-route-name.export`)                   |
+| `searchable()`                   | `true` if `searchable` trait is in use                                        |
+| `isLivewire()`                   | `true` when using `IsLivewireTable`                                           |
+| `tableKey(string $key)`          | Prefixes a URL param key with the `tableId()`                                 |
+| `setDefaultLimit(int)`           | Override the default per-page limit                                           |
+| `setDefaultSort(string, string)` | Set the default sort column and direction                                     |
 
 ---
 
-## 4. Common Patterns
+## 5. Common Patterns
 
 ### Conditional column visibility
 
@@ -800,8 +994,6 @@ class LeaveTable extends Component {
     // params: lv_p, lv_s, lv_d, lv_f, lv_l
 }
 ```
-
-URL params become `staff_s`, `staff_d`, `staff_f`, `leave_s`, `leave_d`, `leave_f`, etc.
 
 ### Setting a custom per-page limit
 

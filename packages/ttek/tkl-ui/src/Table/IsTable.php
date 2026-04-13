@@ -8,6 +8,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\View\ComponentAttributeBag;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Use this trait to add a table to a controller
@@ -28,14 +29,16 @@ trait IsTable
     const string SORT_ASC = 'asc';
     const string SORT_DESC = 'desc';
 
-    public int $limit = 0;
+
+    public int $limit = 0;      // rows per-page
     public string $sort = '';
-    public string $dir = self::SORT_ASC;
+    public string $dir = '';   // empty = use defaultDir
     public array $filterVals = [];
     public ?int $totalRows = null;
 
     protected int $defaultLimit = 30;
     protected string $defaultSort = '';
+    protected string $defaultDir = self::SORT_ASC;
 
     /**
      * @var Collection<int, Cell>
@@ -127,11 +130,6 @@ trait IsTable
         $this->limit = (int)request()->input($this->tableKey(self::QUERY_LIMIT), 0);
         $this->sort = (string)request()->input($this->tableKey(self::QUERY_SORT), '');
         $this->dir = (string)request()->input($this->tableKey(self::QUERY_DIR), '');
-
-        // TODO: Add filter hydration
-        //       I have not looked into how we will implement filters and their dependants within controllers yet.
-        //       I think we will need some JavaScript/Alpine to handle the dynamic options.
-        //       But it will require a request URL.
     }
 
     /**
@@ -150,6 +148,7 @@ trait IsTable
     public function sortableKeys(): array
     {
         return $this->getCells()
+            ->filter(fn(Cell $cell) => $cell->isSortable())
             ->pluck('sort')
             ->filter()
             ->all();
@@ -167,7 +166,7 @@ trait IsTable
 
     public function getDir(): string
     {
-        return $this->dir ?: self::SORT_ASC;
+        return $this->dir ?: $this->defaultDir;
     }
 
     public function setDefaultLimit(int $limit): static
@@ -187,7 +186,7 @@ trait IsTable
 
     public function setDefaultDir(string $dir = self::SORT_ASC): static
     {
-        $this->dir = in_array($dir, [self::SORT_ASC, self::SORT_DESC]) ? $dir : self::SORT_ASC;
+        $this->defaultDir = in_array($dir, [self::SORT_ASC, self::SORT_DESC]) ? $dir : self::SORT_ASC;
         return $this;
     }
 
@@ -197,7 +196,7 @@ trait IsTable
         return $this;
     }
 
-    public function addAttr(array $attrs): static
+    public function addAttrs(array $attrs): static
     {
         $this->attrs = $this->getAttrs()->merge($attrs);
         return $this;
@@ -207,12 +206,6 @@ trait IsTable
     {
         $this->attrs ??= new ComponentAttributeBag();
         return $this->attrs;
-    }
-
-    public function mergeAttrs(array $attrs): static
-    {
-        $this->attrs = $this->getAttrs()->merge($attrs);
-        return $this;
     }
 
     /**
@@ -382,9 +375,9 @@ trait IsTable
             ->merge($after);
     }
 
-    public function isSearchable(): bool
+    public function searchable(): bool
     {
-        return (in_array(IsSearchable::class, class_uses(static::class)));
+        return in_array(IsSearchable::class, array_keys(class_uses_recursive(static::class)));
     }
 
     /**
@@ -562,44 +555,81 @@ trait IsTable
         return $row->{$col} ?? null;
     }
 
-    public function buildCsv(array|Collection|Builder $rows, string $fileName = 'unknown.csv')
+    /**
+     * By default, a table is exportable if the export() method exists
+     * override and return true when using a route to export a table
+     */
+    public function exportable(): bool
+    {
+        return method_exists($this, 'export');
+    }
+
+    /**
+     * CSV export route name. Defaults to current route name + '.export'.
+     */
+    public function exportRoute(): string
+    {
+        return (request()->route()->getName() ?? '') . '.export';
+    }
+
+    /**
+     * build a CSV file from an array of rows
+     * Expects the rows to be a key/value map of column names to values
+     * @param array<string,mixed>|Collection<int,array<string,mixed>> $rows
+     */
+    public function exportCsv(array|Collection $rows, string $fileName = 'unknown.csv'): StreamedResponse
     {
         $callback = function () use ($rows) {
             $handle = fopen('php://output', 'w');
+            $headersWritten = false;
 
-            $headers = $this->getCells()->pluck('header')->all();
-            fputcsv($handle, $headers);
-
-            if (is_array($rows)) {
-                $rows = collect($rows);
-            }
-
-            if ($rows instanceof Collection) {
-                foreach ($rows as $row) {
-                    $row = $this->getCells()
-                        ->map(fn(Cell $cell) => $cell->value($row))
-                        ->all();
-                    fputcsv($handle, $row);
+            $exportColumns = $this->exportColumns();
+            foreach ($rows as $row) {
+                if (!$headersWritten) {
+                    fputcsv(
+                        stream: $handle,
+                        fields: $exportColumns->pluck('label')->all(),
+                        escape: '',
+                    );
+                    $headersWritten = true;
                 }
-            } else {
-                $rows->chunk(500, function ($rows) use ($handle) {
-                    foreach ($rows as $row) {
-                        $row = $this->getCells()
-                            ->map(fn(Cell $cell) => $cell->value($row))
-                            ->all();
-                        fputcsv($handle, $row);
-                    }
-                });
+                $export = $exportColumns->map(fn($col) => $col['value']($row))->all();
+                fputcsv(
+                    stream: $handle,
+                    fields: $export,
+                    escape: '',
+                );
             }
 
             fclose($handle);
         };
 
-        // todo mm need a way for bothLivewire and controller csv downloads
         return response()->streamDownload($callback, $fileName, [
             'Content-Type' => 'text/csv',
         ]);
     }
 
+    /**
+     * The default exportable columns are the visible cells
+     * Override this method to customize the exportable columns
+     *
+     * Eg:
+     * return collect([
+     *     ['label' => 'Name',    'value' => fn($row) => $row->name_last_first],
+     *     ['label' => 'Email',   'value' => fn($row) => $row->email],
+     *     ['label' => 'City',    'value' => fn($row) => $row->city],
+     *     ['label' => 'Country', 'value' => fn($row) => $row->country],
+     *     ['label' => 'Created', 'value' => fn($row) => Carbon::parse($row->created_at)->format('d M Y')],
+     * ]);
+     */
+    public function exportColumns(): Collection
+    {
+        return $this->getVisibleCells()
+            ->filter(fn($cell) => !($cell instanceof ActionCell))
+            ->map(fn(Cell $cell) => [
+                'label' => $cell->header,
+                'value' => fn($row) => $cell->value($row),
+            ]);
+    }
 
 }
