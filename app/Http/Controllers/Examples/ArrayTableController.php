@@ -81,17 +81,6 @@ class ArrayTableController extends Controller
             session()->put('_side-table-cache', $rows);
         }
 
-//        $rows = [
-//            (object)['id' => 1, 'name' => 'Test 1', 'email' => 'email1@example.com', 'roles' => 'admin', 'created_at' => '2021-01-01 12:23:33'],
-//            (object)['id' => 2, 'name' => 'Test 2', 'email' => 'email2@example.com', 'roles' => 'staff', 'created_at' => '2021-01-02 12:23:33'],
-//            (object)['id' => 3, 'name' => 'Test 3', 'email' => 'email3@example.com', 'roles' => 'staff', 'created_at' => '2021-03-01 12:23:33'],
-//            (object)['id' => 4, 'name' => 'Test 4', 'email' => 'email4@example.com', 'roles' => 'admin,staff', 'created_at' => '2021-07-01 12:23:33'],
-//            (object)['id' => 5, 'name' => 'Test 6', 'email' => 'email6@example.com', 'roles' => 'member', 'created_at' => '2021-04-25 12:23:33'],
-//            (object)['id' => 6, 'name' => 'Test 8', 'email' => 'email8@example.com', 'roles' => 'member', 'created_at' => '2021-02-03 12:23:33'],
-//            (object)['id' => 7, 'name' => 'Test 9', 'email' => 'email9@example.com', 'roles' => 'admin,staff', 'created_at' => '2021-02-01 12:23:33'],
-//            (object)['id' => 8, 'name' => 'Test 19', 'email' => 'email10@example.com', 'roles' => 'member', 'created_at' => '2021-04-12 12:23:33'],
-//        ];
-
         // 1. filter results with any filters if available
         // search
         $search = request()->input($this->tableKey('search'), '');

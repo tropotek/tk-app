@@ -59,67 +59,31 @@ class extends Component {
     #[Computed]
     protected function rows(): array|Builder
     {
-        $rows = [
-            (object) [
-                'id' => 1, 'name' => 'Test 1', 'email' => 'email1@example.com', 'roles' => 'test',
-                'created_at' => '2021-01-01 12:23:33'
-            ],
-            (object) [
-                'id' => 2, 'name' => 'Test 2', 'email' => 'email2@example.com', 'roles' => 'admin',
-                'created_at' => '2021-01-02 12:23:33'
-            ],
-            (object) [
-                'id' => 3, 'name' => 'Test 3', 'email' => 'email3@example.com', 'roles' => 'staff',
-                'created_at' => '2021-03-01 12:23:33'
-            ],
-            (object) [
-                'id' => 4, 'name' => 'Test 4', 'email' => 'email4@example.com', 'roles' => 'member',
-                'created_at' => '2021-07-01 12:23:33'
-            ],
-            (object) [
-                'id' => 5, 'name' => 'Test 5', 'email' => 'email5@example.com', 'roles' => 'member',
-                'created_at' => '2021-04-25 12:23:33'
-            ],
-            (object) [
-                'id' => 6, 'name' => 'Test 6', 'email' => 'email6@example.com', 'roles' => 'staff',
-                'created_at' => '2021-02-03 12:23:33'
-            ],
-            (object) [
-                'id' => 7, 'name' => 'Test 7', 'email' => 'email7@example.com', 'roles' => 'admin',
-                'created_at' => '2021-02-01 12:23:33'
-            ],
-            (object) [
-                'id' => 8, 'name' => 'Test 8', 'email' => 'email8@example.com', 'roles' => 'staff',
-                'created_at' => '2021-04-12 12:23:33'
-            ],
-            (object) [
-                'id' => 9, 'name' => 'Test 6', 'email' => 'email6@example.com', 'roles' => 'staff',
-                'created_at' => '2021-02-03 12:23:33'
-            ],
-            (object) [
-                'id' => 10, 'name' => 'Test 7', 'email' => 'email7@example.com', 'roles' => 'admin',
-                'created_at' => '2021-02-01 12:23:33'
-            ],
-            (object) [
-                'id' => 11, 'name' => 'Test 8', 'email' => 'email8@example.com', 'roles' => 'staff',
-                'created_at' => '2021-04-12 12:23:33'
-            ],
-            (object) [
-                'id' => 12, 'name' => 'Test 8', 'email' => 'email8@example.com', 'roles' => 'staff',
-                'created_at' => '2021-04-12 12:23:33'
-            ],
-        ];
+
+        $rows = session()->get('_side-table-cache');
+
+        if (!$rows) {
+            $faker = \Faker\Factory::create();
+            $rows = array_map(fn($i) => [
+                'id' => $i,
+                'name' => $faker->company(),
+                'email' => $faker->email(),
+                'roles' => $faker->randomElement(['admin', 'staff', 'member']),
+                'created_at' => $faker->dateTimeBetween('-5 years', 'now')->format('Y-m-d H:i:s'),
+            ], range(1, 50));
+            session()->put('_side-table-cache', $rows);
+        }
 
         // 1. filter results with any filters if available
         if ($this->search) {
             $rows = array_filter($rows, function ($row) {
-                return str_contains(strtolower($row->name), strtolower($this->search));
+                return str_contains(strtolower($row['name']), strtolower($this->search));
             });
         }
 
         if (!empty($this->filterVals['roles'])) {
             $rows = array_filter($rows, function ($row) {
-                return str_contains(strtolower($row->roles), strtolower($this->filterVals['roles']));
+                return str_contains(strtolower($row['roles']), strtolower($this->filterVals['roles']));
             });
         }
 
