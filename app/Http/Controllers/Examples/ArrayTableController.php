@@ -71,7 +71,7 @@ class ArrayTableController extends Controller
 
         if (!$rows) {
             $faker = \Faker\Factory::create();
-            $array = array_map(fn($i) => [
+            $rows = array_map(fn($i) => [
                 'id' => $i,
                 'name' => $faker->company(),
                 'email' => $faker->email(),
