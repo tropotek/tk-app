@@ -2,10 +2,13 @@
 
 namespace Tk\Table;
 
-use Illuminate\View\ComponentAttributeBag;
+use Tk\Table\Traits\HasAttrs;
+use Tk\Table\Traits\IsTable;
 
 class Filter
 {
+    use HasAttrs;
+
     const string TYPE_SELECT = 'select';
     const string TYPE_TEXT = 'text';
     const string TYPE_CHECKBOX = 'checkbox';
@@ -26,8 +29,7 @@ class Filter
     public bool $visible = true;
     public string $defaultValue = '';
 
-    protected mixed $table = null;  // HasTable trait
-    protected ComponentAttributeBag $attrs;
+    protected mixed $table = null;  // IsTable trait
 
 
     public function __construct(
@@ -40,7 +42,6 @@ class Filter
         string $defaultValue = ''
     )
     {
-        $this->attrs = new ComponentAttributeBag();
         $this->key = $key;
         if (empty($label)) {
             $label = strval(preg_replace('/(Id|_id)$/', '', $key));
@@ -69,7 +70,7 @@ class Filter
             throw new \InvalidArgumentException("cannot set a null table object");
         }
         if (!method_exists($table, 'rows')) {
-            throw new \InvalidArgumentException('expected table object using the isTable trait');
+            throw new \InvalidArgumentException('expected table object using the IsTable trait');
         }
         $this->table = $table;
         return $this;
@@ -142,24 +143,6 @@ class Filter
     {
         $this->visible = $visible;
         return $this;
-    }
-
-    public function addClass(string $class): static
-    {
-        $this->attrs = $this->getAttrs()->class($class);
-        return $this;
-    }
-
-    public function addAttrs(array $attrs): static
-    {
-        $this->attrs = $this->getAttrs()->merge($attrs);
-        return $this;
-    }
-
-    public function getAttrs(): ComponentAttributeBag
-    {
-        $this->attrs ??= new ComponentAttributeBag();
-        return $this->attrs;
     }
 
     public function getDefaultValue(): string

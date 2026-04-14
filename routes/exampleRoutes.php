@@ -38,4 +38,6 @@ Route::middleware('auth')->name('examples.')->prefix('/examples')->group(functio
 
     Route::livewire('/tableArray2', 'pages::examples.tables.table-array-live')->name('tableArray2');
 
+    Route::livewire('/tableTest', 'pages::examples.tables.test')->name('tableTest');
+
 });

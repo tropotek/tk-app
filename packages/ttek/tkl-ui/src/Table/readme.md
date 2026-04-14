@@ -26,8 +26,8 @@ Two implementations are supported:
 1. [Livewire table](#1-livewire-table)
     - [Traits](#11-traits)
     - [Configuring the table with `Builder::build()`](#12-configuring-the-table-with-builderbuild)
-    - [Defining cells](#13-defining-cells)
-    - [Defining action cells](#14-defining-action-cells)
+    - [Defining columns](#13-defining-columns)
+    - [Defining action columns](#14-defining-action-columns)
     - [Defining filters](#15-defining-filters)
     - [Enabling search](#16-enabling-search)
     - [The `rows()` method](#17-the-rows-method)
@@ -39,7 +39,7 @@ Two implementations are supported:
     - [Customising export columns](#32-customising-export-columns)
     - [Livewire export](#33-livewire-export)
     - [Route-driven export](#34-route-driven-export)
-4. [Cell & Filter API reference](#4-cell--filter-api-reference)
+4. [Column & Filter API reference](#4-column--filter-api-reference)
 5. [Common patterns](#5-common-patterns)
 
 ---
@@ -114,7 +114,7 @@ public function boot(): void
         'rowAttrs'    => fn($row, $table) => [
             'data-url' => route('staff.show', $row->id),
         ],
-        'cells'   => [ ... ],
+        'columns'   => [ ... ],
         'actions' => [ ... ],
         'filters' => [ ... ],
         'search'  => [ ... ],
@@ -126,20 +126,20 @@ public function boot(): void
 
 ---
 
-### 1.3 Defining cells
+### 1.3 Defining columns
 
-Each entry in `'cells'` is keyed by the column name (used to read the value from the row by default).
+Each entry in `'columns'` is keyed by the column name (used to read the value from the row by default).
 
 ```php
-'cells' => [
+'columns' => [
     'name_last_first' => [
         'header'      => 'Name',           // column heading (auto-generated from key if omitted)
         'sortable'    => true,             // enables sort click on header
         'sort'        => 'family_name',    // DB column to ORDER BY (defaults to key name)
-        'value'       => fn($row, $cell) => $row->family_name . ', ' . $row->given_name,
-        'view'        => fn($row, $cell) => view('core::components.table.cells.a', [
+        'value'       => fn($row, $column) => $row->family_name . ', ' . $row->given_name,
+        'view'        => fn($row, $column) => view('core::components.table.columns.a', [
                              'href' => route('staff.show', $row->id),
-                             'text' => $cell->value($row),
+                             'text' => $column->value($row),
                          ]),
         'class'       => 'fw-bold',        // CSS class on <td>
         'headerClass' => 'text-nowrap',    // CSS class on <th>
@@ -148,10 +148,10 @@ Each entry in `'cells'` is keyed by the column name (used to read the value from
         'visible'     => true,             // hide the column when false
     ],
 
-    // Minimal cell — header and value derived from the key name automatically
+    // Minimal column — header and value derived from the key name automatically
     'email' => [],
 
-    // Sortable cell using a built-in formatter
+    // Sortable column using a built-in formatter
     'created_at' => [
         'header'   => 'Created',
         'sortable' => true,
@@ -162,31 +162,31 @@ Each entry in `'cells'` is keyed by the column name (used to read the value from
 
 **`value` vs `view`**
 
-- `value($row, $cell)` — plain text value, used in CSV exports and as the fallback for `view`.
-- `view($row, $cell)` — HTML markup rendered in the table cell. Falls back to `value()` when not set.
+- `value($row, $column)` — plain text value, used in CSV exports and as the fallback for `view`.
+- `view($row, $column)` — HTML markup rendered in the table column. Falls back to `value()` when not set.
 
-Both accept a callable with signature `fn(mixed $row, Cell $cell): string`, or a string callable like `'ClassName::method'`.
+Both accept a callable with signature `fn(mixed $row, Column $column): string`, or a string callable like `'ClassName::method'`.
 
 **Auto-generated headers**
 
 If `header` is omitted, the column name is converted automatically:
 `family_name` → `Family Name`, `created_at_id` → `Created At`.
 
-**Cell view helpers**
+**Column view helpers**
 
-Two small Blade components are available for common cell outputs:
+Two small Blade components are available for common column outputs:
 
 ```php
 // Renders: <a href="..."><i class="..."></i> Text</a>
-view('core::components.table.cells.a', [
+view('core::components.table.columns.a', [
     'href'  => route('staff.show', $row->id),
-    'text'  => $cell->value($row),   // optional
+    'text'  => $column->value($row),   // optional
     'icon'  => 'fa fa-eye',          // optional
     'title' => 'View staff',         // optional
 ]);
 
 // Renders: <span title="..."><i class="..."></i> Text</span>
-view('core::components.table.cells.icon', [
+view('core::components.table.columns.icon', [
     'icon'  => 'fa fa-check text-success',
     'text'  => 'Active',   // optional
     'title' => 'Active',   // optional
@@ -195,25 +195,25 @@ view('core::components.table.cells.icon', [
 
 **Accessing raw row values inside a `view` callback**
 
-Inside a `view` callback, use `$cell->getRowValue($row)` to get the unformatted row value (bypassing any `value` callable). Use `$cell->value($row)` to get the formatted/escaped text value.
+Inside a `view` callback, use `$column->getRowValue($row)` to get the unformatted row value (bypassing any `value` callable). Use `$column->value($row)` to get the formatted/escaped text value.
 
 ```php
-'view' => function ($row, $cell) {
+'view' => function ($row, $column) {
     if (!auth()->user()->can(Ability::ChangeStaff->value)) {
-        return $cell->value($row);  // plain text fallback
+        return $column->value($row);  // plain text fallback
     }
-    return view('core::components.table.cells.a', [
+    return view('core::components.table.columns.a', [
         'href' => route('staff.show', $row->id),
-        'text' => $cell->value($row),
+        'text' => $column->value($row),
     ]);
 },
 ```
 
 ---
 
-### 1.4 Defining action cells
+### 1.4 Defining action columns
 
-Action columns render icon links. They use `ActionCell` internally.
+Action columns render icon links. They use `ActionColumn` internally.
 
 ```php
 'actions' => [
@@ -235,9 +235,9 @@ Action columns render icon links. They use `ActionCell` internally.
     'delete' => [
         'icon'  => 'fa fa-fw fa-trash',
         'route' => fn($row) => route('staff.destroy', $row),
-        'view'  => function ($row, $cell) {
+        'view'  => function ($row, $column) {
             $icon = $row->can_delete ? 'fa fa-fw fa-trash' : 'fa fa-fw';
-            return view('core::components.table.cells.a', [
+            return view('core::components.table.columns.a', [
                 'href' => route('staff.destroy', $row),
                 'icon' => $icon,
             ]);
@@ -247,7 +247,7 @@ Action columns render icon links. They use `ActionCell` internally.
 ```
 
 `route` is a callable that returns the URL for the default icon link.
-`view` is an optional callable for complete control over the cell output.
+`view` is an optional callable for complete control over the column output.
 
 ---
 
@@ -420,19 +420,19 @@ class extends Component {
             'defaultSort' => 'family_name',
             'rowAttrs'    => fn($row) => ['data-url' => route('staff.show', $row->id)],
 
-            'cells' => [
+            'columns' => [
                 'name_last_first' => [
                     'header'   => 'Name',
                     'sortable' => true,
                     'sort'     => 'family_name',
                     'class'    => 'fw-bold',
-                    'view'     => function ($row, $cell) {
+                    'view'     => function ($row, $column) {
                         if (!auth()->user()->can(Ability::ChangeStaff->value)) {
-                            return $cell->value($row);
+                            return $column->value($row);
                         }
-                        return view('core::components.table.cells.a', [
+                        return view('core::components.table.columns.a', [
                             'href' => route('staff.show', $row->id),
-                            'text' => $cell->value($row),
+                            'text' => $column->value($row),
                         ]);
                     },
                 ],
@@ -559,7 +559,7 @@ class StaffController extends Controller
 
         TableBuilder::build($this, [
             'defaultSort' => 'family_name',
-            'cells' => [
+            'columns' => [
                 'name_last_first' => [
                     'header'   => 'Name',
                     'sortable' => true,
@@ -596,21 +596,21 @@ In the Blade view, pass `$table` explicitly:
 
 ## 3. CSV Export
 
-`exportCsv()` streams a CSV download response. It uses `exportColumns()` to determine which columns appear in the file and how each cell value is resolved — completely independent of any HTML `view` callables.
+`exportCsv()` streams a CSV download response. It uses `exportColumns()` to determine which columns appear in the file and how each column value is resolved — completely independent of any HTML `view` callables.
 
 ### 3.1 Default column mapping
 
-By default `exportColumns()` maps every visible non-action cell to its `header` label and `value()` callable:
+By default `exportColumns()` maps every visible non-action column to its `header` label and `value()` callable:
 
 ```php
 // IsTable default — no override needed for the basic case
 public function exportColumns(): Collection
 {
-    return $this->getVisibleCells()
-        ->filter(fn($cell) => !($cell instanceof ActionCell))
-        ->map(fn(Cell $cell) => [
-            'label' => $cell->header,
-            'value' => fn($row) => $cell->value($row),
+    return $this->getVisibleColumns()
+        ->filter(fn($column) => !($column instanceof ActionColumn))
+        ->map(fn(Column $column) => [
+            'label' => $column->header,
+            'value' => fn($row) => $column->value($row),
         ]);
 }
 ```
@@ -676,12 +676,12 @@ class StaffExportController extends Controller
 
     public function __invoke(): StreamedResponse
     {
-        $this->appendCell('name_last_first')->setHeader('Name');
-        $this->appendCell('email');
-        $this->appendCell('city');
-        $this->appendCell('country');
-        $this->appendCell('phone');
-        $this->appendCell('created_at')->setHeader('Created');
+        $this->appendColumn('name_last_first')->setHeader('Name');
+        $this->appendColumn('email');
+        $this->appendColumn('city');
+        $this->appendColumn('country');
+        $this->appendColumn('phone');
+        $this->appendColumn('created_at')->setHeader('Created');
 
         return $this->exportCsv($this->rows(), 'staff.csv');
     }
@@ -728,16 +728,16 @@ class TableQueryController extends Controller
     public function __construct()
     {
         $this->setDefaultSort('family_name');
-        $this->appendCell('name_last_first')
+        $this->appendColumn('name_last_first')
             ->setHeader('Name')
             ->setSortable()
             ->addClass('fw-bold');
 
-        $this->appendCell('created_at')
+        $this->appendColumn('created_at')
             ->setHeader('Created')
             ->setSortable();
 
-        $this->appendCell('email', 'name')
+        $this->appendColumn('email', 'name')
             ->setSortable();
     }
 
@@ -781,7 +781,7 @@ Route::prefix('staff')->group(function () {
 
 ---
 
-## 4. Cell & Filter API Reference
+## 4. Column & Filter API Reference
 
 ### `Builder::build()` — full schema
 
@@ -791,13 +791,13 @@ Builder::build($this, [
     'defaultDir'  => 'asc',           // 'asc' (default) | 'desc'
     'rowAttrs'    => fn($row, $table): array => [],
 
-    'cells' => [
+    'columns' => [
         'column_key' => [
             'header'      => string,
             'sortable'    => bool,
             'sort'        => string,    // DB column for ORDER BY; defaults to key
-            'value'       => callable,  // fn($row, $cell): string  — plain text / CSV value
-            'view'        => callable,  // fn($row, $cell): string  — HTML value; falls back to value()
+            'value'       => callable,  // fn($row, $column): string  — plain text / CSV value
+            'view'        => callable,  // fn($row, $column): string  — HTML value; falls back to value()
             'class'       => string,    // CSS class on <td>
             'headerClass' => string,    // CSS class on <th>
             'attrs'       => array,     // extra <td> attributes
@@ -809,8 +809,8 @@ Builder::build($this, [
     'actions' => [
         'action_key' => [
             'icon'        => string,    // font icon class e.g. 'fa fa-fw fa-eye'
-            'route'       => callable,  // fn($row, $cell): string — href for default icon link
-            'view'        => callable,  // fn($row, $cell): string — full override
+            'route'       => callable,  // fn($row, $column): string — href for default icon link
+            'view'        => callable,  // fn($row, $column): string — full override
             'header'      => string,    // optional label (shown as icon title tooltip by default)
             'class'       => string,
             'headerClass' => string,
@@ -840,35 +840,35 @@ Builder::build($this, [
 
 ---
 
-### Fluent cell/filter API (without Builder)
+### Fluent column/filter API (without Builder)
 
-Cells and filters can also be built individually using the fluent API:
+Columns and filters can also be built individually using the fluent API:
 
 ```php
-use Modules\Core\Table\Cell;
+use Modules\Core\Table\Column;
 use Modules\Core\Table\Filter;
 
-// Append a cell to the end
-$cell = $this->appendCell(new Cell('email'));
-$cell->setSortable()
+// Append a column to the end
+$column = $this->appendColumn(new Column('email'));
+$column->setSortable()
      ->setHeader('Email Address')
      ->addClass('text-lowercase')
-     ->setView(fn($row, $cell) => view('core::components.table.cells.a', [
+     ->setView(fn($row, $column) => view('core::components.table.columns.a', [
          'href' => 'mailto:' . $row->email,
          'text' => $row->email,
      ]));
 
-// Insert a cell after another
-$this->appendCell(new Cell('phone'), after: 'email');
+// Insert a column after another
+$this->appendColumn(new Column('phone'), after: 'email');
 
-// Prepend a cell before another
-$this->prependCell(new Cell('id'), before: 'email');
+// Prepend a column before another
+$this->prependColumn(new Column('id'), before: 'email');
 
-// Remove a cell
-$this->removeCell('phone');
+// Remove a column
+$this->removeColumn('phone');
 
-// Modify a cell after Builder::build()
-$this->getCell('email')->addClass('text-danger');
+// Modify a column after Builder::build()
+$this->getColumn('email')->addClass('text-danger');
 
 // Append a filter
 $this->appendFilter(new Filter('status', type: Filter::TYPE_SELECT, options: [
@@ -877,7 +877,7 @@ $this->appendFilter(new Filter('status', type: Filter::TYPE_SELECT, options: [
 ]));
 ```
 
-**`Cell` fluent methods**
+**`Column` fluent methods**
 
 | Method                       | Description |
 |------------------------------|---|
@@ -899,7 +899,7 @@ $this->appendFilter(new Filter('status', type: Filter::TYPE_SELECT, options: [
 
 ### `Formats` — built-in value formatters
 
-`Modules\Core\Table\Formats` provides static formatters for common cell value types. Pass them as a string callable to `value`:
+`Modules\Core\Table\Formats` provides static formatters for common column value types. Pass them as a string callable to `value`:
 
 ```php
 'phone'      => ['value' => '\Modules\Core\Table\Formats::phone'],
@@ -954,13 +954,13 @@ When the column key and the DB sort column differ:
 ],
 ```
 
-### Modifying a cell after `Builder::build()`
+### Modifying a column after `Builder::build()`
 
 ```php
 Builder::build($this, [...]);
 
-$this->getCell('email')->addClass('text-danger');
-$this->removeCell('phone');
+$this->getColumn('email')->addClass('text-danger');
+$this->removeColumn('phone');
 ```
 
 ### Row click navigation

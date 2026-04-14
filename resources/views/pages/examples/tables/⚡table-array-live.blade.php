@@ -1,25 +1,21 @@
 <?php
 
-use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Tk\Support\Facades\Breadcrumbs;
-use Tk\Table\Cell;
-use Tk\Table\IsLivewireTable;
-use Tk\Table\IsSearchable;
+use Tk\Table\Column;
+use Tk\Table\Traits\IsLivewire;
+use Tk\Table\Traits\WithSearch;
 
 new #[Layout('pages.main')]
 class extends Component {
 
-    use WithPagination, IsLivewireTable, IsSearchable;
+    use WithPagination, IsLivewire, WithSearch;
 
     #[Url(except: '')]
     public $roles = '';
@@ -32,23 +28,23 @@ class extends Component {
 //        $this->setDefaultLimit(2);
 //        $this->setDefaultSort('email');
 
-        $this->appendCell(new Cell(
+        $this->appendColumn(new Column(
             name: 'name',
             sortable: true,
         ));
 
-        $this->appendCell(new Cell(
+        $this->appendColumn(new Column(
             name: 'email',
             sortable: true,
         ));
 
-        $this->appendCell(new Cell(
+        $this->appendColumn(new Column(
             name: 'roles',
             sortable: false,
         ));
 
-        // alt method to add cells
-        $this->appendCell('created_at')
+        // alt method to add columns
+        $this->appendColumn('created_at')
             ->setHeader('Created')
             ->setSortable();
 
@@ -59,7 +55,6 @@ class extends Component {
     #[Computed]
     protected function rows(): array|Builder
     {
-
         $rows = session()->get('_side-table-cache');
 
         if (!$rows) {

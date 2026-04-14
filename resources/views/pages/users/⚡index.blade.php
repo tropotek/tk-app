@@ -1,52 +1,48 @@
 <?php
 
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Title;
-use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Tk\Support\Facades\Breadcrumbs;
-use Tk\Table\Cell;
-use Tk\Table\IsLivewireTable;
-use Tk\Table\IsSearchable;
+use Tk\Table\Column;
+use Tk\Table\TableComponent;
+use Tk\Table\Traits\IsLivewire;
+use Tk\Table\Traits\WithSearch;
 
 new #[Layout('pages.main')]
 class extends Component {
 
-    use WithPagination, IsLivewireTable, IsSearchable;
+    use WithPagination, IsLivewire, WithSearch;
 
 
-    public function boot()
+    public function booted()
     {
         Breadcrumbs::push('Users');
 
 
-        $this->appendCell('name')
+        $this->appendColumn('name')
             ->setSortable()
             ->addClass('fw-bold w-auto')
-            ->setView(function (User $user, Cell $cell) {
-                return view('tkl-ui::components.table.cells.a', [
+            ->setView(function (User $user, Column $column) {
+                return view('tkl-ui::components.table.columns.a', [
                     'href' => route('admin.users.edit', $user),
-                    'text' => $cell->value($user)
+                    'text' => $column->value($user)
                 ]);
             });
 
-        $this->appendCell('email')
+        $this->appendColumn('email')
             ->setSortable();
 
-        $this->appendCell('roles')
-            ->setValue(function (User $user, $cell) {
+        $this->appendColumn('roles')
+            ->setValue(function (User $user, $column) {
                 return $user->roles->pluck('name')->implode(', ');
             });
 
-        // alt method to add cells
-        $this->appendCell('created_at')
+        $this->appendColumn('created_at')
             ->setHeader('Created')
             ->setSortable();
 

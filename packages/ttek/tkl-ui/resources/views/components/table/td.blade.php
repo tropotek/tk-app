@@ -1,13 +1,13 @@
 @php
-    /** @var \Tk\Table\Cell $cell */
+    /** @var \Tk\Table\Column $column */
 @endphp
 @props([
     // required
-    'cell',
+    'column',
     'row'
 ])
-@if($cell->isVisible())
-    <td {{ $attributes->merge($cell->getAttrs()->toArray()) }}>
-        {!! $cell->view($row) !!}
+@if($column->isVisible())
+    <td {{ $attributes->merge($column->getAttrs()->toArray()) }}>
+        {!! $column->view($row) !!}
     </td>
 @endif

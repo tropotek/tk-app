@@ -1,6 +1,6 @@
 @php
-    use Tk\Table\Cell;
-    /** @var \Tk\Table\IsTable $table */
+    use Tk\Table\Column;
+    /** @var \Tk\Table\Traits\IsTable $table */
 @endphp
 @props([
     // required
@@ -22,18 +22,18 @@
 <div class="table-responsive">
     <table {{ $attributes }}>
         <thead>
-            <tr>
-                @foreach ($table->getVisibleCells() as $cell)
-                    <x-tkl-ui::table.th :cell="$cell"/>
-                @endforeach
-            </tr>
+        <tr>
+            @foreach ($table->getVisibleColumns() as $column)
+                <x-tkl-ui::table.th :column="$column"/>
+            @endforeach
+        </tr>
         </thead>
 
         <tbody class="table-group-divider">
 
         @forelse ($rows as $i => $row)
             @php
-                $keyVal = Cell::getKey($row) ?: $i;
+                $keyVal = Column::getKey($row) ?: $i;
                 $keyAttr = $table->isLivewire() ? sprintf('wire:key="%s"', $keyVal) : sprintf('data-id="%s"', $keyVal);
             @endphp
             <tr {!! $keyAttr !!} {{ $table->rowAttrs($row) }}
@@ -49,14 +49,14 @@
                         window.location.href = url;
                     "
             >
-                @foreach($table->getVisibleCells() as $cell)
-                    <x-tkl-ui::table.td :cell="$cell" :row="$row"/>
+                @foreach($table->getVisibleColumns() as $column)
+                    <x-tkl-ui::table.td :column="$column" :row="$row"/>
                 @endforeach
             </tr>
         @empty
             <tr>
                 <td
-                    colspan="{{ $table->getVisibleCells()->count()  }}"
+                    colspan="{{ $table->getVisibleColumns()->count()  }}"
                     class="text-center text-muted py-4"
                 >
                     No results found.
@@ -70,8 +70,8 @@
         <div class="mt-4">
             {{ $rows->links() }}
         </div>
-{{--        <div class="mt-4 d-flex justify-content-center">--}}
-{{--            {{ $rows->links('tkl-ui::components.table.paginator') }}--}}
-{{--        </div>--}}
+        {{--        <div class="mt-4 d-flex justify-content-center">--}}
+        {{--            {{ $rows->links('tkl-ui::components.table.paginator') }}--}}
+        {{--        </div>--}}
     @endif
 </div>

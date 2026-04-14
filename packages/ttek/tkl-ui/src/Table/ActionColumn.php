@@ -2,7 +2,7 @@
 
 namespace Tk\Table;
 
-class ActionCell extends Cell
+class ActionColumn extends Column
 {
     public string $icon = '';
 
@@ -40,7 +40,7 @@ class ActionCell extends Cell
             }
         }
 
-        return view('core::components.table.cells.a', [
+        return view('core::components.table.columns.a', [
             'href' => $this->value($row),
             'icon' => $this->icon
         ]);

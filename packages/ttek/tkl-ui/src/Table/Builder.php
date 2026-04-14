@@ -18,13 +18,13 @@ class Builder
      *     'defaultDir'   => string,    // (optional) default sort direction ('asc'|'desc')
      *     'attrs'        => array,     // (optional) table attrs
      *     'rowAttrs'     => callable,  // (optional) fn($row, $table): array|ComponentAttributeBag
-     *     'cells'        => [
-     *         'cell_name' => [
+     *     'columns'        => [
+     *         'column_name' => [
      *             'header'      => string,    // (optional) column label
-     *             'sortable'    => bool,      // (optional) is cell sortable
+     *             'sortable'    => bool,      // (optional) is column sortable
      *             'sort'        => string,    // (optional) DB/sort key
-     *             'value'       => string|callable,  // (optional) fn($row, $cell): string
-     *             'view'        => string|callable,  // (optional) fn($row, $cell): string
+     *             'value'       => string|callable,  // (optional) fn($row, $column): string
+     *             'view'        => string|callable,  // (optional) fn($row, $column): string
      *             'class'       => string,    // (optional) td CSS class
      *             'attrs'       => array,     // (optional) td attrs
      *             'headerClass' => string,    // (optional) th CSS class
@@ -35,8 +35,8 @@ class Builder
      *     'actions'      => [
      *         'action_name' => [
      *             'icon'        => string,    // (optional) font based icon class
-     *             'route'       => string|callable,  // (optional) fn($row, $cell): string (alias for value callback)
-     *             'view'        => string|callable,  // (optional) fn($row, $cell): string
+     *             'route'       => string|callable,  // (optional) fn($row, $column): string (alias for value callback)
+     *             'view'        => string|callable,  // (optional) fn($row, $column): string
      *             'class'       => string,    // (optional) td CSS class
      *             'attrs'       => array,     // (optional) td attrs
      *             'headerClass' => string,    // (optional) th CSS class
@@ -57,6 +57,7 @@ class Builder
      *         ],
      *     ],
      *     'search' => [
+     *         'enabled' => true,                 // (optional) enable/disable search
      *         'placeholder' => 'Search...',      // (optional) placeholder text
      *         'clearFilters' => [],              // (optional) array of filter keys to clear on search
      *     ],
@@ -64,7 +65,7 @@ class Builder
      *
      * Notes:
      * - `defaultSort` and `defaultDir` are applied together.
-     * - `cells`, `actions`, and `filters` are keyed collections.
+     * - `columns`, `actions`, and `filters` are keyed collections.
      * - The builder ignores unknown keys.
      */
     public static function build(mixed $table, array $tableMeta): void
@@ -81,7 +82,7 @@ class Builder
                 'class'    => $table->addClass($meta),
                 'attrs'    => $table->addAttrs($meta),
                 'rowAttrs' => $table->setRowAttrs($meta),
-                'cells'    => self::buildCells($table, $meta),
+                'columns'    => self::buildColumns($table, $meta),
                 'actions'  => self::buildActions($table, $meta),
                 'filters'  => self::buildFilters($table, $meta),
                 'search'   => self::buildSearch($table, $meta),
@@ -91,19 +92,19 @@ class Builder
     }
 
     /**
-     * Build and append one or more Cell objects to the table.
-     * Accepts a single cell definition array or an array of definitions.
+     * Build and append one or more Column objects to the table.
+     * Accepts a single column definition array or an array of definitions.
      */
-    protected static function buildCells(mixed $table, array $meta): void
+    protected static function buildColumns(mixed $table, array $meta): void
     {
-        foreach ($meta as $name => $cellMeta) {
-            $table->appendCell(self::buildCell($name, $cellMeta));
+        foreach ($meta as $name => $columnMeta) {
+            $table->appendColumn(self::buildColumn($name, $columnMeta));
         }
     }
 
-    protected static function buildCell(string $name, array $meta): Cell
+    protected static function buildColumn(string $name, array $meta): Column
     {
-        $cell = new Cell(
+        $column = new Column(
             name:     $name,
             header:   $meta['header'] ?? '',
             sortable: $meta['sortable'] ?? false,
@@ -113,29 +114,29 @@ class Builder
             visible:  $meta['visible'] ?? true,
         );
 
-        $cell->addClass($meta['class'] ?? '');
-        $cell->addAttrs($meta['attrs'] ?? []);
+        $column->addClass($meta['class'] ?? '');
+        $column->addAttrs($meta['attrs'] ?? []);
 
-        $cell->addHeaderClass($meta['headerClass'] ?? '');
-        $cell->addHeaderAttrs($meta['headerAttrs'] ?? []);
+        $column->addHeaderClass($meta['headerClass'] ?? '');
+        $column->addHeaderAttrs($meta['headerAttrs'] ?? []);
 
-        return $cell;
+        return $column;
     }
 
     /**
-     * Build and append one or more ActionCell objects to the table.
+     * Build and append one or more ActionColumn objects to the table.
      * Accepts a single action definition array or an array of definitions.
      */
     protected static function buildActions(mixed $table, array $meta): void
     {
         foreach ($meta as $name => $actionMeta) {
-            $table->appendCell(self::buildAction($name, $actionMeta));
+            $table->appendColumn(self::buildAction($name, $actionMeta));
         }
     }
 
-    protected static function buildAction(string $name, array $meta): ActionCell
+    protected static function buildAction(string $name, array $meta): ActionColumn
     {
-        $cell = new ActionCell(
+        $column = new ActionColumn(
             name:    $name,
             icon:    $meta['icon'] ?? '',
             route:   is_callable($meta['route'] ?? null) ? $meta['route'] : null,
@@ -144,16 +145,16 @@ class Builder
         );
 
         if (!empty($meta['header'])) {
-            $cell->setHeader($meta['header']);
+            $column->setHeader($meta['header']);
         }
 
-        $cell->addClass($meta['class'] ?? '');
-        $cell->addAttrs($meta['attrs'] ?? []);
+        $column->addClass($meta['class'] ?? '');
+        $column->addAttrs($meta['attrs'] ?? []);
 
-        $cell->addHeaderClass($meta['headerClass'] ?? '');
-        $cell->addHeaderAttrs($meta['headerAttrs'] ?? []);
+        $column->addHeaderClass($meta['headerClass'] ?? '');
+        $column->addHeaderAttrs($meta['headerAttrs'] ?? []);
 
-        return $cell;
+        return $column;
     }
 
     /**
@@ -187,12 +188,9 @@ class Builder
 
     protected static function buildSearch(mixed $table, array $meta): void
     {
-        if (!$table->searchable()) {
-            throw new \InvalidArgumentException("Use the 'IsSearchable' trait to enable search.");
-        }
-
-        $table->searchPlaceholder = $meta['placeholder'] ?? '';
+        $table->searchPlaceholder = (string)($meta['placeholder'] ?? '');
         $table->searchClear = $meta['clearFilters'] ?? [];
+        $table->searchEnabled = (bool)($meta['enabled'] ?? true);
     }
 
 }

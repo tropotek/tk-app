@@ -1,8 +1,5 @@
 <?php
 
-use Tk\Events\FileDeletedEvent;
-use Tk\Events\FileUploadedEvent;
-use Tk\Models\File;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Computed;
@@ -11,12 +8,15 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 use Tk\Dto\FileUploadDto;
-use Tk\Table\Cell;
-use Tk\Table\IsLivewireTable;
+use Tk\Events\FileDeletedEvent;
+use Tk\Events\FileUploadedEvent;
+use Tk\Models\File;
+use Tk\Table\Column;
+use Tk\Table\Traits\IsLivewire;
 use Tk\Utils\File as TkFile;
 
 new class extends Component {
-    use WithFileUploads, WithPagination, IsLivewireTable;
+    use WithFileUploads, WithPagination, IsLivewire;
 
     #[Locked]
     public string $fkey = '';
@@ -37,7 +37,7 @@ new class extends Component {
             ->setHeader('Filename')
             ->addClass('fw-bold align-middle')
             ->setSortable()
-            ->setView(fn(File $file, Cell $cell) => view('tkl-ui::components.table.cells.a', [
+            ->setView(fn(File $file, Column $cell) => view('tkl-ui::components.table.cells.a', [
                 'href' => route('files.view', $file->id),
                 'text' => $cell->value($file),
                 'target' => '_blank',
@@ -57,7 +57,7 @@ new class extends Component {
         $this->appendCell('_actions')
             ->setHeader('')
             ->setView(fn(File $file) => '
-                <button wire:click="deleteFile(' . $file->id . ')"
+                <button wire:click="deleteFile('.$file->id.')"
                     wire:confirm="Delete this file?"
                     style="font-size: 0.8em;"
                     class="p-1 btn btn-sm btn-outline-danger" title="Delete">
@@ -68,7 +68,7 @@ new class extends Component {
 
     protected function rules(): array
     {
-        $maxKb = (int)(TkFile::getMaxUploadBytes() / 1024);
+        $maxKb = (int) (TkFile::getMaxUploadBytes() / 1024);
         return [
             'upload' => "required|file|max:{$maxKb}|mimes:txt,md,pdf,zip,tar,gz,doc,docx,xls,xlsx,jpg,jpeg,png,gif",
         ];
@@ -86,7 +86,7 @@ new class extends Component {
         $originalName = $this->upload->getClientOriginalName();
         $mimeType = $this->upload->getMimeType();
 
-        $path = $this->upload->store('documents/' . $this->fid, 'local');
+        $path = $this->upload->store('documents/'.$this->fid, 'local');
         $size = Storage::disk('local')->size($path);
 
         $file = File::create([

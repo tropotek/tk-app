@@ -1,6 +1,6 @@
 @php
     use Tk\Table\Filter;
-    /** @var \Tk\Table\IsTable $table */
+    /** @var \Tk\Table\Traits\IsTable $table */
 @endphp
 @props([
     // required
@@ -76,7 +76,7 @@
                     wire:click="clearFilters"
                 @else
                     name="{{ $table->tableKey($table::QUERY_RESET) }}"
-                    value="1"
+                value="1"
                 @endif
             >
                 <i class="fa fa-circle-xmark fa-lg"></i>

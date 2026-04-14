@@ -1,20 +1,26 @@
 <?php
 
-namespace Tk\Table;
+namespace Tk\Table\Traits;
 
-use Illuminate\Pagination\Paginator;
 use Illuminate\Container\Container;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\View\ComponentAttributeBag;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Tk\Table\Column;
 
 /**
  * Use this trait to add a table to a controller
  */
 trait IsTable
 {
+    use WithSearch,
+        HasAttrs,
+        HasColumns,
+        HasFilters,
+        WithExport;
+
+
     const string DEFAULT_TABLE_ID = 'tbl';
 
     // Table url query names
@@ -32,23 +38,13 @@ trait IsTable
 
     public int $limit = 0;      // rows per-page
     public string $sort = '';
-    public string $dir = '';   // empty = use defaultDir
+    public string $dir = '';
     public array $filterVals = [];
     public ?int $totalRows = null;
 
     protected int $defaultLimit = 30;
     protected string $defaultSort = '';
     protected string $defaultDir = self::SORT_ASC;
-
-    /**
-     * @var Collection<int, Cell>
-     */
-    protected Collection $cells;
-    /**
-     * @var Collection<int, Filter>
-     */
-    protected Collection $filters;
-    protected ComponentAttributeBag $attrs;
     protected mixed $rowAttrs = null;   // null|callable
     protected mixed $paginatedRows = null;
 
@@ -60,6 +56,19 @@ trait IsTable
      * @return array<string,mixed>|Builder
      */
     abstract public function rows(): array|Builder;
+
+    /**
+     * Controller method to set the table properties from the request
+     */
+    public function hydrateTableFromRequest(): void
+    {
+        $this->setDefaultLimit(config('sis.default.pagination', 30));
+
+        $this->limit = (int)request()->input($this->tableKey(self::QUERY_LIMIT), 0);
+        $this->sort = (string)request()->input($this->tableKey(self::QUERY_SORT), '');
+        $this->dir = (string)request()->input($this->tableKey(self::QUERY_DIR), '');
+        $this->filterVals = request()->input($this->tableKey(self::QUERY_FILTER), []) ?? [];
+    }
 
     /**
      * Override this method to change your table ID
@@ -121,18 +130,6 @@ trait IsTable
     }
 
     /**
-     * Controller method to set the table properties from the request
-     */
-    public function hydrateTableFromRequest(): void
-    {
-        $this->setDefaultLimit(config('sis.default.pagination', 30));
-
-        $this->limit = (int)request()->input($this->tableKey(self::QUERY_LIMIT), 0);
-        $this->sort = (string)request()->input($this->tableKey(self::QUERY_SORT), '');
-        $this->dir = (string)request()->input($this->tableKey(self::QUERY_DIR), '');
-    }
-
-    /**
      * Return a validated sort column
      */
     public function safeSort(): string
@@ -143,12 +140,12 @@ trait IsTable
     }
 
     /**
-     * Allowed sort keys. Defaults to all sortable cell keys.
+     * Allowed sort keys. Defaults to all sortable column keys.
      */
     public function sortableKeys(): array
     {
-        return $this->getCells()
-            ->filter(fn(Cell $cell) => $cell->isSortable())
+        return $this->getColumns()
+            ->filter(fn(Column $column) => $column->isSortable())
             ->pluck('sort')
             ->filter()
             ->all();
@@ -188,196 +185,6 @@ trait IsTable
     {
         $this->defaultDir = in_array($dir, [self::SORT_ASC, self::SORT_DESC]) ? $dir : self::SORT_ASC;
         return $this;
-    }
-
-    public function addClass(string $class): static
-    {
-        $this->attrs = $this->getAttrs()->class($class);
-        return $this;
-    }
-
-    public function addAttrs(array $attrs): static
-    {
-        $this->attrs = $this->getAttrs()->merge($attrs);
-        return $this;
-    }
-
-    public function getAttrs(): ComponentAttributeBag
-    {
-        $this->attrs ??= new ComponentAttributeBag();
-        return $this->attrs;
-    }
-
-    /**
-     * @return Collection<int, Cell>
-     */
-    public function getCells(): Collection
-    {
-        return $this->cells ??= collect();
-    }
-
-    /**
-     * @return Collection<int, Cell>
-     */
-    public function getVisibleCells(): Collection
-    {
-        return $this->getCells()->filter(fn(Cell $cell) => $cell->isVisible());
-    }
-
-    public function getCell(string $name): ?Cell
-    {
-        return $this->getCells()->get($name);
-    }
-
-    public function removeCell(string $name): static
-    {
-        $this->getCells()->forget($name);
-        return $this;
-    }
-
-    public function appendCell(string|Cell $cell, ?string $after = null): Cell
-    {
-        $cell = is_string($cell) ? new Cell($cell) : $cell;
-        $cell->setTable($this);
-
-        if ($this->getCells()->has($cell->getName())) {
-            throw new \Exception("Cell with name '{$cell->getName()}' already exists.");
-        }
-
-        if (is_null($after)) {
-            $this->getCells()->put($cell->getName(), $cell);
-            return $cell;
-        }
-
-        $index = $this->getCells()->keys()->search($after);
-        if ($index === false) {
-            $this->getCells()->put($cell->getName(), $cell);
-            return $cell;
-        }
-
-        $this->cells = $this->insertAt($this->getCells(), $index+1, $cell->getName(), $cell);
-
-        return $cell;
-    }
-
-    public function prependCell(string|Cell $cell, ?string $before = null): Cell
-    {
-        $cell = is_string($cell) ? new Cell($cell) : $cell;
-        $cell->setTable($this);
-
-        if ($this->getCells()->has($cell->getName())) {
-            throw new \Exception("Cell with name '{$cell->getName()}' already exists.");
-        }
-
-        if (is_null($before)) {
-            $this->getCells()->prepend($cell, $cell->getName());
-            return $cell;
-        }
-
-        $index = $this->getCells()->keys()->search($before);
-        if ($index === false) {
-            $this->getCells()->prepend($cell, $cell->getName());
-            return $cell;
-        }
-
-        $this->cells = $this->insertAt($this->getCells(), $index, $cell->getName(), $cell);
-
-        return $cell;
-    }
-
-    /**
-     * @return Collection<int, Filter>
-     */
-    public function getFilters(): Collection
-    {
-        return $this->filters ??= collect();
-    }
-
-    /**
-     * @return Collection<int, Filter>
-     */
-    public function getVisibleFilters(): Collection
-    {
-        return $this->getFilters()->filter(fn(Filter $filter) => $filter->isVisible());
-    }
-
-    public function getFilter(string $key): ?Filter
-    {
-        return $this->getFilters()->get($key);
-    }
-
-    public function removeFilter(string $name): static
-    {
-        $this->getFilters()->forget($name);
-        return $this;
-    }
-
-    public function appendFilter(string|Filter $filter, ?string $after = null): Filter
-    {
-        $filter = is_string($filter) ? new Filter($filter) : $filter;
-        $filter->setTable($this);
-
-        if ($this->getFilters()->has($filter->getKey())) {
-            throw new \Exception("Filter with key '{$filter->getKey()}' already exists.");
-        }
-
-        if (is_null($after)) {
-            $this->getFilters()->put($filter->getKey(), $filter);
-            return $filter;
-        }
-
-        $index = $this->getFilters()->keys()->search($after);
-        if ($index === false) {
-            $this->getFilters()->put($filter->getKey(), $filter);
-            return $filter;
-        }
-
-        $this->filters = $this->insertAt($this->getFilters(), $index+1, $filter->getKey(), $filter);
-
-        return $filter;
-    }
-
-    public function prependFilter(string|Filter $filter, ?string $before = null): Filter
-    {
-        $filter = is_string($filter) ? new Filter($filter) : $filter;
-        $filter->setTable($this);
-
-        if ($this->getFilters()->has($filter->getKey())) {
-            throw new \Exception("Filter with key '{$filter->getKey()}' already exists.");
-        }
-
-        if (is_null($before)) {
-            $this->getFilters()->prepend($filter, $filter->getKey());
-            return $filter;
-        }
-
-        $index = $this->getFilters()->keys()->search($before);
-        if ($index === false) {
-            $this->getFilters()->prepend($filter, $filter->getKey());
-            return $filter;
-        }
-
-        $this->filters = $this->insertAt($this->getFilters(), $index, $filter->getKey(), $filter);
-
-        return $filter;
-    }
-
-    /**
-     * Collection helper function to insert items at a specific index
-     */
-    private function insertAt(Collection $col, int $index, string $key, mixed $item): Collection
-    {
-        $before = $col->slice(0, $index);
-        $after = $col->slice($index);
-
-        return $before
-            ->put($key, $item)
-            ->merge($after);
-    }
-
-    public function searchable(): bool
-    {
-        return in_array(IsSearchable::class, array_keys(class_uses_recursive(static::class)));
     }
 
     /**
@@ -553,83 +360,6 @@ trait IsTable
             return $row[$col] ?? null;
         }
         return $row->{$col} ?? null;
-    }
-
-    /**
-     * By default, a table is exportable if the export() method exists
-     * override and return true when using a route to export a table
-     */
-    public function exportable(): bool
-    {
-        return method_exists($this, 'export');
-    }
-
-    /**
-     * CSV export route name. Defaults to current route name + '.export'.
-     */
-    public function exportRoute(): string
-    {
-        return (request()->route()->getName() ?? '') . '.export';
-    }
-
-    /**
-     * build a CSV file from an array of rows
-     * Expects the rows to be a key/value map of column names to values
-     * @param array<string,mixed>|Collection<int,array<string,mixed>> $rows
-     */
-    public function exportCsv(array|Collection $rows, string $fileName = 'unknown.csv'): StreamedResponse
-    {
-        $callback = function () use ($rows) {
-            $handle = fopen('php://output', 'w');
-            $headersWritten = false;
-
-            $exportColumns = $this->exportColumns();
-            foreach ($rows as $row) {
-                if (!$headersWritten) {
-                    fputcsv(
-                        stream: $handle,
-                        fields: $exportColumns->pluck('label')->all(),
-                        escape: '',
-                    );
-                    $headersWritten = true;
-                }
-                $export = $exportColumns->map(fn($col) => $col['value']($row))->all();
-                fputcsv(
-                    stream: $handle,
-                    fields: $export,
-                    escape: '',
-                );
-            }
-
-            fclose($handle);
-        };
-
-        return response()->streamDownload($callback, $fileName, [
-            'Content-Type' => 'text/csv',
-        ]);
-    }
-
-    /**
-     * The default exportable columns are the visible cells
-     * Override this method to customize the exportable columns
-     *
-     * Eg:
-     * return collect([
-     *     ['label' => 'Name',    'value' => fn($row) => $row->name_last_first],
-     *     ['label' => 'Email',   'value' => fn($row) => $row->email],
-     *     ['label' => 'City',    'value' => fn($row) => $row->city],
-     *     ['label' => 'Country', 'value' => fn($row) => $row->country],
-     *     ['label' => 'Created', 'value' => fn($row) => Carbon::parse($row->created_at)->format('d M Y')],
-     * ]);
-     */
-    public function exportColumns(): Collection
-    {
-        return $this->getVisibleCells()
-            ->filter(fn($cell) => !($cell instanceof ActionCell))
-            ->map(fn(Cell $cell) => [
-                'label' => $cell->header,
-                'value' => fn($row) => $cell->value($row),
-            ]);
     }
 
 }

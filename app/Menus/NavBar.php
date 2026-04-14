@@ -25,6 +25,7 @@ final class NavBar implements MenuBuilderInterface
                 MenuItem::make('Form Fieldgroup', route('examples.formThree')),
                 MenuItem::make('Form Fieldset', route('examples.formFieldset')),
                 MenuItem::makeSeparator(),
+                MenuItem::make('Table Test', route('examples.tableTest')),
                 MenuItem::make('Table Arrays', route('examples.tableArray')),
                 MenuItem::make('Table Arrays (Livewire)', route('examples.tableArray2')),
                 MenuItem::makeSeparator(),

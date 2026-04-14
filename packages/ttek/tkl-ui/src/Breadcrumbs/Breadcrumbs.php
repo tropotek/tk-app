@@ -97,29 +97,36 @@ final class Breadcrumbs
         $crumb = $this->createCrumb($pageName, $url);
         if ($name) $crumb->name = $name;
 
-        // look for this page already in the breadcrumbs
-        // if found rewind breadcrumbs to before this page
-        $this->stack = $this->stack->takeWhile(fn($c) => $c->name !== $crumb->name);
+        // only push crumbs to the stack for GET requests, stops livewire post-requests from adding invalid crumb urls
+        if (strtoupper(request()->method()) === 'GET') {
+            // look for this page already in the breadcrumbs
+            // if found rewind breadcrumbs to before this page
+            $this->stack = $this->stack->takeWhile(fn($c) => $c->name !== $crumb->name);
 
-        // check for the top breadcrumb (previous page) matching the
-        // referring page (where we just came from)
-        // if they match change the query string to match in case
-        // the referring page changed its URL dynamically
-        // with the Javascript history API
-        $referer = request()->header('referer') ?? '';
-        if ($referer && !$this->isEmpty()) {
-            $topBc = $this->stack->pop();
-            $refererParts = parse_url($referer);
-            if (parse_url($topBc->url, PHP_URL_PATH) == ($refererParts['path'] ?? '')) {
-                $topBc->url = $refererParts['path'] ?? '';
-                if ($refererParts['query'] ?? '') $topBc->url .= ("?" . $refererParts['query']);
-                if ($refererParts['fragment'] ?? '') $topBc->url .= ("#" . $refererParts['fragment']);
+            // check for the top breadcrumb (previous page) matching the
+            // referring page (where we just came from)
+            // if they match change the query string to match in case
+            // the referring page changed its URL dynamically
+            // with the Javascript history API
+            $referer = request()->header('referer') ?? '';
+            if ($referer && !$this->isEmpty()) {
+                $topBc = $this->stack->pop();
+                $refererParts = parse_url($referer);
+                if (parse_url($topBc->url, PHP_URL_PATH) == ($refererParts['path'] ?? '')) {
+                    $topBc->url = $refererParts['path'] ?? '';
+                    if ($refererParts['query'] ?? '') {
+                        $topBc->url .= ("?".$refererParts['query']);
+                    }
+                    if ($refererParts['fragment'] ?? '') {
+                        $topBc->url .= ("#".$refererParts['fragment']);
+                    }
+                }
+                $this->push($topBc->title, $topBc->url, $topBc->name);
             }
-            $this->push($topBc->title, $topBc->url, $topBc->name);
-        }
 
-	    // add this page to the top of the breadcrumbs
-        $this->stack->push($crumb);
+            // add this page to the top of the breadcrumbs
+            $this->stack->push($crumb);
+        }
 
         // set $pageName for all views
         View::share(self::PAGE_NAME, $crumb->title);

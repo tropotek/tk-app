@@ -1,6 +1,6 @@
 <?php
 
-namespace Tk\Table;
+namespace Tk\Table\Traits;
 
 /**
  * Use this trait to add a table to a Livewire Component
@@ -8,12 +8,12 @@ namespace Tk\Table;
  * Livewire Component methods:
  * @method void reset(...$properties)
  * @method void resetPage(string $pageName = 'page')
- * @uses IsSearchable
+ * @uses WithSearch
  * @property string $search
  * @property string $searchPlaceholder
  * @property array $searchClear
  */
-trait IsLivewireTable
+trait IsLivewire
 {
     use IsTable;
 
@@ -23,7 +23,7 @@ trait IsLivewireTable
     public function queryString(): array
     {
         // set the initial default limit value, called by the Livewire system
-        $this->setDefaultLimit(config('sis.default.pagination', 30));
+        $this->setDefaultLimit(30);
 
         $qs = [
             'limit' => [

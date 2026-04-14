@@ -3,10 +3,14 @@
 namespace Tk\Table;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\View\ComponentAttributeBag;
+use Tk\Table\Traits\HasAttrs;
+use Tk\Table\Traits\HasHeaderAttrs;
+use Tk\Table\Traits\IsTable;
 
-class Cell
+class Column
 {
+    use HasAttrs, HasHeaderAttrs;
+
     public string $name = '';
     public string $header = '';
     public bool $sortable = false;
@@ -16,8 +20,6 @@ class Cell
     protected mixed $value = null;   // null|string|callable
     protected mixed $view = null;   // null|string|callable
     protected mixed $table = null;  // HasTable trait
-    protected ComponentAttributeBag $attrs;
-    protected ComponentAttributeBag $headerAttrs;
 
 
     public function __construct(
@@ -139,7 +141,7 @@ class Cell
     }
 
     /**
-     * return the raw value from a row using the cell key name
+     * return the raw value from a row using the column key name
      */
     public function getRowValue(mixed $row): mixed
     {
@@ -149,7 +151,7 @@ class Cell
     }
 
     /**
-     * Get the plain text value of the cell (useful for .txt or .csv)
+     * Get the plain text value of the column (useful for .txt or .csv)
      */
     public function value(mixed $row): string
     {
@@ -166,11 +168,11 @@ class Cell
     }
 
     /**
-     * Set a callable or string that returns the text value of the cell
+     * Set a callable or string that returns the text value of the column
      * Used for .txt, .csv exports and should not contain any HTML markup.
      * Note: value will be escaped automatically.
      *
-     * @callable function (mixed $row, Cell $cell): string { }
+     * @callable function (mixed $row, Column $column): string { }
      */
     public function setValue(string|callable $value): static
     {
@@ -179,7 +181,7 @@ class Cell
     }
 
     /**
-     * Get the HTML value of the cell
+     * Get the HTML value of the column
      */
     public function view(mixed $row): mixed
     {
@@ -194,54 +196,15 @@ class Cell
     }
 
     /**
-     * Set the callable that returns the HTML value of the cell.
+     * Set the callable that returns the HTML value of the column.
      * By default, `view()` returns `value()`.
      *
-     * @callable function (mixed $row, Cell $cell): string { }
+     * @callable function (mixed $row, Column $column): string { }
      */
     public function setView(callable $view): static
     {
         $this->view = $view;
         return $this;
-    }
-
-    public function addClass(string $class): static
-    {
-        $this->attrs = $this->getAttrs()->class($class);
-        return $this;
-    }
-
-    public function addAttrs(array $attrs): static
-    {
-        $this->attrs = $this->getAttrs()->merge($attrs);
-        return $this;
-    }
-
-    public function getAttrs(): ComponentAttributeBag
-    {
-        $this->attrs ??= new ComponentAttributeBag();
-        return $this->attrs;
-    }
-
-    /**
-     * Add a CSS class to the cell
-     */
-    public function addHeaderClass(string $class): static
-    {
-        $this->headerAttrs = $this->getHeaderAttrs()->class($class);
-        return $this;
-    }
-
-    public function addHeaderAttrs(array $attrs): static
-    {
-        $this->headerAttrs = $this->getHeaderAttrs()->merge($attrs);
-        return $this;
-    }
-
-    public function getHeaderAttrs(): ComponentAttributeBag
-    {
-        $this->headerAttrs ??= new ComponentAttributeBag();
-        return $this->headerAttrs;
     }
 
     public function getNextSortUrl(array $query = []): string

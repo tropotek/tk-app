@@ -1,5 +1,5 @@
 @php
-    /** @var \Tk\Table\IsTable|\Tk\Table\IsSearchable $table */
+    /** @var \Tk\Table\Traits\IsTable|\Tk\Table\Traits\WithSearch $table */
 @endphp
 @aware(['table'])
 
@@ -26,9 +26,9 @@
                        name="{{ $table->tableKey($table::QUERY_SEARCH) }}"
                        value="{{ request()->input($table->tableKey($table::QUERY_SEARCH), '') }}"
                        onkeydown="if (event.keyCode === 13) { event.preventDefault(); this.form?.requestSubmit(); }"
-        {{-- todo mm: test these and check if they are even needed (compare with sisv1) --}}
-        {{--               oninput="clearTimeout(this._searchDebounce); this._searchDebounce = setTimeout(() => { if (this.value.trim().length >= 3 || this.value.trim() === '') { this.form?.requestSubmit(); } }, 250)"--}}
-        {{--               onblur="if (this.value.trim().length >= 3) { this.form?.requestSubmit(); }"--}}
+                    {{-- todo mm: test these and check if they are even needed (compare with sisv1) --}}
+                    {{--               oninput="clearTimeout(this._searchDebounce); this._searchDebounce = setTimeout(() => { if (this.value.trim().length >= 3 || this.value.trim() === '') { this.form?.requestSubmit(); } }, 250)"--}}
+                    {{--               onblur="if (this.value.trim().length >= 3) { this.form?.requestSubmit(); }"--}}
                 />
                 <button class="btn btn-outline-secondary" type="submit" id="fid-search-btn">
                     <i class="fa fa-search"></i>

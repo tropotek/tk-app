@@ -6,12 +6,11 @@ namespace App\Http\Controllers\Examples;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Tk\Support\Facades\Breadcrumbs;
-use Tk\Table\Cell;
-use Tk\Table\IsSearchable;
-use Tk\Table\IsTable;
+use Tk\Table\Column;
+use Tk\Table\Traits\WithSearch;
+use Tk\Table\Traits\IsTable;
 
 /**
  * This is an example of using the Table trait within a controller.
@@ -20,28 +19,28 @@ use Tk\Table\IsTable;
  */
 class ArrayTableController extends Controller
 {
-    use IsTable, IsSearchable;
+    use IsTable, WithSearch;
 
     public function __construct()
     {
 
-        $this->appendCell(new Cell(
+        $this->appendColumn(new Column(
             name: 'name',
             sortable: true,
         ))->addClass('fw-bold');
 
-        $this->appendCell(new Cell(
+        $this->appendColumn(new Column(
             name: 'email',
             sortable: true,
         ));
 
-        $this->appendCell(new Cell(
+        $this->appendColumn(new Column(
             name: 'roles',
             sortable: false,
         ));
 
         // alt method to add cells
-        $this->appendCell(new Cell('created_at'), 'roles')
+        $this->appendColumn(new Column('created_at'), 'roles')
             ->setHeader('Created')
             ->setSortable()
         ;

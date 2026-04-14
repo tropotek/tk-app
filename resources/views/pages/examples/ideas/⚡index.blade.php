@@ -2,55 +2,50 @@
 
 use App\Enum\IdeaStatus;
 use App\Models\Idea;
-use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Tk\Support\Facades\Breadcrumbs;
-use Tk\Table\Cell;
-use Tk\Table\IsLivewireTable;
-use Tk\Table\IsSearchable;
+use Tk\Table\Column;
+use Tk\Table\Traits\IsLivewire;
 
 new #[Layout('pages.main')]
-class extends Component {
+class extends \Tk\Table\TableComponent {
 
-    use WithPagination, IsLivewireTable;
+    use WithPagination;
 
     #[Url(except: '')]
     public $status = '';
 
-    public function boot()
+    public function booted(): void
     {
         Breadcrumbs::push('Ideas');
 
-        $this->appendCell('title')
+        $this->appendColumn('title')
             ->setSortable()
             ->addClass('fw-bold')
-            ->setView(function (Idea $idea, Cell $cell) {
-                return view('tkl-ui::components.table.cells.a', [
+            ->setView(function (Idea $idea, Column $column) {
+                return view('tkl-ui::components.table.columns.a', [
                     'href' => route('examples.ideas.edit', $idea->id),
-                    'text' => $cell->value($idea)
+                    'text' => $column->value($idea)
                 ]);
             });
 
-        $this->appendCell('status')
+        $this->appendColumn('status')
             ->setSortable()
-            ->setValue(function (Idea $idea, $cell) {
+            ->setValue(function (Idea $idea, $column) {
                 return $idea->status->label();
             });
 
-        $this->appendCell('created_at')
+        $this->appendColumn('created_at')
             ->setHeader('Created')
             ->setSortable();
 
-        $this->appendCell('updated_at')
+        $this->appendColumn('updated_at')
             ->setHeader('Updated')
             ->setSortable();
 
@@ -59,7 +54,7 @@ class extends Component {
     }
 
     #[Computed]
-    protected function rows(): array|Builder
+    public function rows(): array|Builder
     {
         return Idea::query()
             ->when($this->search ?? null, function (Builder $builder) {
