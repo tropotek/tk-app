@@ -15,14 +15,29 @@ use Tk\Table\Column;
 use Tk\Table\TableComponent;
 use Tk\Utils\File as FileUtil;
 
+/**
+ * NOTE:
+ *   To change the file upload size limit, edit the php.ini file and config/livewire.php:
+ *   'temporary_file_upload' => [
+ *       // ...
+ *       'rules' => ['required', 'file', 'max:12288'],    // <== Change 'rules' config (12Mb is the default)
+ *      // ...
+ *   ];
+ *
+ */
 new class extends TableComponent {
     use WithFileUploads, WithPagination;
+
+    const DEFAULT_TYPES = ['txt', 'md', 'pdf', 'zip', 'tar', 'gz', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png', 'gif'];
 
     #[Locked]
     public string $fkey = '';
 
     #[Locked]
     public int $fid = 0;
+
+    #[Locked]
+    public string $accept = '';
 
     public $upload = null;
 
@@ -37,9 +52,9 @@ new class extends TableComponent {
             ->setHeader('Filename')
             ->addClass('fw-bold align-middle')
             ->setSortable()
-            ->setView(fn(File $file, Column $cell) => view('tkl-ui::components.table.columns.a', [
+            ->setView(fn(File $file, Column $column) => view('tkl-ui::components.table.columns.a', [
                 'href' => route('files.view', $file->id),
-                'text' => $cell->value($file),
+                'text' => $column->value($file),
                 'target' => '_blank',
             ]));
 
@@ -69,9 +84,45 @@ new class extends TableComponent {
     protected function rules(): array
     {
         $maxKb = (int) (FileUtil::getMaxUploadBytes() / 1024);
+        $exts  = implode(',', $this->allowedExtensions);
         return [
-            'upload' => "required|file|max:{$maxKb}|mimes:txt,md,pdf,zip,tar,gz,doc,docx,xls,xlsx,jpg,jpeg,png,gif",
+            'upload' => "required|file|max:{$maxKb}|mimes:{$exts}",
         ];
+    }
+
+    /**
+     * Extensions derived from the $accept prop (or defaults).
+     * Handles the .ext tokens in an HTML accept string; MIME-type tokens are
+     * passed through to the <input> but not used for server-side validation.
+     */
+    #[Computed]
+    public function allowedExtensions(): array
+    {
+        if (empty($this->accept)) {
+            return self::DEFAULT_TYPES;
+        }
+
+        $exts = array_values(array_filter(array_map(
+            fn($token) => ltrim(trim($token), '.'),
+            array_filter(
+                explode(',', $this->accept),
+                fn($token) => str_starts_with(trim($token), '.')
+            )
+        )));
+
+        return !empty($exts) ? $exts : self::DEFAULT_TYPES;
+    }
+
+    /**
+     * Value for the <input accept="..."> attribute.
+     * Uses the raw $accept prop when provided, otherwise builds it from defaults.
+     */
+    #[Computed]
+    public function acceptAttribute(): string
+    {
+        return !empty($this->accept)
+            ? $this->accept
+            : implode(',', array_map(fn($e) => '.' . $e, self::DEFAULT_TYPES));
     }
 
     public function updatedUpload(): void
@@ -130,166 +181,169 @@ new class extends TableComponent {
     }
 };
 ?>
-<div class="card mb-3 border-info">
-    <div class="card-header text-bg-info">
-        <h6 class="mb-0">
-            <a href="#collapse-myDocuments" id="heading-myDocuments" role="button"
-               class="d-block text-decoration-none text-white" data-bs-toggle="collapse">
-                <i class="fa fa-chevron-down text-white-50 float-end"></i>
-                My Documents
-            </a>
-        </h6>
+<div
+    x-data="{
+        modalOpen: false,
+        uploading: false,
+        uploaded: false,
+        progress: 0,
+        filename: null,
+        openModal() {
+            this.modalOpen = true;
+            document.body.style.overflow = 'hidden';
+        },
+        closeModal() {
+            this.modalOpen = false;
+            document.body.style.removeProperty('overflow');
+            this.resetForm();
+            $wire.set('upload', null);
+        },
+        init() {
+            this.$el.addEventListener('livewire-upload-start', () => {
+                this.uploading = true;
+                this.uploaded = false;
+                this.progress = 0;
+            });
+            this.$el.addEventListener('livewire-upload-finish', () => {
+                this.uploading = false;
+                this.uploaded = true;
+            });
+            this.$el.addEventListener('livewire-upload-error', () => {
+                this.uploading = false;
+                this.uploaded = false;
+            });
+            this.$el.addEventListener('livewire-upload-progress', (e) => {
+                this.progress = e.detail.progress;
+            });
+            $wire.$watch('upload', (value) => {
+                if (value === null) this.resetForm();
+            });
+            $wire.$on('upload-complete', () => {
+                this.closeModal();
+            });
+        },
+        resetForm() {
+            this.uploading = false;
+            this.uploaded = false;
+            this.progress = 0;
+            this.filename = null;
+            if (this.$refs.fileInput) this.$refs.fileInput.value = '';
+        },
+        handleChange(e) {
+            const file = e.target.files[0];
+            this.filename = file ? file.name : null;
+            this.uploaded = false;
+        },
+    }"
+    @keydown.escape.window="if (modalOpen) closeModal()"
+>
+    {{-- Card --}}
+    <div class="card mb-3 border-info">
+        <div class="card-header text-bg-info d-flex align-items-center justify-content-between">
+            <h6 class="mb-0">
+                <a href="#collapse-myDocuments" id="heading-myDocuments" role="button"
+                   class="d-block text-decoration-none text-white" data-bs-toggle="collapse">
+                    <i class="fa fa-chevron-down text-white-50 me-1"></i>
+                    My Documents
+                </a>
+            </h6>
+            <button type="button" class="btn btn-sm btn-light" @click="openModal()">
+                <i class="fa fa-upload me-1"></i> Upload File
+            </button>
+        </div>
+        <div id="collapse-myDocuments" class="collapse show">
+            <div class="card-body">
+                <x-tkl-ui::table :table="$this" class="table table-sm table-hover" style="font-size: 0.8rem;"/>
+            </div>
+        </div>
     </div>
-    <div id="collapse-myDocuments" class="collapse show">
-        <div class="card-body">
 
-            {{-- Upload Zone --}}
-            <div
-                x-data="{
-                    dragOver: false,
-                    uploading: false,
-                    progress: 0,
-                    previewSrc: null,
-                    previewName: null,
-                    isImage: false,
-                    init() {
-                        this.$el.addEventListener('livewire-upload-start', () => {
-                            this.uploading = true;
-                            this.progress = 0;
-                        });
-                        this.$el.addEventListener('livewire-upload-finish', () => {
-                            this.uploading = false;
-                            $wire.uploadFile();
-                        });
-                        this.$el.addEventListener('livewire-upload-error', () => {
-                            this.uploading = false;
-                            this.reset();
-                        });
-                        this.$el.addEventListener('livewire-upload-progress', (e) => {
-                            this.progress = e.detail.progress;
-                        });
-                        $wire.$watch('upload', (value) => {
-                            if (value === null) this.reset();
-                        });
-                    },
-                    reset() {
-                        this.$refs.fileInput.value = '';
-                        this.previewSrc = null;
-                        this.previewName = null;
-                        this.isImage = false;
-                    },
-                    handleDrop(e) {
-                        this.dragOver = false;
-                        const file = e.dataTransfer.files[0];
-                        if (!file) return;
-                        const input = this.$refs.fileInput;
-                        const dt = new DataTransfer();
-                        dt.items.add(file);
-                        input.files = dt.files;
-                        input.dispatchEvent(new Event('change'));
-                        this.showPreview(file);
-                    },
-                    handleChange(e) {
-                        const file = e.target.files[0];
-                        if (file) this.showPreview(file);
-                    },
-                    showPreview(file) {
-                        this.previewName = file.name;
-                        this.isImage = file.type.startsWith('image/');
-                        if (this.isImage) {
-                            const reader = new FileReader();
-                            reader.onload = (ev) => { this.previewSrc = ev.target.result; };
-                            reader.readAsDataURL(file);
-                        } else {
-                            this.previewSrc = null;
-                        }
-                    },
-                }"
-                @dragover.prevent="dragOver = true"
-                @dragleave.prevent="dragOver = false"
-                @drop.prevent="handleDrop($event)"
-            >
-                {{-- Drop Zone --}}
-                <div
-                    class="border rounded p-4 text-center mb-2"
-                    :class="dragOver ? 'border-primary bg-primary bg-opacity-10' : 'border-dashed'"
-                    style="border-style: dashed !important; cursor: pointer;"
-                    @click="$refs.fileInput.click()"
-                >
-                    <template x-if="!previewName">
-                        <div>
-                            <i class="fa fa-cloud-upload-alt fa-2x text-muted mb-2"></i>
-                            <p class="mb-1 text-muted">Drag &amp; drop a file here or <span
-                                    class="text-primary">browse</span></p>
-                            <small class="text-muted">
-                                Allowed: txt, md, pdf, zip, tar, gz, doc, docx, xls, xlsx, jpg, jpeg, png, gif
-                                &mdash; Max: {{ \Tk\Utils\File::bytes2String(\Tk\Utils\File::getMaxUploadBytes()) }}
-                            </small>
+    {{-- Modal — Alpine controls visibility; no Bootstrap JS involved so no orphaned backdrop --}}
+    <template x-if="modalOpen">
+        <div>
+            {{-- Backdrop --}}
+            <div class="modal-backdrop fade show"></div>
+
+            {{-- Dialog --}}
+            <div class="modal fade show d-block" tabindex="-1" @click.self="closeModal()">
+                <div class="modal-dialog" @click.stop>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                <i class="fa fa-upload me-2"></i>Upload File
+                            </h5>
+                            <button type="button" class="btn-close" @click="closeModal()" aria-label="Close"></button>
                         </div>
-                    </template>
-                    <template x-if="previewName">
-                        <div>
-                            <template x-if="isImage && previewSrc">
-                                <img :src="previewSrc" class="img-thumbnail mb-2"
-                                     style="max-height: 150px; max-width: 100%;" alt="preview">
-                            </template>
-                            <template x-if="!isImage">
-                                <div class="mb-2">
-                                    <i class="fa fa-file fa-3x text-muted"></i>
-                                </div>
-                            </template>
-                            <p class="mb-1 fw-semibold" x-text="previewName"></p>
-                            <small class="text-muted"><i class="fa fa-spinner fa-spin"></i> Uploading...</small>
+                        <div class="modal-body">
 
-                            {{-- Progress Bar --}}
-                            <div x-show="uploading" x-cloak class="mb-2">
+                            <div class="mb-3">
+                                <label class="form-label">Select file</label>
+                                <input
+                                    x-ref="fileInput"
+                                    type="file"
+                                    class="form-control @error('upload') is-invalid @enderror"
+                                    wire:model="upload"
+                                    accept="{{ $this->acceptAttribute }}"
+                                    @change="handleChange($event)"
+                                >
+                                <div class="form-text">
+                                    Allowed: {{ implode(', ', $this->allowedExtensions) }}
+                                    &mdash; Max: {{ \Tk\Utils\File::bytes2String(\Tk\Utils\File::getMaxUploadBytes()) }}
+                                </div>
+                                @error('upload')
+                                <div class="invalid-feedback d-block">
+                                    <i class="fa fa-exclamation-circle"></i> {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+
+                            {{-- Progress bar --}}
+                            <div x-show="uploading || uploaded" class="mb-2">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <small class="text-muted"
+                                           x-text="uploading ? 'Uploading...' : 'Ready to save'"></small>
+                                    <small class="text-muted" x-show="uploading" x-text="progress + '%'"></small>
+                                </div>
                                 <div class="progress" style="height: 6px;">
                                     <div
-                                        class="progress-bar progress-bar-striped progress-bar-animated"
+                                        class="progress-bar progress-bar-striped"
+                                        :class="uploading ? 'progress-bar-animated' : 'bg-success'"
                                         role="progressbar"
-                                        :style="'width: ' + progress + '%'"
-                                        :aria-valuenow="progress"
+                                        :style="'width: ' + (uploaded ? 100 : progress) + '%'"
                                         aria-valuemin="0"
                                         aria-valuemax="100"
                                     ></div>
                                 </div>
-                                <small class="text-muted">Uploading... <span x-text="progress"></span>%</small>
                             </div>
+
+                            {{-- Saving indicator --}}
+                            <div wire:loading wire:target="uploadFile">
+                                <small class="text-muted">
+                                    <span class="spinner-border spinner-border-sm" role="status"></span>
+                                    Saving...
+                                </small>
+                            </div>
+
                         </div>
-                    </template>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @click="closeModal()">Cancel</button>
+                            <button
+                                type="button"
+                                class="btn btn-primary"
+                                wire:click="uploadFile"
+                                wire:loading.attr="disabled"
+                                wire:target="uploadFile"
+                                :disabled="!uploaded || uploading"
+                            >
+                                <span wire:loading wire:target="uploadFile"
+                                      class="spinner-border spinner-border-sm me-1" role="status"></span>
+                                <i wire:loading.remove wire:target="uploadFile" class="fa fa-upload me-1"></i>
+                                Save
+                            </button>
+                        </div>
+                    </div>
                 </div>
-
-                <input
-                    x-ref="fileInput"
-                    type="file"
-                    class="d-none"
-                    wire:model="upload"
-                    accept=".txt,.md,.pdf,.zip,.tar,.gz,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif"
-                    @change="handleChange($event)"
-                >
-
-                {{-- Validation Error --}}
-                @error('upload')
-                <div class="alert alert-danger py-2 mb-2">
-                    <i class="fa fa-exclamation-circle"></i> {{ $message }}
-                </div>
-                @enderror
-
-                {{-- Saving indicator --}}
-                <div wire:loading wire:target="uploadFile" class="mb-2">
-                    <small class="text-muted">
-                        <span class="spinner-border spinner-border-sm" role="status"></span>
-                        Saving...
-                    </small>
-                </div>
-
             </div>
-
-            {{-- Files Table --}}
-            <div class="mt-3">
-                <x-tkl-ui::table :table="$this" class="table table-sm table-hover" style="font-size: 0.8rem;"/>
-            </div>
-
         </div>
-    </div>
+    </template>
 </div>
