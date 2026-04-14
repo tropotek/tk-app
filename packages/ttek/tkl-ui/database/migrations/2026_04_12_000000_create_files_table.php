@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('mime_type', 100)->nullable();
             $table->unsignedBigInteger('size')->default(0);
             $table->timestamps();
+            $table->softDeletes();
 
             $table->index(['fkey', 'fid']);
         });

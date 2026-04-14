@@ -12,11 +12,11 @@ use Tk\Events\FileDeletedEvent;
 use Tk\Events\FileUploadedEvent;
 use Tk\Models\File;
 use Tk\Table\Column;
-use Tk\Table\Traits\IsLivewire;
-use Tk\Utils\File as TkFile;
+use Tk\Table\TableComponent;
+use Tk\Utils\File as FileUtil;
 
-new class extends Component {
-    use WithFileUploads, WithPagination, IsLivewire;
+new class extends TableComponent {
+    use WithFileUploads, WithPagination;
 
     #[Locked]
     public string $fkey = '';
@@ -33,28 +33,28 @@ new class extends Component {
         $this->setDefaultSort('created_at', self::SORT_DESC);
         $this->setRowAttrs(fn($r) => ['style' => 'font-size: 0.9em;']);
 
-        $this->appendCell('original_name')
+        $this->appendColumn('original_name')
             ->setHeader('Filename')
             ->addClass('fw-bold align-middle')
             ->setSortable()
-            ->setView(fn(File $file, Column $cell) => view('tkl-ui::components.table.cells.a', [
+            ->setView(fn(File $file, Column $cell) => view('tkl-ui::components.table.columns.a', [
                 'href' => route('files.view', $file->id),
                 'text' => $cell->value($file),
                 'target' => '_blank',
             ]));
 
-        $this->appendCell('size')
+        $this->appendColumn('size')
             ->setSortable()
             ->addClass('align-middle text-nowrap')
-            ->setValue(fn(File $file) => TkFile::bytes2String($file->size));
+            ->setValue(fn(File $file) => FileUtil::bytes2String($file->size));
 
-        $this->appendCell('created_at')
+        $this->appendColumn('created_at')
             ->setHeader('Uploaded')
             ->addClass('align-middle text-nowrap')
             ->setValue([\Tk\Table\Formats::class, 'date'])
             ->setSortable();
 
-        $this->appendCell('_actions')
+        $this->appendColumn('_actions')
             ->setHeader('')
             ->setView(fn(File $file) => '
                 <button wire:click="deleteFile('.$file->id.')"
@@ -68,7 +68,7 @@ new class extends Component {
 
     protected function rules(): array
     {
-        $maxKb = (int) (TkFile::getMaxUploadBytes() / 1024);
+        $maxKb = (int) (FileUtil::getMaxUploadBytes() / 1024);
         return [
             'upload' => "required|file|max:{$maxKb}|mimes:txt,md,pdf,zip,tar,gz,doc,docx,xls,xlsx,jpg,jpeg,png,gif",
         ];
