@@ -17,13 +17,16 @@ use Tk\Table\TableComponent;
 use Tk\Utils\File as FileUtil;
 
 /**
- * NOTE:
- *   To change the file upload size limit, edit the php.ini file and config/livewire.php:
- *   'temporary_file_upload' => [
- *       // ...
- *       'rules' => ['required', 'file', 'max:12288'],    // <== Change 'rules' config (12Mb is the default)
- *      // ...
- *   ];
+ *
+ * For SIS we need the following:
+ * - Use AWS S3 buckets
+ * - Look into using spatie media lib (https://github.com/spatie/laravel-medialibrary) attach files to objects
+ * - Sis Entities have a number of categories of files, consider how we can logically store them
+ * - Sis has various file categories and types that have various upload types, validation rules upload dialog options, etc...
+ *   We need a Document object and FileType object to hold these rules.
+ * - The upload modal needs a filetype select, on select show the allowed file types, with the optional fields if defined in the FileTpye object.
+ * - We need to check with the Gregs and ensure the final requirements are solid, would like to see a way simpler Document system than Sisv1
+ *
  *
  */
 new class extends TableComponent {
@@ -87,8 +90,6 @@ new class extends TableComponent {
     {
         $maxKb = (int)(FileUtil::getMaxUploadBytes() / 1024)-10;
         $exts = implode(',', $this->allowedExtensions);
-
-        vd($exts, $maxKb);
         return [
             'upload' => "required|file|max:{$maxKb}|mimes:{$exts}",
         ];
