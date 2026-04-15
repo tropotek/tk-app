@@ -40,7 +40,7 @@ new class extends TableComponent {
     #[Locked]
     public string $accept = '';
 
-    #[Rule('required|file|max:51200')]
+    //#[Rule('required|file|max:51200')]
     public $upload = null;
 
 
@@ -85,8 +85,10 @@ new class extends TableComponent {
 
     protected function rules(): array
     {
-        $maxKb = (int)(FileUtil::getMaxUploadBytes() / 1024);
+        $maxKb = (int)(FileUtil::getMaxUploadBytes() / 1024)-10;
         $exts = implode(',', $this->allowedExtensions);
+
+        vd($exts, $maxKb);
         return [
             'upload' => "required|file|max:{$maxKb}|mimes:{$exts}",
         ];
@@ -129,12 +131,12 @@ new class extends TableComponent {
 
     public function updatedUpload(): void
     {
-        $this->validateOnly('upload');
+        $valid = $this->validateOnly('upload');
     }
 
     public function uploadFile(): void
     {
-        $this->validate();
+        $valid = $this->validate();
 
         $originalName = $this->upload->getClientOriginalName();
         $mimeType = $this->upload->getMimeType();
@@ -190,9 +192,12 @@ new class extends TableComponent {
         uploaded: false,
         progress: 0,
         filename: null,
+        uploadError: null,
+        maxBytes: {{ \Tk\Utils\File::getMaxUploadBytes() }},
         openModal() {
             this.modalOpen = true;
             document.body.style.overflow = 'hidden';
+            this.resetForm();
         },
         closeModal() {
             this.modalOpen = false;
@@ -206,35 +211,81 @@ new class extends TableComponent {
                 this.uploaded = false;
                 this.progress = 0;
             });
+
             this.$el.addEventListener('livewire-upload-finish', () => {
                 this.uploading = false;
                 this.uploaded = true;
             });
+
             this.$el.addEventListener('livewire-upload-error', () => {
                 this.uploading = false;
                 this.uploaded = false;
             });
+
             this.$el.addEventListener('livewire-upload-progress', (e) => {
                 this.progress = e.detail.progress;
             });
+
             $wire.$watch('upload', (value) => {
                 if (value === null) this.resetForm();
             });
+
             $wire.$on('upload-complete', () => {
                 this.closeModal();
             });
         },
+
         resetForm() {
             this.uploading = false;
             this.uploaded = false;
             this.progress = 0;
             this.filename = null;
-            if (this.$refs.fileInput) this.$refs.fileInput.value = '';
+            this.uploadError = null;
+
+            if (this.$refs.fileInput) {
+                this.$refs.fileInput.value = '';
+            }
         },
+
         handleChange(e) {
             const file = e.target.files[0];
-            this.filename = file ? file.name : null;
+
+            this.uploadError = null;
+            this.uploading = false;
             this.uploaded = false;
+            this.progress = 0;
+
+            if (!file) {
+                this.filename = null;
+                return;
+            }
+
+            if (file.size > this.maxBytes) {
+                this.uploadError = `File is too large. Maximum allowed size is ${Math.ceil(this.maxBytes / 1024 / 1024)} MB.`;
+                this.filename = null;
+                e.target.value = '';
+                $wire.set('upload', null);
+                return;
+            }
+
+            this.filename = file.name;
+
+            $wire.upload(
+                'upload',
+                file,
+                () => {
+                    this.uploading = true;
+                    this.uploaded = true;
+                },
+                () => {
+                    this.uploading = false;
+                    this.uploaded = false;
+                    this.uploadError = 'Upload failed.';
+                },
+                (event) => {
+                    this.progress = event.detail.progress;
+                }
+            );
         },
     }"
     @keydown.escape.window="if (modalOpen) closeModal()"
@@ -260,13 +311,10 @@ new class extends TableComponent {
         </div>
     </div>
 
-    {{-- Modal — Alpine controls visibility; no Bootstrap JS involved so no orphaned backdrop --}}
     <template x-if="modalOpen">
         <div>
-            {{-- Backdrop --}}
             <div class="modal-backdrop fade show"></div>
 
-            {{-- Dialog --}}
             <div class="modal fade show d-block" tabindex="-1" @click.self="closeModal()">
                 <div class="modal-dialog" @click.stop>
                     <div class="modal-content">
@@ -276,22 +324,30 @@ new class extends TableComponent {
                             </h5>
                             <button type="button" class="btn-close" @click="closeModal()" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body">
 
+                        <div class="modal-body">
                             <div class="mb-3">
                                 <label class="form-label">Select file</label>
                                 <input
                                     x-ref="fileInput"
                                     type="file"
-                                    class="form-control @error('upload') is-invalid @enderror"
-                                    wire:model="upload"
+                                    class="form-control"
                                     accept="{{ $this->acceptAttribute }}"
                                     @change="handleChange($event)"
                                 >
+
                                 <div class="form-text">
                                     Allowed: {{ implode(', ', $this->allowedExtensions) }}
                                     &mdash; Max: {{ \Tk\Utils\File::bytes2String(\Tk\Utils\File::getMaxUploadBytes()) }}
                                 </div>
+
+                                <template x-if="uploadError">
+                                    <div class="invalid-feedback d-block">
+                                        <i class="fa fa-exclamation-circle"></i>
+                                        <span x-text="uploadError"></span>
+                                    </div>
+                                </template>
+
                                 @error('upload')
                                 <div class="invalid-feedback d-block">
                                     <i class="fa fa-exclamation-circle"></i> {{ $message }}
@@ -299,7 +355,6 @@ new class extends TableComponent {
                                 @enderror
                             </div>
 
-                            {{-- Progress bar --}}
                             <div x-show="uploading || uploaded" class="mb-2">
                                 <div class="d-flex justify-content-between mb-1">
                                     <small class="text-muted"
@@ -318,15 +373,14 @@ new class extends TableComponent {
                                 </div>
                             </div>
 
-                            {{-- Saving indicator --}}
                             <div wire:loading wire:target="uploadFile">
                                 <small class="text-muted">
                                     <span class="spinner-border spinner-border-sm" role="status"></span>
                                     Saving...
                                 </small>
                             </div>
-
                         </div>
+
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @click="closeModal()">Cancel</button>
                             <button
