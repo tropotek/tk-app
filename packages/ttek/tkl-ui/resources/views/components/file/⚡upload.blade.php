@@ -4,6 +4,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
+use Livewire\Attributes\Rule;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
@@ -39,6 +40,7 @@ new class extends TableComponent {
     #[Locked]
     public string $accept = '';
 
+    #[Rule('required|file|max:51200')]
     public $upload = null;
 
 
@@ -72,7 +74,7 @@ new class extends TableComponent {
         $this->appendColumn('_actions')
             ->setHeader('')
             ->setView(fn(File $file) => '
-                <button wire:click="deleteFile('.$file->id.')"
+                <button wire:click="deleteFile(' . $file->id . ')"
                     wire:confirm="Delete this file?"
                     style="font-size: 0.8em;"
                     class="p-1 btn btn-sm btn-outline-danger" title="Delete">
@@ -83,8 +85,8 @@ new class extends TableComponent {
 
     protected function rules(): array
     {
-        $maxKb = (int) (FileUtil::getMaxUploadBytes() / 1024);
-        $exts  = implode(',', $this->allowedExtensions);
+        $maxKb = (int)(FileUtil::getMaxUploadBytes() / 1024);
+        $exts = implode(',', $this->allowedExtensions);
         return [
             'upload' => "required|file|max:{$maxKb}|mimes:{$exts}",
         ];
@@ -137,7 +139,7 @@ new class extends TableComponent {
         $originalName = $this->upload->getClientOriginalName();
         $mimeType = $this->upload->getMimeType();
 
-        $path = $this->upload->store('documents/'.$this->fid, 'local');
+        $path = $this->upload->store('documents/' . $this->fid, 'local');
         $size = Storage::disk('local')->size($path);
 
         $file = File::create([
