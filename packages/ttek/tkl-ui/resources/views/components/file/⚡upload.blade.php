@@ -194,17 +194,32 @@ new class extends TableComponent {
         filename: null,
         uploadError: null,
         maxBytes: {{ \Tk\Utils\File::getMaxUploadBytes() }},
+
         openModal() {
             this.modalOpen = true;
             document.body.style.overflow = 'hidden';
             this.resetForm();
         },
+
         closeModal() {
             this.modalOpen = false;
             document.body.style.removeProperty('overflow');
             this.resetForm();
             $wire.set('upload', null);
         },
+
+        resetForm() {
+            this.uploading = false;
+            this.uploaded = false;
+            this.progress = 0;
+            this.filename = null;
+            this.uploadError = null;
+
+            if (this.$refs.fileInput) {
+                this.$refs.fileInput.value = '';
+            }
+        },
+
         init() {
             this.$el.addEventListener('livewire-upload-start', () => {
                 this.uploading = true;
@@ -220,14 +235,11 @@ new class extends TableComponent {
             this.$el.addEventListener('livewire-upload-error', () => {
                 this.uploading = false;
                 this.uploaded = false;
+                this.uploadError = 'Upload failed.';
             });
 
             this.$el.addEventListener('livewire-upload-progress', (e) => {
-                this.progress = e.detail.progress;
-            });
-
-            $wire.$watch('upload', (value) => {
-                if (value === null) this.resetForm();
+                this.progress = e.detail.progress ?? 0;
             });
 
             $wire.$on('upload-complete', () => {
@@ -235,24 +247,12 @@ new class extends TableComponent {
             });
         },
 
-        resetForm() {
-            this.uploading = false;
-            this.uploaded = false;
-            this.progress = 0;
-            this.filename = null;
-            this.uploadError = null;
-
-            if (this.$refs.fileInput) {
-                this.$refs.fileInput.value = '';
-            }
-        },
-
         handleChange(e) {
             const file = e.target.files[0];
 
             this.uploadError = null;
-            this.uploading = false;
             this.uploaded = false;
+            this.uploading = false;
             this.progress = 0;
 
             if (!file) {
@@ -264,31 +264,33 @@ new class extends TableComponent {
                 this.uploadError = `File is too large. Maximum allowed size is ${Math.ceil(this.maxBytes / 1024 / 1024)} MB.`;
                 this.filename = null;
                 e.target.value = '';
-                $wire.set('upload', null);
                 return;
             }
 
             this.filename = file.name;
+            this.uploading = true;
 
             $wire.upload(
                 'upload',
                 file,
                 () => {
-                    this.uploading = true;
+                    this.uploading = false;
                     this.uploaded = true;
+                    this.progress = 100;
                 },
                 () => {
                     this.uploading = false;
                     this.uploaded = false;
                     this.uploadError = 'Upload failed.';
                 },
-                (event) => {
-                    this.progress = event.detail.progress;
+                (progress) => {
+                    this.progress = typeof progress === 'number'
+                        ? progress
+                        : progress?.detail?.progress ?? 0;
                 }
             );
         },
     }"
-    @keydown.escape.window="if (modalOpen) closeModal()"
 >
     {{-- Card --}}
     <div class="card mb-3 border-info">
@@ -333,6 +335,7 @@ new class extends TableComponent {
                                     type="file"
                                     class="form-control"
                                     accept="{{ $this->acceptAttribute }}"
+                                    @click="progress = 0; uploaded = false; uploadError = null"
                                     @change="handleChange($event)"
                                 >
 
@@ -366,7 +369,7 @@ new class extends TableComponent {
                                         class="progress-bar progress-bar-striped"
                                         :class="uploading ? 'progress-bar-animated' : 'bg-success'"
                                         role="progressbar"
-                                        :style="'width: ' + (uploaded ? 100 : progress) + '%'"
+                                        :style="'width: ' + progress + '%'"
                                         aria-valuemin="0"
                                         aria-valuemax="100"
                                     ></div>
