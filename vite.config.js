@@ -27,7 +27,6 @@ export default defineConfig(({ mode }) => {
         resolve: {
             alias: {
                 '@tkl-ui': path.resolve(__dirname, 'packages/ttek/tkl-ui/resources'),
-                //'$': 'jQuery',
             },
         },
         plugins: [

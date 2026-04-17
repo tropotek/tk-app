@@ -1,20 +1,21 @@
-import './bootstrap';
-
-import $ from 'jquery';
-window.jQuery = window.$ = $;
-
-import htmx from 'htmx.org';
-window.htmx = htmx;
-
 import * as bootstrap from 'bootstrap';
+window.bootstrap = bootstrap;
 
-import '@tkl-ui/js/functions.js';
+import { Livewire, Alpine } from '../../vendor/livewire/livewire/dist/livewire.esm';
+window.Alpine = Alpine;
 
 import '@tkl-ui/js/form.js';
-import '@tkl-ui/js/table.js';
+
+import confirmModal from '@tkl-ui/js/alpine/confirmModal.js';
+
+Alpine.plugin(confirmModal);
+
+// Livewire/Alpine initialization
+Livewire.start();
+
 
 // global JS config object
-window.appConfig = {
-    isProd: false,
-};
+// window.appConfig = {
+//     isProd: false,
+// };
 

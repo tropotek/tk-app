@@ -17,9 +17,18 @@
                 <div class="col-md-8">
 
                     <div class="card mb-3">
-                        <div class="card-body">
+                        <div class="card-body" x-data>
                             <h4>My Ideas</h4>
                             <p>...</p>
+                            <div x-init="console.log('alpine alive')"></div>
+                            <p><button
+                                    x-confirm="Are you sure?"
+                                    @confirmed-action="console.log('Action Executed!')"
+                                >Delete</button></p>
+                            <p><a href="{{ route('dashboard') }}"
+                                  x-confirm="Are you sure?"
+                                  @confirmed-action="location.href = $el.href"
+                                >Lets Go!</a></p>
                             <p>...</p>
                         </div>
                     </div>

@@ -20,8 +20,6 @@
         "@fortawesome/fontawesome-free": "^7.2.0",
         "@popperjs/core": "^2.11.8",
         "bootstrap": "^5.3.8",
-        "htmx.org": "^2.0.8",
-        "jquery": "^4.0.0",
         "playwright": "^1.57.0"
     }
 }

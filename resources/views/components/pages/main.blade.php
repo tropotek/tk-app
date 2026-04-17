@@ -7,6 +7,7 @@
 
     <title>{{ $pageName }} {{ config('app.name', 'Example App') }}</title>
 
+    @livewireStyles
     @vite(['resources/scss/app.scss', 'resources/js/app.js'])
 
 </head>
@@ -31,5 +32,7 @@
     <x-pages.meta.footer />
 
     <x-ui.modal.about />
+
+    @livewireScriptConfig
 </body>
 </html>

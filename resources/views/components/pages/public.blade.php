@@ -9,6 +9,8 @@
 
     @vite(['resources/scss/app.scss', 'resources/js/app.js'])
 
+    @livewireStyles
+
 </head>
 <body class="bg-light h-100">
 
@@ -24,6 +26,6 @@
         </div>
     </div>
 
-
+    @livewireScriptConfig
 </body>
 </html>
