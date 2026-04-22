@@ -1,3 +1,9 @@
+/**
+ * This is a demo of an alpine plugin  only
+ * It is buggy and  not production ready
+ *
+ * @todo make it production ready
+ */
 import * as bootstrap from 'bootstrap';
 
 export default function confirmModal(Alpine) {

@@ -22,11 +22,12 @@
                             <p>...</p>
                             <div x-init="console.log('alpine alive')"></div>
                             <p><button
-                                    x-confirm="Are you sure?"
+                                    x-confirm="'Are you sure?'"
                                     @confirmed-action="console.log('Action Executed!')"
+                                    {{-- @confirmed-action="$el.form.submit()" --}}
                                 >Delete</button></p>
                             <p><a href="{{ route('dashboard') }}"
-                                  x-confirm="Are you sure?"
+                                  x-confirm="'Are you sure?'"
                                   @confirmed-action="location.href = $el.href"
                                 >Lets Go!</a></p>
                             <p>...</p>
