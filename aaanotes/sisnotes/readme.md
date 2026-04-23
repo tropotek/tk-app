@@ -47,7 +47,7 @@ The PR description should have the issue ID number and the major changes along w
 Use a PR template; this is what we used in SISv1, with some notes to remind me of what to check before publishing. 
 Edit this in parallel with the code to help keep track of what you have done. When you feel the code is ready to publish, the PR test procedure is generally ready to go to. 
 
-[The PR template](./pr_template.md)
+[My PR Template Version](./pr_template.md)
 
 
 **HOT TIP:**
