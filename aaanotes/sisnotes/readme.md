@@ -1,11 +1,12 @@
-# SIS Development Ideas
+# SIS Development Notes
 
-These are just some strategies I use to help me when developing for SIS. Maybe they can help us all?
+Strategies to remember when developing PRs for SIS.
+
 
 ## Interpreting the PR Requirements
 
 Read the requirements and be sure you fully understand what is required. Be sure that you recognise the intent of every word in the spec.
-Sometimes I need to read the spec a number of times and even look up the meaning of words to get the full intent of what's being asked for.
+If needed, re-read the spec multiple times and even look up the meaning of words to get the full intent of what's being asked for.
 If you still think it's a little ambiguous, ask for clarification or use Claude to help get a better understanding.
 
 Checklist:
@@ -15,13 +16,13 @@ Checklist:
 - Ask another developer to help clarify
 - Ask for clarification from the story author
 
-I find the requirements are generally written in a way that requires more focus than a general requirement that you would receive from a non-technical client.
+The requirements are generally written in a way that requires more focus than general requirements that you would receive from a non-technical client.
 
-Another thing to keep in mind, and something I struggle with, is to stop and ask yourself, "Can this task be logically broken down into sub-tasks?" If yes, then add that to the story outlining the smaller sub-tasks and possibly a story for each sub-task.
+Another thing to keep in mind is to stop and ask yourself, "Can this task be logically broken down into sub-tasks?" If yes, then add that to the story outlining the smaller sub-tasks and possibly a story for each sub-task. Mostly this is done already, but when you notice a case for it note it in the story.
 
 ## Available Resources
 
-It's sometimes hard to remember all the available resources we have available to us. But one that I have found useful to get an idea of how the clients (ie: staff and students) will interact with the system is to look at the student Handbook. It will highlight the details of what the students have to do to progress and how the staff will assess that progression. Login to SISv1 and you should find a link on the dashboard page to the current handbook. Highly suggest taking the time to read it, you do not need to memorise it, but it should help to clarify the intended business logic required for SIS.
+It's sometimes hard to remember all the available resources we have available to us. But one that is useful to get an idea of how the clients (ie: staff and students) will interact with the system is the student Handbook. It will highlight the details of what the students have to do to progress and how the staff will assess that progression. Login to SISv1 to find a link on the dashboard page to the current handbook. Highly suggest taking the time to read it, you do not need to memorise it, but it should help to clarify the intended business logic required for SIS.
 
 On top of that, be sure to look up the docs link in Shortcut there are a number of recent resources that are available, and we should use them as much as possible.
 
@@ -35,23 +36,23 @@ You can spend the free time looking into SISv1 to see if it has any similarities
 
 ## Publishing a PR
 
-We have to be careful when publishing a PR for review.
+Be careful when publishing a PR for review. Keep them in a draft or WIP (Work In Progress) state until ready for an actual review.
 The main goal here is to ensure the reviewers and devs are not overwhelmed with PRs that are not ready to be merged.
 Try to focus your attention on one PR at a time. 
-However, do have multiple braches and issues you are working on in the background, try not to be a machine and publish multiple PRs at once, that may come back to bite you. 
-This is not a hard and fast rule, you may find at times you have to publish multiple PRs, but they should be relatively small and focused.
+However, feel free to have multiple branches and issues you are working on in the background, try not to be a machine and publish multiple PRs at once. That will come back to bite you. 
+You may find at times you have to publish multiple PRs, but they should be relatively small and focused.
 
-The PR description should have the issue ID number and the major changes along with a **current** test procedure. If you have refactored the code, be sure to review the test procedure and make sure it still works. This takes time but is important to those reviewing the PR.
+The PR description should have the issue ID number and the major changes along with a **current** test procedure. If you have refactored the code, be sure to **review the test procedure** and make sure it still works. This takes time but is important to those reviewing the PR.
 
-When I publish a PR, I use a template that was used in SISv1, I added some notes to remind me of what to check before publishing. 
-I usually work on this as I work on the PR to keep track of what I have done. When I feel the code is ready to publish, the PR test procedure is generally ready to go to. 
+Use a PR template; this is what we used in SISv1, with some notes to remind me of what to check before publishing. 
+Edit this in parallel with the code to help keep track of what you have done. When you feel the code is ready to publish, the PR test procedure is generally ready to go to. 
 
-[Here is my version of the PR template](./pr_template.md)
+[The PR template](./pr_template.md)
 
 
 **HOT TIP:**
 
-I add the PR template to the sisv2 `./_notes/pr-notes/_template.md` and use a bash script `./_notes/pr-notes/new-pr.sh` that I can run to generate a new pr document from the branch name. (eg: `sc-123-start-a-pr`)
+Add the PR template to the sisv2 `./_notes/pr-notes/_template.md` and use a bash script `./_notes/pr-notes/new-pr.sh` that can generate a new pr document from the branch name. (eg: `sc-123-start-a-pr`)
 ```bash
 #!/bin/bash -e
 #
