@@ -29,9 +29,9 @@ On top of that, be sure to look up the docs link in Shortcut there are a number 
 
 ## While You Wait...
 
-Sometimes you will find that you are waiting for a response or review of a PR. This is a good time to review the stories and have one picked out you can be reading while you wait. I will generally have multiple uncommitted branches on the go, experimenting with ideas or implementations that generally never make it to a PR. I like to have a totally external project such as this repo `tk-app` as just a place to implement things for the future that does not impact SIS at all.    
+Sometimes you will find that you are waiting for a response or review of a PR. This is a good time to review the stories and have one picked out you can be reading while you wait. Have multiple uncommitted branches on the go, experimenting with ideas or implementations that generally never make it to a PR. Have a totally external project such as this repo `tk-app` as a place to experiment with ideas for future SIS tasks.    
 
-You can spend the free time looking into SISv1 to see if it has any similarities to what you are trying to do.
+Remember to look into SISv1 to see if it has any code ideas/logic that may help you understand any requirements in more depth.
 
 
 ## Publishing a PR
