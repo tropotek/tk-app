@@ -40,6 +40,10 @@ closes {sc-nnn} | issue {sc-nnn}
 
 
 
+### Implementations (optional)
+- _If this is a new feature, summarise the implementation/usage details._
+
+
 ### Post-deployment (optional)
 - _Anything needed after deployment, e.g. cron job, one-time script to run._
 
