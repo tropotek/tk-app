@@ -23,7 +23,7 @@ Checklist:
 
 The requirements are generally written in a way that requires more focus than general requirements that you would receive from a non-technical client.
 
-Another thing to keep in mind is to stop and ask yourself, "Can this task be logically broken down into sub-tasks?" If yes, then add that to the story outlining the smaller sub-tasks and possibly a story for each sub-task. Mostly this is done already, but when you notice a case for it note it in the story.
+Another thing to keep in mind is to stop and ask yourself, "Can this task be logically broken down into sub-tasks?" If yes, then add that to the story outlining the smaller sub-tasks and possibly a story for each sub-task. Mostly this is done already, but when you notice a case for it, note it in the story.
 
 ## Available Resources
 
