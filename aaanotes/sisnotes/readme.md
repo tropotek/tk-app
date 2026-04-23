@@ -19,6 +19,12 @@ I find the requirements are generally written in a way that requires more focus 
 
 Another thing to keep in mind, and something I struggle with, is to stop and ask yourself, "Can this task be logically broken down into sub-tasks?" If yes, then add that to the story outlining the smaller sub-tasks and possibly a story for each sub-task.
 
+## Available Resources
+
+It's sometimes hard to remember all the available resources we have available to us. But one that I have found useful to get an idea of how the clients (ie: staff and students) will interact with the system is to look at the student Handbook. It will highlight the details of what the students have to do to progress and how the staff will assess that progression. Login to SISv1 and you should find a link on the dashboard page to the current handbook. Highly suggest taking the time to read it, you do not need to memorise it, but it should help to clarify the intended business logic required for SIS.
+
+On top of that, be sure to look up the docs link in Shortcut there are a number of recent resources that are available, and we should use them as much as possible.
+
 
 ## While You Wait...
 
