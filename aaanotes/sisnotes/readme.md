@@ -49,6 +49,8 @@ Edit this in parallel with the code to help keep track of what you have done. Wh
 
 [My PR Template Version](./pr_template.md)
 
+Having the "STOP!!!" section at the top reminds me of things to check before publishing. Edit it to match your needs.
+
 
 **HOT TIP:**
 
