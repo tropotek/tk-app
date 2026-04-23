@@ -3,6 +3,11 @@
 Strategies to remember when developing PRs for SIS.
 
 
+## Handy References
+
+- [PR template](./pr_template.md)
+- [SIS Acronyms](./acronyms.md)
+
 ## Interpreting the PR Requirements
 
 Read the requirements and be sure you fully understand what is required. Be sure that you recognise the intent of every word in the spec.
@@ -86,9 +91,4 @@ fi
 ```
 If you're using PhpStorm and can execute bash scripts, right-click on this file and select `Run` to create a new document.
 
-
-# Handy References
-
-- [PR template](./pr_template.md)
-- [SIS Acronyms](./acronyms.md)
 
