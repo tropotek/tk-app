@@ -1,25 +1,18 @@
 <x-pages.main>
 
-    <div class="alert-component row">
-        <div class="col-12">
-            <div class="alert alert-info" role="alert">
-                A simple info alert—check it out!
-            </div>
-        </div>
-    </div>
-
     <div class="row mb-2">
-        <h2>Bootstrap Examples</h2>
+        <h2>Livewire Examples</h2>
     </div>
     <div class="row">
         <div class="col-lg-9 col-md-8 col-sm-6 col-xs-12">
             <div class="row">
                 <div class="col-md-8">
 
-                    <div class="card mb-3">
+                    <div class="card mb-3 border-primary">
                         <div class="card-body" x-data>
-                            <h4>My Ideas</h4>
-                            <p>...</p>
+                            <h4>Examples</h4>
+
+                            <p><strong>Confirm dialog:</strong></p>
                             <div x-init="console.log('alpine alive')"></div>
                             <p><button
                                     x-confirm="'Are you sure?'"
@@ -30,7 +23,22 @@
                                   x-confirm="'Are you sure?'"
                                   @confirmed-action="location.href = $el.href"
                                 >Lets Go!</a></p>
-                            <p>...</p>
+                            <p>&nbsp;</p>
+
+                            <p><strong>Test flash message alerts:</strong></p>
+                            <ul class="list-unstyled">&nbsp;
+                                <a class="btn btn-primary" href="{{ request()->url() }}">Primary</a>
+                                <a class="btn btn-success" href="{{ request()->fullUrlWithQuery(['alert' => 'success']) }}">Success</a>
+                                <a class="btn btn-info" href="{{ request()->fullUrlWithQuery(['alert' => 'info']) }}">Info</a>
+                                <a class="btn btn-warning" href="{{ request()->fullUrlWithQuery(['alert' => 'warning']) }}">Warning</a>
+                                <a class="btn btn-danger" href="{{ request()->fullUrlWithQuery(['alert' => 'danger']) }}">Danger</a>
+                                <a class="btn btn-danger" href="{{ request()->fullUrlWithQuery(['alert' => 'error']) }}">Error</a>
+                            </ul>
+
+                            <p>&nbsp;</p>
+                            <p>&nbsp;</p>
+                            <p>&nbsp;</p>
+                            <p>&nbsp;</p>
                         </div>
                     </div>
 

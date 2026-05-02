@@ -1,11 +1,59 @@
-
-@use 'bootstrap/scss/bootstrap';
-
 // Note: you can import .scss files if you manually copy font files to /public
 @use "@fortawesome/fontawesome-free/css/all";
 
 @use '@tkl-ui/scss/form.scss';
 @use '@tkl-ui/scss/table.scss';
+
+
+// NOTE: Bootstrap 6 will be using the @use inplace of @import
+// SEE: https://bootswatch.com/
+
+// 1. Import Bootstrap functions first
+@import 'bootstrap/scss/functions';
+
+// 2. Import Bootswatch theme variables (e.g., 'flatly')
+//@import "bootswatch/dist/cerulean/variables";
+@import "variables";
+
+// 3. Import Bootstrap core
+@import "bootstrap/scss/bootstrap";
+
+// 4. Import Bootswatch theme overrides
+//@import "bootswatch/dist/cerulean/bootswatch";
+@import "themestyles";
+
+// Mick's recommended themes
+//  "cerulean";
+//  "litera";
+//  "spacelab";
+//  "united";
+
+// bootswatch themes
+//  "cerulean";
+//  "cosmo";
+//  "cyborg";
+//  "darkly";
+//  "flatly";
+//  "journal";
+//  "litera";
+//  "lumen";
+//  "lux";
+//  "materia";
+//  "minty";
+//  "morph";
+//  "pulse";
+//  "quartz";
+//  "sandstone";
+//  "simplex";
+//  "sketchy";
+//  "slate";
+//  "solar";
+//  "spacelab";
+//  "superhero";
+//  "united";
+//  "vapor";
+//  "yeti";
+//  "zephyr";
 
 
 html {

@@ -112,10 +112,10 @@
         </x-slot:col1>
 
         <x-slot:col2>
-            <div class="card mb-3 border-info">
-                <div class="card-header text-bg-info">
+            <div class="card mb-3 border-primary">
+                <div class="card-header text-bg-primary">
                     <h6 class="mb-0">
-                        <a href="#collapse-example1" id="heading-example" role="button" class="d-block text-decoration-none text-white" data-bs-toggle="collapse">
+                        <a href="#collapse-example1" id="heading-example" role="button" class="d-block text-decoration-none text-bg-primary" data-bs-toggle="collapse">
                             <i class="fa fa-chevron-down text-white-50 float-end"></i>
                             Collapsible Group Item #1
                         </a>
@@ -137,10 +137,10 @@
         </x-slot:col2>
 
         <x-slot:col3>
-            <div class="card mb-3 border-info">
-                <div class="card-header text-bg-primary">
+            <div class="card mb-3 border-warning">
+                <div class="card-header text-bg-warning">
                     <h6 class="mb-0">
-                        <a href="#collapse-example" id="heading-example" role="button" class="d-block text-decoration-none text-white" data-bs-toggle="collapse">
+                        <a href="#collapse-example" id="heading-example" role="button" class="d-block text-decoration-none text-bg-warning" data-bs-toggle="collapse">
                             <i class="fa fa-chevron-down text-white-50 float-end"></i>
                             Collapsible Group Item #1
                         </a>

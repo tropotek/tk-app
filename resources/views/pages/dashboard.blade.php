@@ -10,6 +10,7 @@
 
         <p>Test flash message alerts:</p>
         <ul class="list-unstyled">&nbsp;
+            <a class="btn btn-primary" href="{{ request()->fullUrlWithQuery(['alert' => 'primary']) }}">Primary</a>
             <a class="btn btn-success" href="{{ request()->fullUrlWithQuery(['alert' => 'success']) }}">Success</a>
             <a class="btn btn-info" href="{{ request()->fullUrlWithQuery(['alert' => 'info']) }}">Info</a>
             <a class="btn btn-warning" href="{{ request()->fullUrlWithQuery(['alert' => 'warning']) }}">Warning</a>

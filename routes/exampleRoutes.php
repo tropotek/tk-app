@@ -9,6 +9,7 @@ use App\Http\Controllers\Examples\IdeaController;
 // Laracasts Ideas tutorial
 Route::middleware('auth')->name('examples.')->prefix('/examples')->group(function () {
     Route::get('/examples', [ExamplesController::class, 'index'])->name('index');
+    Route::livewire('/bootstrap', 'pages::examples.bootstrap')->name('bootstrap');
 
     Route::name('ideas.')->group(function () {
         Route::livewire('/ideas', 'pages::examples.ideas')->name('index');

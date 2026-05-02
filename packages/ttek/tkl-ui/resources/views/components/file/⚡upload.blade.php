@@ -294,8 +294,8 @@ new class extends TableComponent {
     }"
 >
     {{-- Card --}}
-    <div class="card mb-3 border-info">
-        <div class="card-header text-bg-info d-flex align-items-center justify-content-between">
+    <div class="card mb-3 border-primary">
+        <div class="card-header text-bg-primary d-flex align-items-center justify-content-between">
             <h6 class="mb-0">
                 <a href="#collapse-myDocuments" id="heading-myDocuments" role="button"
                    class="d-block text-decoration-none text-white" data-bs-toggle="collapse">

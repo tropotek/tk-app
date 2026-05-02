@@ -44,8 +44,8 @@ new class extends Component {
 };
 ?>
 
-<div class="card mb-3 border-info">
-    <div class="card-header text-bg-info">
+<div class="card mb-3 border-primary">
+    <div class="card-header text-bg-primary">
         <h6 class="mb-0">
             <a href="#collapse-example" id="heading-example" role="button"
                 class="d-block text-decoration-none text-white" data-bs-toggle="collapse">

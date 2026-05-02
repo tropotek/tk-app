@@ -33,6 +33,7 @@ final class NavBar implements MenuBuilderInterface
                     ->setVisible(auth()->check()),
                 MenuItem::makeSeparator(),
                 MenuItem::make('Page Layout Example', route('examples.index')),
+                MenuItem::make('Bootstrap Elements', route('examples.bootstrap')),
             ]),
 
 
