@@ -24,6 +24,15 @@ class extends Component {
         Breadcrumbs::push('Users');
 
 
+        $this->appendColumn('actions')
+            ->setSortable()
+            ->addClass('fw-bold w-auto')
+            ->setView(function (User $user, Column $column) {
+                return sprintf('<a href="%s"><i class="fa fa-fw fa-pencil"></i></a>',
+                    route('admin.users.edit1', $user)
+                );
+            });
+
         $this->appendColumn('name')
             ->setSortable()
             ->addClass('fw-bold w-auto')

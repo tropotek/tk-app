@@ -4,7 +4,6 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Tables\UserTable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Tk\Support\Facades\Breadcrumbs;
@@ -18,7 +17,7 @@ class UserController extends Controller
 
         $user = new User();
 
-        return view('pages.users.edit', [
+        return view('pages.users.edit1', [
             'mode' => 'create',
             'method' => 'post',
             'action' => '/user',
@@ -31,7 +30,7 @@ class UserController extends Controller
     {
         Breadcrumbs::push('user.edit|User View');
 
-        return view('pages.users.edit',[
+        return view('pages.users.edit1',[
             'mode' => 'view',
             'cancelRoute' => '/users',
             'editRoute' => "/user/{$user->id}/edit",
@@ -43,7 +42,7 @@ class UserController extends Controller
     {
         Breadcrumbs::push('user.edit|User Edit');
 
-        return view('pages.users.edit', [
+        return view('pages.users.edit1', [
             'mode' => 'edit',
             'method' => 'patch',
             'action' => '/user/' . $user->id,
