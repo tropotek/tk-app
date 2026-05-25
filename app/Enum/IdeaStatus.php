@@ -23,6 +23,7 @@ enum IdeaStatus: string
         foreach (self::cases() as $case) {
             $items[$case->value] = $case->label();
         }
+
         return $items;
     }
 }

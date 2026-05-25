@@ -2,7 +2,6 @@
 
 namespace Tk\Table\Traits;
 
-use Illuminate\Support\Collection;
 use Tk\Support\ItemCollection;
 use Tk\Table\Column;
 
@@ -10,13 +9,12 @@ trait HasColumns
 {
     protected ItemCollection $columns;
 
-
     /**
      * @return ItemCollection<string, Column>
      */
     public function getColumns(): ItemCollection
     {
-        return $this->columns ??= new ItemCollection();
+        return $this->columns ??= new ItemCollection;
     }
 
     /**
@@ -24,7 +22,7 @@ trait HasColumns
      */
     public function getVisibleColumns(): ItemCollection
     {
-        return $this->getColumns()->filter(fn(Column $column) => $column->isVisible());
+        return $this->getColumns()->filter(fn (Column $column) => $column->isVisible());
     }
 
     public function getColumn(string $name): ?Column
@@ -35,6 +33,7 @@ trait HasColumns
     public function removeColumn(string $name): static
     {
         $this->getColumns()->forget($name);
+
         return $this;
     }
 
@@ -61,6 +60,4 @@ trait HasColumns
 
         return $this->getColumns()->prependItem($column->getName(), $column, $before);
     }
-
-
 }

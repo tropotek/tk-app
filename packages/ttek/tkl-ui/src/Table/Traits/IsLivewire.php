@@ -6,9 +6,12 @@ namespace Tk\Table\Traits;
  * Use this trait to add a table to a Livewire Component
  *
  * Livewire Component methods:
+ *
  * @method void reset(...$properties)
  * @method void resetPage(string $pageName = 'page')
+ *
  * @uses WithSearch
+ *
  * @property string $search
  * @property string $searchPlaceholder
  * @property array $searchClear
@@ -28,26 +31,26 @@ trait IsLivewire
         $qs = [
             'limit' => [
                 'except' => 0,
-                'as' => $this->tableKey(self::QUERY_LIMIT)
+                'as' => $this->tableKey(self::QUERY_LIMIT),
             ],
             'sort' => [
                 'except' => '',
-                'as' => $this->tableKey(self::QUERY_SORT)
+                'as' => $this->tableKey(self::QUERY_SORT),
             ],
             'dir' => [
                 'except' => '',
-                'as' => $this->tableKey(self::QUERY_DIR)
+                'as' => $this->tableKey(self::QUERY_DIR),
             ],
             'filterVals' => [
                 'except' => [],
-                'as' => $this->tableKey(self::QUERY_FILTER)
+                'as' => $this->tableKey(self::QUERY_FILTER),
             ],
         ];
 
         if ($this->searchable()) {
             $qs['search'] = [
                 'except' => '',
-                'as' => $this->tableKey(self::QUERY_SEARCH)
+                'as' => $this->tableKey(self::QUERY_SEARCH),
             ];
         }
 
@@ -91,6 +94,7 @@ trait IsLivewire
 
         $this->resetPage($this->tableKey(self::QUERY_PAGE));
     }
+
     public function updatedSearch(): void
     {
         if ($this->searchable()) {
@@ -109,13 +113,15 @@ trait IsLivewire
 
     public function setSort(string $key): void
     {
-        if (!in_array($key, $this->sortableKeys())) return;
+        if (! in_array($key, $this->sortableKeys())) {
+            return;
+        }
 
         if ($this->getSort() === $key) {
             $this->dir = $this->getDir() === self::SORT_DESC ? self::SORT_ASC : self::SORT_DESC;
         } else {
             $this->sort = $key;
-            $this->dir  = self::SORT_ASC;
+            $this->dir = self::SORT_ASC;
         }
 
         $this->resetPage($this->tableKey(self::QUERY_PAGE));
@@ -131,5 +137,4 @@ trait IsLivewire
     {
         return true;
     }
-
 }

@@ -15,15 +15,17 @@ trait WithSearch
      */
     public array $searchClear = [];
 
-
     public function enableSearch(): static
     {
         $this->searchEnabled = true;
+
         return $this;
     }
+
     public function disableSearch(): static
     {
         $this->searchEnabled = false;
+
         return $this;
     }
 

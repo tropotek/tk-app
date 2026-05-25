@@ -8,7 +8,6 @@ use Tk\Support\Facades\Breadcrumbs;
 
 class FieldsetController extends Controller
 {
-
     protected array $values = [
         'title' => 'mrs',
         'firstName' => 'John',
@@ -20,9 +19,8 @@ class FieldsetController extends Controller
         'groups' => ['1', '3'],
         'options' => ['option1', 'option3'],
         'options2' => 'option3',
-        'description' => 'This is a test description'
+        'description' => 'This is a test description',
     ];
-
 
     public function index(Request $request)
     {
@@ -49,7 +47,7 @@ class FieldsetController extends Controller
         Breadcrumbs::push('Fieldset Create');
 
         return view('pages.examples.forms.fieldset', [
-            'mode' => 'create'
+            'mode' => 'create',
         ]);
     }
 
@@ -60,13 +58,12 @@ class FieldsetController extends Controller
             'lastName' => 'required|min:3|max:20',
             'email' => 'required|email',
             'gender' => 'required',
-//            'address' => 'required',
-//            'image' => 'image|max:2048',
+            //            'address' => 'required',
+            //            'image' => 'image|max:2048',
         ]);
 
         vd($request->all());
 
         return redirect('/examples/formFieldset')->with('success', 'Form submitted successfully!');
     }
-
 }

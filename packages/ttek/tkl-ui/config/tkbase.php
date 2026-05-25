@@ -1,6 +1,5 @@
 <?php
 
-
 return [
 
     /*
@@ -13,8 +12,8 @@ return [
     |
     */
 
-//    'menu_builders' => [
-//        'App\\Menus\\',
-//    ],
+    //    'menu_builders' => [
+    //        'App\\Menus\\',
+    //    ],
 
 ];

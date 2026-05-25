@@ -13,7 +13,9 @@ class DefaultPageName
      */
     public function compose(\Illuminate\View\View $view): void
     {
-        if (View::getShared()[Breadcrumbs::PAGE_NAME] ?? false) return;
+        if (View::getShared()[Breadcrumbs::PAGE_NAME] ?? false) {
+            return;
+        }
 
         $basename = basename(request()->path()) ?: '';
         $defaultName = ucwords(str_replace(['/', '_'], ' ', strtolower($basename)));

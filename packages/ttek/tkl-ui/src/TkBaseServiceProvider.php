@@ -9,11 +9,9 @@ use Livewire\Livewire;
 use Tk\Support\Facades\Breadcrumbs;
 use Tk\Support\Facades\MenuBuilder;
 use Tk\View\Composers\DefaultPageName;
-use Illuminate\Pagination\Paginator;
 
 class TkBaseServiceProvider extends ServiceProvider
 {
-
     public function register()
     {
         // Register bindings in the IoC container
@@ -23,17 +21,18 @@ class TkBaseServiceProvider extends ServiceProvider
 
         // MenuBuilder
         $this->app->singleton('menu-builder', function () {
-            return new \Tk\Menu\MenuBuilder();
+            return new Menu\MenuBuilder;
         });
         AliasLoader::getInstance()->alias('MenuBuilder', MenuBuilder::class);
 
         // Breadcrumbs
         AliasLoader::getInstance()->alias('Breadcrumbs', Breadcrumbs::class);
         // bind the Breadcrumbs Alias to an existing Breadcrumbs instance if exists
-        $this->app->bind(\Tk\Breadcrumbs\Breadcrumbs::class, function() {
+        $this->app->bind(\Tk\Breadcrumbs\Breadcrumbs::class, function () {
             if (auth()->check()) {
                 return \Tk\Breadcrumbs\Breadcrumbs::make('Dashboard', route('dashboard'));
             }
+
             return \Tk\Breadcrumbs\Breadcrumbs::make('Home', route('home'));
         });
 
@@ -47,7 +46,7 @@ class TkBaseServiceProvider extends ServiceProvider
         ], 'config');
 
         // Livewire Volt component namespace
-        if (class_exists(\Livewire\Livewire::class)) {
+        if (class_exists(Livewire::class)) {
             Livewire::addNamespace(
                 namespace: 'tkl-pages',
                 viewPath: __DIR__.'/../Resources/views/pages',
@@ -64,11 +63,10 @@ class TkBaseServiceProvider extends ServiceProvider
         // set a default controller TITLE if none set
         View::composer('*', DefaultPageName::class);
 
-
         // Load routes (optional)
         // $this->loadRoutesFrom(__DIR__.'/routes/web.php');
 
         // Load migrations
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
     }
 }

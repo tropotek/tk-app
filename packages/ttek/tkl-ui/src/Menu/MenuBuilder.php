@@ -1,7 +1,5 @@
 <?php
-/**
- *
- */
+
 namespace Tk\Menu;
 
 use Illuminate\Support\Facades\Session;
@@ -16,16 +14,16 @@ use Illuminate\Support\Facades\Session;
  *
  * Blade Example:
  * ```
+ *
  *  @foreach (menu('navbar')->getItems() as $item)
  *      <x-nav-item :item="$item" level="0" class="nav-item" submenu-class="dropdown-menu" link-class="nav-link" />
+ *
  *  @endforeach
  * ```
- *
  */
 class MenuBuilder
 {
     protected array $builders = [];
-
 
     /**
      * Register a menu builder class
@@ -41,12 +39,12 @@ class MenuBuilder
     public function compileMenu(string $namespace = 'menu'): Menu
     {
 
-        if (!isset($this->builders[$namespace])) {
+        if (! isset($this->builders[$namespace])) {
             throw new \Exception("no menu builders found for namespace $namespace");
         }
 
         $menu = Session::cache()->get($this->getSid($namespace));
-        //if ($menu instanceof Menu) {
+        // if ($menu instanceof Menu) {
         if ($menu instanceof Menu && app()->environment(['production', 'staging'])) {
             return $menu;
         }
@@ -56,7 +54,7 @@ class MenuBuilder
         foreach (($this->builders[$namespace] ?? []) as $builderClass) {
             if (class_exists($builderClass)) {
                 $builder = app($builderClass);
-                if ($builder instanceof \Tk\Menu\MenuBuilderInterface) {
+                if ($builder instanceof MenuBuilderInterface) {
                     $builder->build($menu);
                 }
             }
@@ -79,7 +77,6 @@ class MenuBuilder
      */
     private function getSid($namespace): string
     {
-        return 'menu_' . $namespace;
+        return 'menu_'.$namespace;
     }
-
 }

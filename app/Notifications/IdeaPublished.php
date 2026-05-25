@@ -4,7 +4,6 @@ namespace App\Notifications;
 
 use App\Models\Idea;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -35,7 +34,7 @@ class IdeaPublished extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $url = url('/ideas/' . $notifiable->id);
+        $url = url('/ideas/'.$notifiable->id);
 
         return (new MailMessage)
             ->greeting('G\'day')

@@ -72,21 +72,21 @@ class Builder
     {
         // defaultSort and defaultDir are set together via setDefaultSort()
         $defaultSort = $tableMeta['defaultSort'] ?? '';
-        $defaultDir  = $tableMeta['defaultDir'] ?? '';
+        $defaultDir = $tableMeta['defaultDir'] ?? '';
         if ($defaultSort !== '' || $defaultDir !== '') {
             $table->setDefaultSort($defaultSort, $defaultDir);
         }
 
         foreach ($tableMeta as $key => $meta) {
             match ($key) {
-                'class'    => $table->addClass($meta),
-                'attrs'    => $table->addAttrs($meta),
+                'class' => $table->addClass($meta),
+                'attrs' => $table->addAttrs($meta),
                 'rowAttrs' => $table->setRowAttrs($meta),
-                'columns'    => self::buildColumns($table, $meta),
-                'actions'  => self::buildActions($table, $meta),
-                'filters'  => self::buildFilters($table, $meta),
-                'search'   => self::buildSearch($table, $meta),
-                default    => null,
+                'columns' => self::buildColumns($table, $meta),
+                'actions' => self::buildActions($table, $meta),
+                'filters' => self::buildFilters($table, $meta),
+                'search' => self::buildSearch($table, $meta),
+                default => null,
             };
         }
     }
@@ -105,13 +105,13 @@ class Builder
     protected static function buildColumn(string $name, array $meta): Column
     {
         $column = new Column(
-            name:     $name,
-            header:   $meta['header'] ?? '',
+            name: $name,
+            header: $meta['header'] ?? '',
             sortable: $meta['sortable'] ?? false,
-            value:    is_callable($meta['value'] ?? null) ? $meta['value'] : null,
-            view:     is_callable($meta['view'] ?? null) ? $meta['view'] : null,
-            sort:     $meta['sort'] ?? '',
-            visible:  $meta['visible'] ?? true,
+            value: is_callable($meta['value'] ?? null) ? $meta['value'] : null,
+            view: is_callable($meta['view'] ?? null) ? $meta['view'] : null,
+            sort: $meta['sort'] ?? '',
+            visible: $meta['visible'] ?? true,
         );
 
         $column->addClass($meta['class'] ?? '');
@@ -137,14 +137,14 @@ class Builder
     protected static function buildAction(string $name, array $meta): ActionColumn
     {
         $column = new ActionColumn(
-            name:    $name,
-            icon:    $meta['icon'] ?? '',
-            route:   is_callable($meta['route'] ?? null) ? $meta['route'] : null,
-            view:    is_callable($meta['view'] ?? null) ? $meta['view'] : null,
+            name: $name,
+            icon: $meta['icon'] ?? '',
+            route: is_callable($meta['route'] ?? null) ? $meta['route'] : null,
+            view: is_callable($meta['view'] ?? null) ? $meta['view'] : null,
             visible: $meta['visible'] ?? true,
         );
 
-        if (!empty($meta['header'])) {
+        if (! empty($meta['header'])) {
             $column->setHeader($meta['header']);
         }
 
@@ -171,12 +171,12 @@ class Builder
     protected static function buildFilter(string $key, array $meta): Filter
     {
         $filter = new Filter(
-            key:          $key,
-            label:        $meta['label'] ?? '',
-            type:         $meta['type'] ?? Filter::TYPE_SELECT,
-            options:      $meta['options'] ?? [],
-            visible:      $meta['visible'] ?? true,
-            dependsOn:    $meta['dependsOn'] ?? '',
+            key: $key,
+            label: $meta['label'] ?? '',
+            type: $meta['type'] ?? Filter::TYPE_SELECT,
+            options: $meta['options'] ?? [],
+            visible: $meta['visible'] ?? true,
+            dependsOn: $meta['dependsOn'] ?? '',
             defaultValue: $meta['defaultValue'] ?? '',
         );
 
@@ -188,9 +188,8 @@ class Builder
 
     protected static function buildSearch(mixed $table, array $meta): void
     {
-        $table->searchPlaceholder = (string)($meta['placeholder'] ?? '');
+        $table->searchPlaceholder = (string) ($meta['placeholder'] ?? '');
         $table->searchClear = $meta['clearFilters'] ?? [];
-        $table->searchEnabled = (bool)($meta['enabled'] ?? true);
+        $table->searchEnabled = (bool) ($meta['enabled'] ?? true);
     }
-
 }

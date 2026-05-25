@@ -1,12 +1,12 @@
 <?php
 
-
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\User\AuthController;
-use Tk\Models\File;
+use App\Models\User;
 use Illuminate\Support\Facades\Storage;
+use Tk\Models\File;
 
-Route::middleware(['auth'])->group(function() {
+Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'doDefault'])
         ->name('dashboard');
 
@@ -15,9 +15,10 @@ Route::middleware(['auth'])->group(function() {
 
     Route::get('/files/{file}', function (File $file) {
         abort_unless(
-            $file->fkey === App\Models\User::class && $file->fid === auth()->id(),
+            $file->fkey === User::class && $file->fid === auth()->id(),
             403
         );
+
         return Storage::disk('local')->response($file->path, $file->original_name);
     })->name('files.view');
 

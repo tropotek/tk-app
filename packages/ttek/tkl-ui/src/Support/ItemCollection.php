@@ -6,7 +6,6 @@ use Illuminate\Support\Collection;
 
 class ItemCollection extends Collection
 {
-
     public function appendItem(string $key, mixed $item, ?string $after = null): mixed
     {
         if ($this->has($key)) {
@@ -15,16 +14,18 @@ class ItemCollection extends Collection
 
         if (is_null($after)) {
             $this->put($key, $item);
+
             return $item;
         }
 
         $index = $this->keys()->search($after);
         if ($index === false) {
             $this->put($key, $item);
+
             return $item;
         }
 
-        $this->insertAt($index+1, $key, $item);
+        $this->insertAt($index + 1, $key, $item);
 
         return $item;
     }
@@ -37,12 +38,14 @@ class ItemCollection extends Collection
 
         if (is_null($before)) {
             $this->prepend($item, $key);
+
             return $item;
         }
 
         $index = $this->keys()->search($before);
         if ($index === false) {
             $this->prepend($item, $key);
+
             return $item;
         }
 

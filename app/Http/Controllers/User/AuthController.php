@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-
     public function login(Request $request)
     {
         if (auth()->check()) {
@@ -37,6 +36,7 @@ class AuthController extends Controller
     {
         auth()->logout();
         session()->flush();
+
         return redirect(route('home'));
     }
 
@@ -52,6 +52,7 @@ class AuthController extends Controller
             $user->assignRole(Roles::Member->value);
 
             auth()->login($user);
+
             return redirect(route('dashboard'))->with('success', 'Registration successful. You are now logged in!');
         }
 

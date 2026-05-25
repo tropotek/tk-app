@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UserRegisterRequest extends FormRequest
@@ -17,16 +18,18 @@ class UserRegisterRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
-        if ($this->isMethod('GET')) return [];
+        if ($this->isMethod('GET')) {
+            return [];
+        }
 
         return [
             'email' => ['required', 'email:rfc,dns', 'unique:users'],
             'name' => ['required', 'min:3', 'unique:users'],
-            'password' => 'required|min:8|max:255'
+            'password' => 'required|min:8|max:255',
         ];
     }
 
@@ -35,7 +38,7 @@ class UserRegisterRequest extends FormRequest
         if ($this->has('password')) {
             $this->merge(
                 ['password' => password_hash($this->input('password'), PASSWORD_DEFAULT)]
-            //['password' => bcrypt($this->input('password'))]
+                // ['password' => bcrypt($this->input('password'))]
             );
         }
     }
@@ -45,6 +48,7 @@ class UserRegisterRequest extends FormRequest
         if ($this->has('password')) {
             return array_merge(parent::validated(), ['password' => $this->input('password')]);
         }
+
         return parent::validated();
     }
 }

@@ -10,8 +10,11 @@ class Filter
     use HasAttrs;
 
     const string TYPE_SELECT = 'select';
+
     const string TYPE_TEXT = 'text';
+
     const string TYPE_CHECKBOX = 'checkbox';
+
     const string TYPE_DATE = 'date';
 
     const array FILTER_TYPES = [
@@ -22,15 +25,20 @@ class Filter
     ];
 
     public string $key = '';
+
     public string $label = '';
+
     public string $type = self::TYPE_SELECT;
+
     public mixed $options = []; // array|callable
+
     public string $dependsOn = '';
+
     public bool $visible = true;
+
     public string $defaultValue = '';
 
     protected mixed $table = null;  // IsTable trait
-
 
     public function __construct(
         string $key,
@@ -40,8 +48,7 @@ class Filter
         bool $visible = true,
         string $dependsOn = '',
         string $defaultValue = ''
-    )
-    {
+    ) {
         $this->key = $key;
         if (empty($label)) {
             $label = strval(preg_replace('/(Id|_id)$/', '', $key));
@@ -67,12 +74,13 @@ class Filter
     public function setTable(mixed $table): static
     {
         if (is_null($table)) {
-            throw new \InvalidArgumentException("cannot set a null table object");
+            throw new \InvalidArgumentException('cannot set a null table object');
         }
-        if (!method_exists($table, 'rows')) {
+        if (! method_exists($table, 'rows')) {
             throw new \InvalidArgumentException('expected table object using the IsTable trait');
         }
         $this->table = $table;
+
         return $this;
     }
 
@@ -89,6 +97,7 @@ class Filter
     public function setLabel(string $label): static
     {
         $this->label = $label;
+
         return $this;
     }
 
@@ -99,10 +108,11 @@ class Filter
 
     public function setType(string $type): static
     {
-        if (!in_array($type, self::FILTER_TYPES)) {
+        if (! in_array($type, self::FILTER_TYPES)) {
             throw new \InvalidArgumentException("Invalid filter type: {$type}");
         }
         $this->type = $type;
+
         return $this;
     }
 
@@ -111,6 +121,7 @@ class Filter
         if (is_callable($this->options)) {
             return call_user_func($this->options, $this->dependsOn);
         }
+
         return $this->options;
     }
 
@@ -120,6 +131,7 @@ class Filter
     public function setOptions(array|callable $options): static
     {
         $this->options = $options;
+
         return $this;
     }
 
@@ -131,6 +143,7 @@ class Filter
     public function setDependsOn(string $dependsOn): static
     {
         $this->dependsOn = $dependsOn;
+
         return $this;
     }
 
@@ -142,6 +155,7 @@ class Filter
     public function setVisible(bool $visible): static
     {
         $this->visible = $visible;
+
         return $this;
     }
 
@@ -153,7 +167,7 @@ class Filter
     public function setDefaultValue(string $defaultValue): static
     {
         $this->defaultValue = $defaultValue;
+
         return $this;
     }
-
 }

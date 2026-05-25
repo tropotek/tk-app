@@ -13,7 +13,6 @@ namespace Tk\Menu;
  *      \Tk\Support\Facades\Menu::registerBuilder(\App\Menus\UserNav::class, 'UserNav');
  * }
  * ```
- *
  */
 interface MenuBuilderInterface
 {

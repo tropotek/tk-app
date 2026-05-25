@@ -16,6 +16,7 @@ class Str
         $hashUrlsafe = str_replace(['+', '/', '=', '-', '_'], [''], $hashBase64);
         // Trim base64 padding characters from the end.
         $hashUrlsafe = rtrim($hashUrlsafe, '=');
+
         // Shorten the string before returning.
         return substr($hashUrlsafe, 0, $length);
     }
@@ -52,7 +53,7 @@ class Str
      */
     public static function isHtml(string $str): bool
     {
-        return (strlen($str) != strlen(strip_tags($str)));
+        return strlen($str) != strlen(strip_tags($str));
     }
 
     /**
@@ -62,9 +63,9 @@ class Str
     {
         $lines = explode("\n", $str);
         foreach ($lines as $i => $line) {
-            $lines[$i] = ($i+1) . '  ' . $line;
+            $lines[$i] = ($i + 1).'  '.$line;
         }
+
         return implode("\n", $lines);
     }
-
 }

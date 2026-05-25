@@ -13,8 +13,7 @@ final class FileUploadDto
         public readonly string $path,
         public readonly string $mimeType,
         public readonly int $size,
-    ) {
-    }
+    ) {}
 
     public static function fromArray(array $data): self
     {

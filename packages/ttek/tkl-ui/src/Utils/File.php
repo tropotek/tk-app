@@ -4,15 +4,14 @@ namespace Tk\Utils;
 
 class File
 {
-
     /**
      * get the maximum upload size for a form in bytes
      */
     public static function getMaxUploadBytes(): int
     {
         return min(
-            self::string2Bytes((string)ini_get('upload_max_filesize')),
-            self::string2Bytes((string)ini_get('post_max_size'))
+            self::string2Bytes((string) ini_get('upload_max_filesize')),
+            self::string2Bytes((string) ini_get('post_max_size'))
         );
     }
 
@@ -22,25 +21,26 @@ class File
     public static function string2Bytes(string $str): int
     {
         $sUnit = substr($str, -1);
-        $iSize = (int)substr($str, 0, -1);
+        $iSize = (int) substr($str, 0, -1);
         switch (strtoupper($sUnit)) {
-        case 'Y' :
-            $iSize *= 1024; // Yotta
-        case 'Z' :
-            $iSize *= 1024; // Zetta
-        case 'E' :
-            $iSize *= 1024; // Exa
-        case 'P' :
-            $iSize *= 1024; // Peta
-        case 'T' :
-            $iSize *= 1024; // Tera
-        case 'G' :
-            $iSize *= 1024; // Giga
-        case 'M' :
-            $iSize *= 1024; // Mega
-        case 'K' :
-            $iSize *= 1024; // kilo
+            case 'Y':
+                $iSize *= 1024; // Yotta
+            case 'Z':
+                $iSize *= 1024; // Zetta
+            case 'E':
+                $iSize *= 1024; // Exa
+            case 'P':
+                $iSize *= 1024; // Peta
+            case 'T':
+                $iSize *= 1024; // Tera
+            case 'G':
+                $iSize *= 1024; // Giga
+            case 'M':
+                $iSize *= 1024; // Mega
+            case 'K':
+                $iSize *= 1024; // kilo
         }
+
         return $iSize;
     }
 
@@ -69,9 +69,10 @@ class File
         $bytes /= $rounder;
         if ($round > 0) {
             $bytes = round($bytes, $round);
-            return  sprintf('%.'.$round.'f %s', $bytes, $tags[$index]);
+
+            return sprintf('%.'.$round.'f %s', $bytes, $tags[$index]);
         } else {
-            return  sprintf('%s %s', $bytes, $tags[$index]);
+            return sprintf('%s %s', $bytes, $tags[$index]);
         }
     }
 }

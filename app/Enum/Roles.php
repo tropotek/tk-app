@@ -8,7 +8,6 @@ enum Roles: string
     case Staff = 'staff';
     case Member = 'member';
 
-
     public static function values(): array
     {
         return array_map(fn ($case) => $case->value, self::cases());
@@ -20,6 +19,7 @@ enum Roles: string
         foreach (self::cases() as $case) {
             $items[$case->value] = $case->name;
         }
+
         return $items;
     }
 }

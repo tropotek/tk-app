@@ -9,13 +9,12 @@ use Tk\Table\ActionColumn;
 use Tk\Table\Column;
 
 /**
- *
  * IsTable methods used:
+ *
  * @method ItemCollection getVisibleColumns()
  */
 trait WithExport
 {
-
     /**
      * By default, a table is exportable if the export() method exists
      * override and return true when using a route to export a table
@@ -30,13 +29,14 @@ trait WithExport
      */
     public function exportRoute(): string
     {
-        return (request()->route()->getName() ?? '') . '.export';
+        return (request()->route()->getName() ?? '').'.export';
     }
 
     /**
      * build a CSV file from an array of rows
      * Expects the rows to be a key/value map of column names to values
-     * @param array<string,mixed>|Collection<int,array<string,mixed>> $rows
+     *
+     * @param  array<string,mixed>|Collection<int,array<string,mixed>>  $rows
      */
     public function exportCsv(array|Collection $rows, string $fileName = 'unknown.csv'): StreamedResponse
     {
@@ -46,7 +46,7 @@ trait WithExport
 
             $exportColumns = $this->exportColumns();
             foreach ($rows as $row) {
-                if (!$headersWritten) {
+                if (! $headersWritten) {
                     fputcsv(
                         stream: $handle,
                         fields: $exportColumns->pluck('label')->all(),
@@ -54,7 +54,7 @@ trait WithExport
                     );
                     $headersWritten = true;
                 }
-                $export = $exportColumns->map(fn($col) => $col['value']($row))->all();
+                $export = $exportColumns->map(fn ($col) => $col['value']($row))->all();
                 fputcsv(
                     stream: $handle,
                     fields: $export,
@@ -86,10 +86,10 @@ trait WithExport
     public function exportColumns(): Collection
     {
         return $this->getVisibleColumns()
-            ->filter(fn($column) => !($column instanceof ActionColumn))
-            ->map(fn(Column $column) => [
+            ->filter(fn ($column) => ! ($column instanceof ActionColumn))
+            ->map(fn (Column $column) => [
                 'label' => $column->header,
-                'value' => fn($row) => $column->value($row),
+                'value' => fn ($row) => $column->value($row),
             ]);
     }
 }

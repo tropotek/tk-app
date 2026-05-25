@@ -12,26 +12,30 @@ class Column
     use HasAttrs, HasHeaderAttrs;
 
     public string $name = '';
+
     public string $header = '';
+
     public bool $sortable = false;
+
     public string $sort = '';
+
     public bool $visible = true;
 
     protected mixed $value = null;   // null|string|callable
-    protected mixed $view = null;   // null|string|callable
-    protected mixed $table = null;  // HasTable trait
 
+    protected mixed $view = null;   // null|string|callable
+
+    protected mixed $table = null;  // HasTable trait
 
     public function __construct(
         string $name,
         string $header = '',
         bool $sortable = false,
-        null|callable $value = null,
-        null|callable $view = null,
+        ?callable $value = null,
+        ?callable $view = null,
         string $sort = '',
         bool $visible = true
-    )
-    {
+    ) {
         $this->name = $name;
         if (empty($header)) {
             $header = strval(preg_replace('/(Id|_id)$/', '', $name));
@@ -43,8 +47,12 @@ class Column
         $this->setSort($sort ?: $name);
         $this->setSortable($sortable);
         $this->setVisible($visible);
-        if (is_callable($value)) $this->value = $value;
-        if (is_callable($view)) $this->view = $view;
+        if (is_callable($value)) {
+            $this->value = $value;
+        }
+        if (is_callable($view)) {
+            $this->view = $view;
+        }
     }
 
     /**
@@ -52,7 +60,9 @@ class Column
      */
     public static function getKey(mixed $row, string $key = 'id'): string
     {
-        if (is_null($row)) return '';
+        if (is_null($row)) {
+            return '';
+        }
 
         if ($row instanceof Model) {
             return $row->getKey();
@@ -65,6 +75,7 @@ class Column
         if (is_object($row)) {
             return $row->{$key} ?? '';
         }
+
         return '';
     }
 
@@ -79,12 +90,13 @@ class Column
     public function setTable(mixed $table): static
     {
         if (is_null($table)) {
-            throw new \InvalidArgumentException("cannot set a null table object");
+            throw new \InvalidArgumentException('cannot set a null table object');
         }
-        if (!method_exists($table, 'rows')) {
+        if (! method_exists($table, 'rows')) {
             throw new \InvalidArgumentException('expected table object using the isTable trait');
         }
         $this->table = $table;
+
         return $this;
     }
 
@@ -104,12 +116,14 @@ class Column
     public function setHeader(string $header): static
     {
         $this->header = $header;
+
         return $this;
     }
 
     public function setSortable(bool $sortable = true): static
     {
         $this->sortable = $sortable;
+
         return $this;
     }
 
@@ -126,6 +140,7 @@ class Column
     public function setSort(string $sort): static
     {
         $this->sort = $sort;
+
         return $this;
     }
 
@@ -137,6 +152,7 @@ class Column
     public function setVisible(bool $visible = true): static
     {
         $this->visible = $visible;
+
         return $this;
     }
 
@@ -145,8 +161,13 @@ class Column
      */
     public function getRowValue(mixed $row): mixed
     {
-        if (is_array($row)) return $row[$this->name] ?? '';
-        if (is_object($row)) return $row->{$this->name} ?? '';
+        if (is_array($row)) {
+            return $row[$this->name] ?? '';
+        }
+        if (is_object($row)) {
+            return $row->{$this->name} ?? '';
+        }
+
         return '';
     }
 
@@ -155,7 +176,9 @@ class Column
      */
     public function value(mixed $row): string
     {
-        if (!$this->isVisible()) return '';
+        if (! $this->isVisible()) {
+            return '';
+        }
         if (is_callable($this->value)) {
             $ret = call_user_func($this->value, $row, $this);
             if (is_string($ret) || $ret instanceof \Stringable) {
@@ -164,6 +187,7 @@ class Column
         }
 
         $value = $this->getRowValue($row);
+
         return is_scalar($value) || $value instanceof \Stringable ? e((string) $value) : '';
     }
 
@@ -177,6 +201,7 @@ class Column
     public function setValue(string|callable $value): static
     {
         $this->value = $value;
+
         return $this;
     }
 
@@ -185,13 +210,16 @@ class Column
      */
     public function view(mixed $row): mixed
     {
-        if (!$this->isVisible()) return '';
+        if (! $this->isVisible()) {
+            return '';
+        }
         if (is_callable($this->view)) {
             $ret = call_user_func($this->view, $row, $this);
             if (is_string($ret) || $ret instanceof \Stringable) {
                 return $ret;
             }
         }
+
         return $this->value($row);
     }
 
@@ -204,6 +232,7 @@ class Column
     public function setView(callable $view): static
     {
         $this->view = $view;
+
         return $this;
     }
 
@@ -218,7 +247,7 @@ class Column
                     ? $this->getTable()::SORT_ASC
                     : $this->getTable()::SORT_DESC;
             } else {
-                $dir  = $this->getTable()::SORT_ASC;
+                $dir = $this->getTable()::SORT_ASC;
             }
 
             $query[$this->getTable()->tableKey($this->getTable()::QUERY_SORT)] = $this->getSort();
@@ -227,5 +256,4 @@ class Column
 
         return url()->query($url, $query);
     }
-
 }

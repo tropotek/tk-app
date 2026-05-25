@@ -6,8 +6,6 @@ use App\Models\User;
 use Database\Factories\IdeaFactory;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -25,7 +23,6 @@ class DatabaseSeeder extends Seeder
 
         User::factory(76)->create();
         IdeaFactory::times(512)->create();
-
 
     }
 }

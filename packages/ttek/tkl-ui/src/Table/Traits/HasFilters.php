@@ -9,13 +9,12 @@ trait HasFilters
 {
     protected ItemCollection $filters;
 
-
     /**
      * @return ItemCollection<string, Filter>
      */
     public function getFilters(): ItemCollection
     {
-        return $this->filters ??= new ItemCollection();
+        return $this->filters ??= new ItemCollection;
     }
 
     /**
@@ -23,7 +22,7 @@ trait HasFilters
      */
     public function getVisibleFilters(): ItemCollection
     {
-        return $this->getFilters()->filter(fn(Filter $filter) => $filter->isVisible());
+        return $this->getFilters()->filter(fn (Filter $filter) => $filter->isVisible());
     }
 
     public function getFilter(string $key): ?Filter
@@ -34,6 +33,7 @@ trait HasFilters
     public function removeFilter(string $key): static
     {
         $this->getFilters()->forget($key);
+
         return $this;
     }
 
@@ -60,6 +60,4 @@ trait HasFilters
 
         return $this->getFilters()->prependItem($filter->getKey(), $filter, $before);
     }
-
-
 }

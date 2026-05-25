@@ -2,20 +2,19 @@
 
 namespace App\Http\Controllers\Examples;
 
-
 use App\Http\Controllers\Controller;
+use Faker\Factory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Tk\Support\Facades\Breadcrumbs;
 use Tk\Table\Column;
-use Tk\Table\Traits\WithSearch;
 use Tk\Table\Traits\IsTable;
+use Tk\Table\Traits\WithSearch;
 
 /**
  * This is an example of using the Table trait within a controller.
  * Data is sourced from an array.
- *
  */
 class ArrayTableController extends Controller
 {
@@ -42,8 +41,7 @@ class ArrayTableController extends Controller
         // alt method to add cells
         $this->appendColumn(new Column('created_at'), 'roles')
             ->setHeader('Created')
-            ->setSortable()
-        ;
+            ->setSortable();
 
     }
 
@@ -68,9 +66,9 @@ class ArrayTableController extends Controller
 
         $rows = session()->get('_side-table-cache');
 
-        if (!$rows) {
-            $faker = \Faker\Factory::create();
-            $rows = array_map(fn($i) => [
+        if (! $rows) {
+            $faker = Factory::create();
+            $rows = array_map(fn ($i) => [
                 'id' => $i,
                 'name' => $faker->company(),
                 'email' => $faker->email(),
@@ -95,7 +93,7 @@ class ArrayTableController extends Controller
     public function export(): StreamedResponse
     {
         $this->hydrateTableFromRequest();
+
         return $this->exportCsv($this->rows(), 'demo-controller-table.csv');
     }
-
 }

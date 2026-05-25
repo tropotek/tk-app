@@ -2,8 +2,8 @@
 
 use App\Http\Controllers\Examples\ArrayTableController;
 use App\Http\Controllers\Examples\ExamplesController;
-use App\Http\Controllers\Examples\Forms\FieldsetController;
 use App\Http\Controllers\Examples\Forms\FieldgroupController;
+use App\Http\Controllers\Examples\Forms\FieldsetController;
 use App\Http\Controllers\Examples\IdeaController;
 
 // Laracasts Ideas tutorial

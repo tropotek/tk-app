@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Examples;
 
 use App\Http\Controllers\Controller;
 use App\Models\Idea;
-use App\Tables\IdeaTable;
+use App\Notifications\IdeaPublished;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -12,19 +12,19 @@ use Tk\Support\Facades\Breadcrumbs;
 
 class IdeaController extends Controller
 {
-
     public function create()
     {
         Breadcrumbs::push('idea|Idea Create');
+
         return view('pages.examples.ideas.create');
     }
 
     public function show(Idea $idea)
     {
         Breadcrumbs::push('idea|Idea View');
-        //Gate::authorize('update', $idea);
+        // Gate::authorize('update', $idea);
 
-        return view('pages.examples.ideas.edit',[
+        return view('pages.examples.ideas.edit', [
             'mode' => 'view',
             'idea' => $idea,
         ]);
@@ -34,7 +34,7 @@ class IdeaController extends Controller
     {
         Breadcrumbs::push('idea|Idea Edit');
 
-        return view('pages.examples.ideas.edit',[
+        return view('pages.examples.ideas.edit', [
             'mode' => 'edit',
             'idea' => $idea,
         ]);
@@ -55,7 +55,7 @@ class IdeaController extends Controller
             'description' => request('description'),
         ]);
 
-        return redirect('/examples/ideas/' . $idea->id);
+        return redirect('/examples/ideas/'.$idea->id);
     }
 
     public function store(Request $request)
@@ -72,7 +72,7 @@ class IdeaController extends Controller
             'description' => request('description'),
         ]);
 
-        Auth::user()->notify(new \App\Notifications\IdeaPublished($idea->first()));
+        Auth::user()->notify(new IdeaPublished($idea->first()));
 
         return redirect('/examples/ideas');
     }
@@ -80,12 +80,14 @@ class IdeaController extends Controller
     public function destroy(Idea $idea)
     {
         $idea->delete();
+
         return redirect('/examples/ideas');
     }
 
     public function deleteAll()
     {
         Auth::user()->ideas()->delete();
+
         return redirect('/examples/ideas');
     }
 }

@@ -4,11 +4,9 @@ namespace App\Policies;
 
 use App\Models\Idea;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class IdeaPolicy
 {
-
     /**
      * Determine whether the user can view the model.
      */
@@ -16,5 +14,4 @@ class IdeaPolicy
     {
         return $user->is($idea->user);
     }
-
 }

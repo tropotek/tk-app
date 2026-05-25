@@ -4,7 +4,6 @@ namespace Tk\Menu;
 
 final class Menu extends MenuItem
 {
-
     public function __construct(string $label)
     {
         parent::__construct($label);

@@ -2,7 +2,6 @@
 
 namespace Tk\Traits;
 
-
 use Illuminate\View\ComponentAttributeBag;
 
 /**
@@ -12,12 +11,12 @@ trait HasAttributes
 {
     protected ComponentAttributeBag $_attributes;
 
-
     public function getAttrs(): ComponentAttributeBag
     {
         if (empty($this->_attributes)) {
-            $this->_attributes = new ComponentAttributeBag();
+            $this->_attributes = new ComponentAttributeBag;
         }
+
         return $this->_attributes;
     }
 
@@ -27,12 +26,14 @@ trait HasAttributes
     public function addClass(string $class): static
     {
         $this->_attributes = $this->_attributes->class($class);
+
         return $this;
     }
 
     public function addAttr(array $attrs): static
     {
         $this->_attributes = $this->_attributes->merge($attrs);
+
         return $this;
     }
 }

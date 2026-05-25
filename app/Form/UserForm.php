@@ -24,7 +24,7 @@ class UserForm extends Form
                 'required',
                 'email:rfc,dns',
                 'max:255',
-                Rule::unique('user','email')->ignore($this->user)
+                Rule::unique('user', 'email')->ignore($this->user),
             ],
         ];
     }

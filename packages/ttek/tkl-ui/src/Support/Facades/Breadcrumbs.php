@@ -26,5 +26,4 @@ class Breadcrumbs extends Facade
     {
         return \Tk\Breadcrumbs\Breadcrumbs::class;
     }
-
 }

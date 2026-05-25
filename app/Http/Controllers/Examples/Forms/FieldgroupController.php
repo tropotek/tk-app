@@ -8,7 +8,6 @@ use Tk\Support\Facades\Breadcrumbs;
 
 class FieldgroupController extends Controller
 {
-
     protected array $values = [
         'testId' => 22,
         'title' => 'mrs',
@@ -21,15 +20,16 @@ class FieldgroupController extends Controller
         'groups' => ['1', '3'],
         'options' => ['option1', 'option3'],
         'options2' => 'option3',
-        'description' => 'This is a test description'
+        'description' => 'This is a test description',
     ];
 
-    //protected string $view = 'forms.three';
+    // protected string $view = 'forms.three';
     protected string $view = 'pages.examples.forms.fieldgroup';
 
     public function index(Request $request)
     {
         Breadcrumbs::push('form three|Form Three View');
+
         return view($this->view, [
             'mode' => 'view',
             'values' => $this->values,
@@ -39,6 +39,7 @@ class FieldgroupController extends Controller
     public function edit(Request $request)
     {
         Breadcrumbs::push('form three|Form Three Edit');
+
         return view($this->view, [
             'mode' => 'edit',
             'values' => $this->values,
@@ -48,8 +49,9 @@ class FieldgroupController extends Controller
     public function create(Request $request)
     {
         Breadcrumbs::push('form three|Form Three create');
+
         return view($this->view, [
-            'mode' => 'create'
+            'mode' => 'create',
         ]);
     }
 
@@ -58,15 +60,14 @@ class FieldgroupController extends Controller
         $request->validate([
             'firstName' => 'required|min:3|max:20',
             'lastName' => 'required|min:3|max:20',
-//            'email' => 'required|email',
-//            'gender' => 'required',
-//            'address' => 'required',
-//            'image' => 'image|max:2048',
+            //            'email' => 'required|email',
+            //            'gender' => 'required',
+            //            'address' => 'required',
+            //            'image' => 'image|max:2048',
         ]);
 
         vd($request->all());
 
         return redirect('/examples/formThree')->with('success', 'Form submitted successfully!');
     }
-
 }

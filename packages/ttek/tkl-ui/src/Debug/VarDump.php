@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Tk\Debug;
-
 
 /**
  * vd(), vdd() helper functions
@@ -11,8 +9,8 @@ namespace Tk\Debug;
 class VarDump
 {
     protected static mixed $_instance = null;
-    protected string $basePath = '';
 
+    protected string $basePath = '';
 
     public function __construct(string $basePath = '')
     {
@@ -22,9 +20,12 @@ class VarDump
     public static function instance(string $basePath = ''): self
     {
         if (is_null(static::$_instance)) {
-            if (!$basePath) $basePath = dirname(__DIR__, 2);
+            if (! $basePath) {
+                $basePath = dirname(__DIR__, 2);
+            }
             static::$_instance = new self($basePath);
         }
+
         return static::$_instance;
     }
 
@@ -36,6 +37,7 @@ class VarDump
     public function setBasePath(string $basePath): self
     {
         $this->basePath = $basePath;
+
         return $this;
     }
 
@@ -43,8 +45,9 @@ class VarDump
     {
         $str = $this->argsToString($args);
         if ($showTrace) {
-            $str .= "\n" . self::getBacktrace(4, $this->basePath) . "\n";
+            $str .= "\n".self::getBacktrace(4, $this->basePath)."\n";
         }
+
         return $str;
     }
 
@@ -52,8 +55,9 @@ class VarDump
     {
         $output = '';
         foreach ($args as $var) {
-            $output .= self::varToString($var) . "\n";
+            $output .= self::varToString($var)."\n";
         }
+
         return $output;
     }
 
@@ -70,6 +74,7 @@ class VarDump
             }
             $arr[] = $type;
         }
+
         return $arr;
     }
 
@@ -80,24 +85,24 @@ class VarDump
     {
         $pad = str_repeat('  ', $nest * 2 + 1);
 
-        //$type = 'native';
+        // $type = 'native';
         $str = $var;
 
         if ($var === null) {
             $str = '{NULL}';
-        } else if (is_bool($var)) {
-            //$type = 'Boolean';
+        } elseif (is_bool($var)) {
+            // $type = 'Boolean';
             $str = $var ? '{true}' : '{false}';
-        } else if (is_string($var)) {
-            //$type = 'String';
+        } elseif (is_string($var)) {
+            // $type = 'String';
             $str = str_replace("\0", '|', $var);
             $str = "'{$str}'";
-        } else if (is_resource($var)) {
-            //$type = 'Resource';
+        } elseif (is_resource($var)) {
+            // $type = 'Resource';
             $str = get_resource_type($var);
-        } else if (is_array($var)) {
+        } elseif (is_array($var)) {
             $type = sprintf('Array[%s]', count($var));
-            $a = array();
+            $a = [];
             if ($nest >= $depth) {
                 $str = $type;
             } else {
@@ -106,32 +111,34 @@ class VarDump
                 }
                 $str = sprintf("%s \n%s(\n%s\n%s)", $type, substr($pad, 0, -2), implode('', $a), substr($pad, 0, -2));
             }
-        } else if (is_object($var)) {
+        } elseif (is_object($var)) {
             $class = str_replace("\0", '', get_class($var));
-            $type = '{' . $class . '} Object';
+            $type = '{'.$class.'} Object';
             if ($nest >= $depth) {
                 $str = $type;
             } else {
-                $a = array();
-                foreach ((array)$var as $k => $v) {
+                $a = [];
+                foreach ((array) $var as $k => $v) {
                     $k = str_replace($class, '*', $k);
-                    $a[] = sprintf("%s[%s] => %s", $pad, $k, self::varToString($v, $depth, $nest + 1));
+                    $a[] = sprintf('%s[%s] => %s', $pad, $k, self::varToString($v, $depth, $nest + 1));
                 }
                 $str = sprintf("%s \n%s{\n%s\n%s}", $type, substr($pad, 0, -2), implode("\n", $a), substr($pad, 0, -2));
             }
         }
+
         return $str;
     }
 
     /**
      * Get the backtrace dump as a string
      */
-    static function getBacktrace(int $skip = 1, string $sitePath = ''): string
+    public static function getBacktrace(int $skip = 1, string $sitePath = ''): string
     {
         $stackTraceArray = debug_backtrace();
         for ($i = 0; $i < $skip && $i < count($stackTraceArray); $i++) {
             array_shift($stackTraceArray);
         }
+
         return self::traceToString($stackTraceArray, $sitePath);
     }
 
@@ -139,7 +146,7 @@ class VarDump
      * Take a stack trace array from \Exception::getTrace or debug_backtrace()
      * and convert it to a string
      */
-    static function traceToString(array $stackTraceArray, string $sitePath = ''): string
+    public static function traceToString(array $stackTraceArray, string $sitePath = ''): string
     {
         $str = '';
         foreach ($stackTraceArray as $i => $t) {
@@ -176,17 +183,22 @@ class VarDump
                     if (is_array($o)) {
                         $o = 'Array['.count($o).']';
                     }
-                    if ($o === null) $o = '{null}';
-                    if (is_string($o) || $o == '') $o = "'" . str_replace(["\n", "\r"], ' ', substr((string)$o, 0, 32)) . "'";
-                    $astr .= $o . ', ';
+                    if ($o === null) {
+                        $o = '{null}';
+                    }
+                    if (is_string($o) || $o == '') {
+                        $o = "'".str_replace(["\n", "\r"], ' ', substr((string) $o, 0, 32))."'";
+                    }
+                    $astr .= $o.', ';
                 }
             }
             if ($astr) {
-                $args = '(' . substr($astr, 0, -2) . ')';
+                $args = '('.substr($astr, 0, -2).')';
             }
 
             $str .= sprintf("[%s] %s(%s): %s%s%s%s \n", $i, $file, $line, $class, $type, $function, $args);
         }
+
         return trim($str);
     }
 
@@ -196,17 +208,17 @@ class VarDump
         $line = $line[$dumpLine];
 
         $class = '';
-        if ($showClass && !empty($line['object'])) {
-            $class = ': ' . str_replace("\0", '', get_class($line['object']));
+        if ($showClass && ! empty($line['object'])) {
+            $class = ': '.str_replace("\0", '', get_class($line['object']));
         }
 
-        if ($showFunction && !empty($line['function'])) {
-            $class .= '::' . $line['function'] . '()';
+        if ($showFunction && ! empty($line['function'])) {
+            $class .= '::'.$line['function'].'()';
         }
 
-        //$path = str_replace(base_path(), '', $line['file'] ?? '');
+        // $path = str_replace(base_path(), '', $line['file'] ?? '');
         $path = str_replace(app_path(), '', $line['file'] ?? '');
+
         return sprintf('%s [%s]%s', $path, $line['line'] ?? 0, $class);
     }
-
 }

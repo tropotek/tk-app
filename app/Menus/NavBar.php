@@ -4,20 +4,19 @@ namespace App\Menus;
 
 use App\Enum\Roles;
 use Tk\Breadcrumbs\Breadcrumbs;
-use Tk\Menu\MenuBuilderInterface;
 use Tk\Menu\Menu;
+use Tk\Menu\MenuBuilderInterface;
 use Tk\Menu\MenuItem;
 
 final class NavBar implements MenuBuilderInterface
 {
-
     public function build(Menu $menu): void
     {
         $isLocal = app()->environment('local');
 
         $menu->addChildren([
             MenuItem::make('Home', route('home'))
-                ->setVisible(!auth()->check()),
+                ->setVisible(! auth()->check()),
             MenuItem::make('Dashboard', route('dashboard'))
                 ->setVisible(auth()->check()),
 
@@ -35,7 +34,6 @@ final class NavBar implements MenuBuilderInterface
                 MenuItem::make('Page Layout Example', route('examples.index')),
                 MenuItem::make('Bootstrap Elements', route('examples.bootstrap')),
             ]),
-
 
             MenuItem::make('Admin')->addChildren([
                 MenuItem::make('Settings', route('dashboard'))->setDisabled(),

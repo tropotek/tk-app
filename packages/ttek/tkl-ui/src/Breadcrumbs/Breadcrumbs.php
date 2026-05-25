@@ -18,11 +18,13 @@ final class Breadcrumbs
     /**
      * query string to reset breadcrumbs
      */
-    const string CRUMB_RESET  = '_cr';
+    const string CRUMB_RESET = '_cr';
 
-    protected Collection  $stack;
-    protected string      $homeTitle     = '';
-    protected string      $homeUrl       = '';
+    protected Collection $stack;
+
+    protected string $homeTitle = '';
+
+    protected string $homeUrl = '';
 
     public function __construct(string $homeTitle = 'Dashboard', string $homeUrl = '/')
     {
@@ -40,6 +42,7 @@ final class Breadcrumbs
 
         $breadcrumbs = new self($homeTitle, $homeUrl);
         Session::put(self::class, $breadcrumbs);
+
         return $breadcrumbs;
     }
 
@@ -52,7 +55,7 @@ final class Breadcrumbs
     {
         [$name, $pageName] = $this->parseTitle($pageName);
 
-        return (object)[
+        return (object) [
             'name' => $name,
             'title' => $pageName,
             'url' => $this->normalizeUrl($url),
@@ -67,7 +70,8 @@ final class Breadcrumbs
         $parts = parse_url($url);
         $path = $parts['path'] ?? '/';
         $queryString = $parts['query'] ?? '';
-        return $path . ($queryString ? '?' . $queryString : '');
+
+        return $path.($queryString ? '?'.$queryString : '');
     }
 
     /**
@@ -76,8 +80,11 @@ final class Breadcrumbs
     public function parseTitle(string $pageName): array
     {
         [$name, $pageName] = array_map('trim', explode('|', $pageName.'|'));
-        if (!$pageName) $pageName = $name;
+        if (! $pageName) {
+            $pageName = $name;
+        }
         $pageName = ucwords(strip_tags($pageName));
+
         return [$name, $pageName];
     }
 
@@ -91,17 +98,20 @@ final class Breadcrumbs
         $url = parse_url($url, PHP_URL_PATH);
         if ($url === $this->getHomeUrl()) {
             $this->reset();
+
             return $this->getHomeTitle();
         }
 
         $crumb = $this->createCrumb($pageName, $url);
-        if ($name) $crumb->name = $name;
+        if ($name) {
+            $crumb->name = $name;
+        }
 
         // only push crumbs to the stack for GET requests, stops livewire post-requests from adding invalid crumb urls
         if (strtoupper(request()->method()) === 'GET') {
             // look for this page already in the breadcrumbs
             // if found rewind breadcrumbs to before this page
-            $this->stack = $this->stack->takeWhile(fn($c) => $c->name !== $crumb->name);
+            $this->stack = $this->stack->takeWhile(fn ($c) => $c->name !== $crumb->name);
 
             // check for the top breadcrumb (previous page) matching the
             // referring page (where we just came from)
@@ -109,16 +119,16 @@ final class Breadcrumbs
             // the referring page changed its URL dynamically
             // with the Javascript history API
             $referer = request()->header('referer') ?? '';
-            if ($referer && !$this->isEmpty()) {
+            if ($referer && ! $this->isEmpty()) {
                 $topBc = $this->stack->pop();
                 $refererParts = parse_url($referer);
                 if (parse_url($topBc->url, PHP_URL_PATH) == ($refererParts['path'] ?? '')) {
                     $topBc->url = $refererParts['path'] ?? '';
                     if ($refererParts['query'] ?? '') {
-                        $topBc->url .= ("?".$refererParts['query']);
+                        $topBc->url .= ('?'.$refererParts['query']);
                     }
                     if ($refererParts['fragment'] ?? '') {
-                        $topBc->url .= ("#".$refererParts['fragment']);
+                        $topBc->url .= ('#'.$refererParts['fragment']);
                     }
                 }
                 $this->push($topBc->title, $topBc->url, $topBc->name);
@@ -138,18 +148,21 @@ final class Breadcrumbs
     /**
      * Pop the last crumb from the stack (prev if current url already added to stack)
      * Returns a redirect response object
-     * @return RedirectResponse|Redirector
      */
     public function pop(): RedirectResponse|Redirector
     {
-        if (!$this->count()) return redirect($this->getHomeUrl());
+        if (! $this->count()) {
+            return redirect($this->getHomeUrl());
+        }
 
         $url = $this->getHomeUrl();
         $currUrl = request()->getRequestUri();
 
         do {
             $crumb = $this->stack->pop();
-            if ($crumb) $url = $crumb->url;
+            if ($crumb) {
+                $url = $crumb->url;
+            }
         } while ($url == $currUrl);
 
         return redirect($url);
@@ -160,7 +173,9 @@ final class Breadcrumbs
      */
     public function lastUrl(): string
     {
-        if (!$this->count()) return $this->getHomeUrl();
+        if (! $this->count()) {
+            return $this->getHomeUrl();
+        }
 
         $url = $this->getHomeUrl();
         $currUrl = request()->getRequestUri();
@@ -168,7 +183,9 @@ final class Breadcrumbs
 
         do {
             $crumb = $stack->pop();
-            if ($crumb) $url = $crumb->url;
+            if ($crumb) {
+                $url = $crumb->url;
+            }
         } while ($url == $currUrl);
 
         return $url;
@@ -194,6 +211,7 @@ final class Breadcrumbs
     public function reset(): self
     {
         $this->stack = collect();
+
         return $this;
     }
 
@@ -229,8 +247,9 @@ final class Breadcrumbs
     {
         $str = $this->homeTitle;
         foreach ($this->stack as $crumb) {
-            $str .= ' > ' . $crumb->title;
+            $str .= ' > '.$crumb->title;
         }
+
         return $str;
     }
 }

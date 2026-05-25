@@ -10,12 +10,11 @@ use Tk\Support\Facades\Breadcrumbs;
 
 class UserController extends Controller
 {
-
     public function create()
     {
         Breadcrumbs::push('user.edit|User Create');
 
-        $user = new User();
+        $user = new User;
 
         return view('pages.users.edit1', [
             'mode' => 'create',
@@ -30,7 +29,7 @@ class UserController extends Controller
     {
         Breadcrumbs::push('user.edit|User View');
 
-        return view('pages.users.edit1',[
+        return view('pages.users.edit1', [
             'mode' => 'view',
             'cancelRoute' => '/users',
             'editRoute' => "/user/{$user->id}/edit",
@@ -45,7 +44,7 @@ class UserController extends Controller
         return view('pages.users.edit1', [
             'mode' => 'edit',
             'method' => 'patch',
-            'action' => '/user/' . $user->id,
+            'action' => '/user/'.$user->id,
             'cancelRoute' => '/users',
             'user' => $user,
         ]);
@@ -70,7 +69,7 @@ class UserController extends Controller
             $user->syncRoles($vals['roles']);
         }
 
-        return redirect('/user/' . $user->id);
+        return redirect('/user/'.$user->id);
     }
 
     public function store(Request $request)

@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
-
 use Illuminate\Http\Request;
 use Tk\Support\Facades\Breadcrumbs;
 
 class HomeController extends Controller
 {
-
     public function doDefault(Request $request)
     {
         Breadcrumbs::push('Home');
@@ -19,10 +17,10 @@ class HomeController extends Controller
 
         if ($request->has('alert')) {
             $type = $request->input('alert');
+
             return redirect($request->fullUrlWithoutQuery(['alert']))->with($type, "This is a {$type} flash message.");
         }
 
         return view('pages.home');
     }
-
 }

@@ -3,8 +3,8 @@
 namespace App\Menus;
 
 use Tk\Breadcrumbs\Breadcrumbs;
-use Tk\Menu\MenuBuilderInterface;
 use Tk\Menu\Menu;
+use Tk\Menu\MenuBuilderInterface;
 use Tk\Menu\MenuItem;
 
 final class UserNav implements MenuBuilderInterface

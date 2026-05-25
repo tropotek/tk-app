@@ -14,40 +14,52 @@ use Tk\Table\Column;
  */
 trait IsTable
 {
-    use WithSearch,
-        HasAttrs,
+    use HasAttrs,
         HasColumns,
         HasFilters,
-        WithExport;
-
+        WithExport,
+        WithSearch;
 
     const string DEFAULT_TABLE_ID = 'tbl';
 
     // Table url query names
-    const string QUERY_LIMIT    = 'l';
-    const string QUERY_PAGE     = 'p';
-    const string QUERY_SORT     = 's';
-    const string QUERY_DIR      = 'd';
-    const string QUERY_SEARCH   = 'sr';
-    const string QUERY_FILTER   = 'f';
-    const string QUERY_RESET    = 'rst';
+    const string QUERY_LIMIT = 'l';
+
+    const string QUERY_PAGE = 'p';
+
+    const string QUERY_SORT = 's';
+
+    const string QUERY_DIR = 'd';
+
+    const string QUERY_SEARCH = 'sr';
+
+    const string QUERY_FILTER = 'f';
+
+    const string QUERY_RESET = 'rst';
 
     const string SORT_ASC = 'asc';
+
     const string SORT_DESC = 'desc';
 
-
     public int $limit = 0;      // rows per-page
+
     public string $sort = '';
+
     public string $dir = '';
+
     public array $filterVals = [];
+
     public ?int $totalRows = null;
 
     protected int $defaultLimit = 30;
-    protected string $defaultSort = '';
-    protected string $defaultDir = self::SORT_ASC;
-    protected mixed $rowAttrs = null;   // null|callable
-    protected mixed $paginatedRows = null;
 
+    protected string $defaultSort = '';
+
+    protected string $defaultDir = self::SORT_ASC;
+
+    protected mixed $rowAttrs = null;   // null|callable
+
+    protected mixed $paginatedRows = null;
 
     /**
      * Returns an array with all available rows or a query builder
@@ -64,9 +76,9 @@ trait IsTable
     {
         $this->setDefaultLimit(config('sis.default.pagination', 30));
 
-        $this->limit = (int)request()->input($this->tableKey(self::QUERY_LIMIT), 0);
-        $this->sort = (string)request()->input($this->tableKey(self::QUERY_SORT), '');
-        $this->dir = (string)request()->input($this->tableKey(self::QUERY_DIR), '');
+        $this->limit = (int) request()->input($this->tableKey(self::QUERY_LIMIT), 0);
+        $this->sort = (string) request()->input($this->tableKey(self::QUERY_SORT), '');
+        $this->dir = (string) request()->input($this->tableKey(self::QUERY_DIR), '');
         $this->filterVals = request()->input($this->tableKey(self::QUERY_FILTER), []) ?? [];
     }
 
@@ -85,13 +97,13 @@ trait IsTable
      */
     public function paginatedRows(): LengthAwarePaginator
     {
-        if (!is_null($this->paginatedRows)) {
+        if (! is_null($this->paginatedRows)) {
             return $this->paginatedRows;
         }
 
         $rows = $this->rows();
         if (is_array($rows)) {
-            $rows = $this->sortArray($rows, ($this->getDir() === self::SORT_DESC ? '-' : '') . $this->safeSort());
+            $rows = $this->sortArray($rows, ($this->getDir() === self::SORT_DESC ? '-' : '').$this->safeSort());
             $this->paginatedRows = $this->paginateArray($rows);
         } else {
             $rows = $this->sortQuery($rows);
@@ -113,8 +125,10 @@ trait IsTable
     {
         if (is_callable($this->rowAttrs)) {
             $attrs = call_user_func($this->rowAttrs, $row, $this);
+
             return ($attrs instanceof ComponentAttributeBag) ? $attrs : new ComponentAttributeBag($attrs);
         }
+
         return null;
     }
 
@@ -126,6 +140,7 @@ trait IsTable
     public function setRowAttrs(callable $callback): static
     {
         $this->rowAttrs = $callback;
+
         return $this;
     }
 
@@ -145,7 +160,7 @@ trait IsTable
     public function sortableKeys(): array
     {
         return $this->getColumns()
-            ->filter(fn(Column $column) => $column->isSortable())
+            ->filter(fn (Column $column) => $column->isSortable())
             ->pluck('sort')
             ->filter()
             ->all();
@@ -169,6 +184,7 @@ trait IsTable
     public function setDefaultLimit(int $limit): static
     {
         $this->defaultLimit = $limit;
+
         return $this;
     }
 
@@ -178,12 +194,14 @@ trait IsTable
         if ($dir) {
             $this->setDefaultDir($dir);
         }
+
         return $this;
     }
 
     public function setDefaultDir(string $dir = self::SORT_ASC): static
     {
         $this->defaultDir = in_array($dir, [self::SORT_ASC, self::SORT_DESC]) ? $dir : self::SORT_ASC;
+
         return $this;
     }
 
@@ -202,10 +220,13 @@ trait IsTable
      */
     public static function makeTableKey(string $key, string $tableId = ''): string
     {
-        if ($tableId == self::DEFAULT_TABLE_ID) return $key;
+        if ($tableId == self::DEFAULT_TABLE_ID) {
+            return $key;
+        }
         if (str_starts_with($key, $tableId.'_')) {
             return $key;
         }
+
         return $tableId.'_'.$key;
     }
 
@@ -213,6 +234,7 @@ trait IsTable
     {
         $sort = $this->safeSort();
         $dir = $this->getDir();
+
         return $query->orderBy($sort, $dir);
     }
 
@@ -272,15 +294,15 @@ trait IsTable
     {
         $remainingParams = collect(request()->query())->reject(
             $this->tableId() !== self::DEFAULT_TABLE_ID
-                ? fn($v, $k) => str_starts_with($k, $this->tableId() . '_') || in_array($k, $params)
-                : fn($v, $k) => in_array($k, array_merge([
-                self::QUERY_PAGE, self::QUERY_SORT, self::QUERY_DIR,
-                self::QUERY_LIMIT, self::QUERY_FILTER, self::QUERY_SEARCH, self::QUERY_RESET
-            ], $params))
+                ? fn ($v, $k) => str_starts_with($k, $this->tableId().'_') || in_array($k, $params)
+                : fn ($v, $k) => in_array($k, array_merge([
+                    self::QUERY_PAGE, self::QUERY_SORT, self::QUERY_DIR,
+                    self::QUERY_LIMIT, self::QUERY_FILTER, self::QUERY_SEARCH, self::QUERY_RESET,
+                ], $params))
         )->all();
 
         return $remainingParams
-            ? url()->current() . '?' . http_build_query($remainingParams)
+            ? url()->current().'?'.http_build_query($remainingParams)
             : url()->current();
     }
 
@@ -288,7 +310,6 @@ trait IsTable
     {
         return false;
     }
-
 
     // todo mm: Refactor the below array sort method, this is just copied from sisV1 for now,
     //          It needs to be refactored to cater for the new `sort` and `dir` properties
@@ -301,15 +322,18 @@ trait IsTable
      *
      * @template K of string|int
      * @template T of mixed
-     * @param array<K, T> $rows
+     *
+     * @param  array<K, T>  $rows
      * @return array<K, T>
      */
     public function sortArray(array $rows, string ...$columns): array
     {
-        if (count($rows) < 2) return $rows;
+        if (count($rows) < 2) {
+            return $rows;
+        }
 
         // generalized comparison function for sorting two values
-        $compare = fn(mixed $a, mixed $b): int => match(true) {
+        $compare = fn (mixed $a, mixed $b): int => match (true) {
             is_null($a) && is_null($b) => 0,
             // nulls always sort after non-nulls
             is_null($a) => -1,
@@ -327,7 +351,9 @@ trait IsTable
         $cols = [];
         foreach (array_reverse($columns) as $col) {
             $desc = false;
-            if (empty($col)) continue;
+            if (empty($col)) {
+                continue;
+            }
             if ($col[0] == '-') {
                 $desc = true;
                 $col = substr($col, 1);
@@ -342,9 +368,9 @@ trait IsTable
         // relies on PHP 8 stable sorting
         foreach ($cols as $col => $desc) {
             if ($desc) {
-                usort($rows, fn($l, $r) => $compare($this->getOrderVal($r, $col) ?? null, $this->getOrderVal($l, $col) ?? null));
+                usort($rows, fn ($l, $r) => $compare($this->getOrderVal($r, $col) ?? null, $this->getOrderVal($l, $col) ?? null));
             } else {
-                usort($rows, fn($l, $r) => $compare($this->getOrderVal($l, $col) ?? null, $this->getOrderVal($r, $col) ?? null));
+                usort($rows, fn ($l, $r) => $compare($this->getOrderVal($l, $col) ?? null, $this->getOrderVal($r, $col) ?? null));
             }
         }
 
@@ -352,14 +378,14 @@ trait IsTable
     }
 
     /**
-     * @param array<string,mixed>|object $row
+     * @param  array<string,mixed>|object  $row
      */
     protected function getOrderVal(array|object $row, string $col): mixed
     {
         if (is_array($row)) {
             return $row[$col] ?? null;
         }
+
         return $row->{$col} ?? null;
     }
-
 }

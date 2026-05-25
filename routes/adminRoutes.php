@@ -18,12 +18,11 @@ Route::middleware(['auth', 'role:admin'])->name('admin.')->group(function () {
         Route::post('/user', [UserController::class, 'store'])->name('store');
     });
 
-
     // development-specific
     if (app()->environment('local')) {
-        Route::get('/phpinfo', fn() => phpinfo())->name('phpinfo');
+        Route::get('/phpinfo', fn () => phpinfo())->name('phpinfo');
         Route::get('/user',
-            fn() => '<pre>'.print_r(Auth::user()->attributesToArray(), true).'</pre>')->name('dump-user');
-        Route::get('/session', fn() => '<pre>'.print_r(session()->all(), true).'</pre>')->name('dump-session');
+            fn () => '<pre>'.print_r(Auth::user()->attributesToArray(), true).'</pre>')->name('dump-user');
+        Route::get('/session', fn () => '<pre>'.print_r(session()->all(), true).'</pre>')->name('dump-session');
     }
 });

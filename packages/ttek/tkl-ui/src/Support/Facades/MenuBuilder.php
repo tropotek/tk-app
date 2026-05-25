@@ -1,4 +1,5 @@
 <?php
+
 namespace Tk\Support\Facades;
 
 use Illuminate\Support\Facades\Facade;
