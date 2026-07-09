@@ -75,9 +75,19 @@ docker exec -it tk-app /bin/bash
 ```
 *Note: You may need to run `composer install` inside the container if it's a fresh install.*
 
+
+Update db and clear caches:
+
+```
+./artisan migrate:fresh --seed
+./artisan cache:clear
+./artisan route:clear
+```
+
 ### 4. Default Credentials
 - **User:** `admin@example.com`
 - **Password:** `password`
+
 
 ---
 
