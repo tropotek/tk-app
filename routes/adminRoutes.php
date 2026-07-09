@@ -8,8 +8,9 @@ Route::middleware(['auth', 'role:admin'])->name('admin.')->group(function () {
     // Manage Users
     Route::name('users.')->group(function () {
         Route::livewire('/users', 'pages::users')->name('index');
-        Route::livewire('/user/{user}', 'pages::users.edit')->name('show');
-        Route::livewire('/user/{user}/edit1', 'pages::users.edit')->name('edit1');
+        Route::livewire('/user1/{user}', 'pages::users.edit')->name('show1');
+        Route::livewire('/user1/{user}/edit', 'pages::users.edit')->name('edit1');
+        Route::livewire('/user1/create', 'pages::users.edit')->name('create1');
 
         Route::get('/user/create', [UserController::class, 'create'])->name('create');
         Route::get('/user/{user}', [UserController::class, 'show'])->name('show');

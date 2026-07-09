@@ -17,21 +17,19 @@ use Tk\Table\Traits\WithSearch;
 new #[Layout('pages.main')]
 class extends Component {
 
-
-    public string $username;
-
     public UserForm $form;
 
 
-    public function mount(User $user)
+    public function mount(?User $user)
     {
-        Breadcrumbs::push($user->name, route('admin.users.show'));
-        Breadcrumbs::push('Edit User');
 
+        //Breadcrumbs::push($user->name, route('admin.users.show1', $user));
+        if ($user) {
+            Breadcrumbs::push('Edit User: ' . $user->name);
+        } else {
+            Breadcrumbs::push('Create User');
+        }
 
-        $this->username = $user->user->username;
-
-        logger([$user]);
 
         $this->form->load($user);
     }
@@ -40,24 +38,15 @@ class extends Component {
     {
         $this->form->update();
 
-        // The recommendation is to use a string literal to check SuperAdmin
-        // abilities. See https://github.com/eMedSIS/sisv2/pull/118
-        if (auth('staff')->user()->can('ChangeUsername')) {
-            $this->validate([
-                'username' => ['required', new Username($this->form->staff->user)],
-            ]);
 
-            $this->form->staff->user->update(['username' => $this->username]);
-        }
 
-        $this->toastSuccess('Staff updated.');
     }
 
 };
 ?>
 
 <div>
-    <h1>{{ $pageName }}</h1>
+    <h3 class="mb-4">{{ $pageName }}</h3>
 
 
 </div>
