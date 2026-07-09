@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Examples;
+namespace Demo\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Idea;
-use App\Notifications\IdeaPublished;
+use Demo\Models\Idea;
+use Demo\Notifications\IdeaPublished;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -16,7 +16,7 @@ class IdeaController extends Controller
     {
         Breadcrumbs::push('idea|Idea Create');
 
-        return view('pages.examples.ideas.create');
+        return view('demo::examples.ideas.create');
     }
 
     public function show(Idea $idea)
@@ -24,7 +24,7 @@ class IdeaController extends Controller
         Breadcrumbs::push('idea|Idea View');
         // Gate::authorize('update', $idea);
 
-        return view('pages.examples.ideas.edit', [
+        return view('demo::examples.ideas.edit', [
             'mode' => 'view',
             'idea' => $idea,
         ]);
@@ -34,7 +34,7 @@ class IdeaController extends Controller
     {
         Breadcrumbs::push('idea|Idea Edit');
 
-        return view('pages.examples.ideas.edit', [
+        return view('demo::examples.ideas.edit', [
             'mode' => 'edit',
             'idea' => $idea,
         ]);
@@ -72,7 +72,7 @@ class IdeaController extends Controller
             'description' => request('description'),
         ]);
 
-        Auth::user()->notify(new IdeaPublished($idea->first()));
+        Auth::user()->notify(new IdeaPublished($idea));
 
         return redirect('/examples/ideas');
     }

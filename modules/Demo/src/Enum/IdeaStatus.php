@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enum;
+namespace Demo\Enum;
 
 enum IdeaStatus: string
 {

@@ -30,7 +30,7 @@
 
             <x-tkl-ui::form.fields.select
                 name="status"
-                :options="['' => '-- Select --'] + \App\Enum\IdeaStatus::getLabels()"
+                :options="['' => '-- Select --'] + \Demo\Enum\IdeaStatus::getLabels()"
                 :value="$idea->status->value"
             />
 

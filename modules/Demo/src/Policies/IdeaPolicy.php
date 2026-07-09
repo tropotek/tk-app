@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Policies;
+namespace Demo\Policies;
 
-use App\Models\Idea;
 use App\Models\User;
+use Demo\Models\Idea;
 
 class IdeaPolicy
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Examples;
+namespace Demo\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Faker\Factory;
@@ -56,7 +56,7 @@ class ArrayTableController extends Controller
             return redirect(url()->current());
         }
 
-        return view('pages.examples.tables.table-array', [
+        return view('demo::examples.tables.table-array', [
             'table' => $this,
         ]);
     }

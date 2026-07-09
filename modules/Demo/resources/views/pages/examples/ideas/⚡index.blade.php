@@ -1,7 +1,7 @@
 <?php
 
-use App\Enum\IdeaStatus;
-use App\Models\Idea;
+use Demo\Enum\IdeaStatus;
+use Demo\Models\Idea;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;

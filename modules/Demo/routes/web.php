@@ -1,23 +1,23 @@
 <?php
 
-use App\Http\Controllers\Examples\ArrayTableController;
-use App\Http\Controllers\Examples\ExamplesController;
-use App\Http\Controllers\Examples\Forms\FieldgroupController;
-use App\Http\Controllers\Examples\Forms\FieldsetController;
-use App\Http\Controllers\Examples\IdeaController;
+use Demo\Http\Controllers\ArrayTableController;
+use Demo\Http\Controllers\ExamplesController;
+use Demo\Http\Controllers\Forms\FieldgroupController;
+use Demo\Http\Controllers\Forms\FieldsetController;
+use Demo\Http\Controllers\IdeaController;
 
 // Laracasts Ideas tutorial
-Route::middleware('auth')->name('examples.')->prefix('/examples')->group(function () {
+Route::middleware(['web', 'auth'])->name('examples.')->prefix('/examples')->group(function () {
     Route::get('/examples', [ExamplesController::class, 'index'])->name('index');
-    Route::livewire('/bootstrap', 'pages::examples.bootstrap')->name('bootstrap');
+    Route::livewire('/bootstrap', 'demo::examples.bootstrap')->name('bootstrap');
 
     Route::name('ideas.')->group(function () {
-        Route::livewire('/ideas', 'pages::examples.ideas')->name('index');
+        Route::livewire('/ideas', 'demo::examples.ideas')->name('index');
         Route::get('/ideas/create', [IdeaController::class, 'create'])->name('create');
         Route::get('/ideas/{idea}', [IdeaController::class, 'show'])->name('show');
         Route::get('/ideas/{idea}/edit', [IdeaController::class, 'edit'])->name('edit');
         Route::patch('/ideas/{idea}', [IdeaController::class, 'update'])->name('update');
-        Route::post('/ideas', [IdeaController::class, 'store'])->name('stor');
+        Route::post('/ideas', [IdeaController::class, 'store'])->name('store');
         Route::delete('/ideas/{idea}', [IdeaController::class, 'destroy'])->name('destroy');
         Route::get('/ideas/delete-all', [IdeaController::class, 'deleteAll'])->name('deleteAll');
     });
@@ -37,8 +37,8 @@ Route::middleware('auth')->name('examples.')->prefix('/examples')->group(functio
     Route::get('/tableArray', [ArrayTableController::class, 'index'])->name('tableArray');
     Route::get('/tableArrayExport', [ArrayTableController::class, 'export'])->name('tableArray.export');
 
-    Route::livewire('/tableArray2', 'pages::examples.tables.table-array-live')->name('tableArray2');
+    Route::livewire('/tableArray2', 'demo::examples.tables.table-array-live')->name('tableArray2');
 
-    Route::livewire('/tableTest', 'pages::examples.tables.test')->name('tableTest');
+    Route::livewire('/tableTest', 'demo::examples.tables.test')->name('tableTest');
 
 });

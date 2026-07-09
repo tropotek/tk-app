@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Database\Factories\IdeaFactory;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -21,7 +20,9 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::factory(76)->create();
-        IdeaFactory::times(512)->create();
 
+        if (class_exists(\Demo\DemoServiceProvider::class) && app()->getProvider(\Demo\DemoServiceProvider::class)) {
+            $this->call(\Demo\Database\Seeders\IdeaSeeder::class);
+        }
     }
 }

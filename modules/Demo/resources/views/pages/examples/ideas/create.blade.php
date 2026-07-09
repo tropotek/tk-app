@@ -1,4 +1,4 @@
-@php use App\Enum\IdeaStatus; @endphp
+@php use Demo\Enum\IdeaStatus; @endphp
 @props([
     'mode'   => 'create',       // ['view', 'edit', 'create']
     'action' => '/examples/ideas',

@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Examples\Forms;
+namespace Demo\Http\Controllers\Forms;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Tk\Support\Facades\Breadcrumbs;
 
-class FieldgroupController extends Controller
+class FieldsetController extends Controller
 {
     protected array $values = [
-        'testId' => 22,
         'title' => 'mrs',
         'firstName' => 'John',
         'lastName' => 'Doe',
@@ -23,14 +22,11 @@ class FieldgroupController extends Controller
         'description' => 'This is a test description',
     ];
 
-    // protected string $view = 'forms.three';
-    protected string $view = 'pages.examples.forms.fieldgroup';
-
     public function index(Request $request)
     {
-        Breadcrumbs::push('form three|Form Three View');
+        Breadcrumbs::push('Fieldset View');
 
-        return view($this->view, [
+        return view('demo::examples.forms.fieldset', [
             'mode' => 'view',
             'values' => $this->values,
         ]);
@@ -38,9 +34,9 @@ class FieldgroupController extends Controller
 
     public function edit(Request $request)
     {
-        Breadcrumbs::push('form three|Form Three Edit');
+        Breadcrumbs::push('Fieldset Edit');
 
-        return view($this->view, [
+        return view('demo::examples.forms.fieldset', [
             'mode' => 'edit',
             'values' => $this->values,
         ]);
@@ -48,9 +44,9 @@ class FieldgroupController extends Controller
 
     public function create(Request $request)
     {
-        Breadcrumbs::push('form three|Form Three create');
+        Breadcrumbs::push('Fieldset Create');
 
-        return view($this->view, [
+        return view('demo::examples.forms.fieldset', [
             'mode' => 'create',
         ]);
     }
@@ -60,14 +56,14 @@ class FieldgroupController extends Controller
         $request->validate([
             'firstName' => 'required|min:3|max:20',
             'lastName' => 'required|min:3|max:20',
-            //            'email' => 'required|email',
-            //            'gender' => 'required',
+            'email' => 'required|email',
+            'gender' => 'required',
             //            'address' => 'required',
             //            'image' => 'image|max:2048',
         ]);
 
         vd($request->all());
 
-        return redirect('/examples/formThree')->with('success', 'Form submitted successfully!');
+        return redirect('/examples/formFieldset')->with('success', 'Form submitted successfully!');
     }
 }
