@@ -12,7 +12,7 @@ class UserRegisterRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return config('app.registration_enabled');
     }
 
     /**
@@ -27,7 +27,7 @@ class UserRegisterRequest extends FormRequest
         }
 
         return [
-            'email' => ['required', 'email:rfc,dns', 'unique:users'],
+            'email' => ['required', 'email:rfc', 'unique:users'],
             'name' => ['required', 'min:3', 'unique:users'],
             'password' => 'required|min:8|max:255',
         ];

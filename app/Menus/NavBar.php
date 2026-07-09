@@ -2,7 +2,6 @@
 
 namespace App\Menus;
 
-use App\Enum\Roles;
 use Tk\Breadcrumbs\Breadcrumbs;
 use Tk\Menu\Menu;
 use Tk\Menu\MenuBuilderInterface;
@@ -12,8 +11,6 @@ final class NavBar implements MenuBuilderInterface
 {
     public function build(Menu $menu): void
     {
-        $isLocal = app()->environment('local');
-
         $menu->addChildren([
             MenuItem::make('Home', route('home'))
                 ->setVisible(! auth()->check()),
@@ -38,11 +35,11 @@ final class NavBar implements MenuBuilderInterface
             MenuItem::make('Admin')->addChildren([
                 MenuItem::make('Settings', route('dashboard'))->setDisabled(),
                 MenuItem::make('Users', route('admin.users.index')),
-                MenuItem::makeSeparator()->setVisible($isLocal),
-                MenuItem::make('Phpinfo', route('admin.phpinfo'))->setVisible($isLocal),
-                MenuItem::make('User', route('admin.dump-user'))->setVisible($isLocal),
-                MenuItem::make('Session', route('admin.dump-session'))->setVisible($isLocal),
-            ])->setVisible(auth()->check() && auth()->user()->hasRole(Roles::Admin->value)),
+                MenuItem::makeSeparator(),
+                MenuItem::make('Phpinfo', route('admin.phpinfo')),
+                MenuItem::make('User', route('admin.dump-user')),
+                MenuItem::make('Session', route('admin.dump-session')),
+            ])->setVisible(auth()->check() && auth()->user()->isStaff()),
 
             MenuItem::make('Logout', route('logout'))
                 ->setTitleVisible(false)

@@ -24,15 +24,6 @@ class extends Component {
         Breadcrumbs::push('Users');
 
 
-        $this->appendColumn('actions')
-            ->setSortable()
-            ->addClass('fw-bold w-auto')
-            ->setView(function (User $user, Column $column) {
-                return sprintf('<a href="%s"><i class="fa fa-fw fa-pencil"></i></a>',
-                    route('admin.users.edit1', $user)
-                );
-            });
-
         $this->appendColumn('name')
             ->setSortable()
             ->addClass('fw-bold w-auto')
@@ -46,23 +37,26 @@ class extends Component {
         $this->appendColumn('email')
             ->setSortable();
 
-        $this->appendColumn('roles')
+        $this->appendColumn('role')
+            ->setSortable()
             ->setValue(function (User $user, $column) {
-                return $user->roles->pluck('name')->implode(', ');
+                return $user->role->name;
             });
 
         $this->appendColumn('created_at')
+            ->addClass('text-end')
+            ->addHeaderClass('text-end')
             ->setHeader('Created')
             ->setSortable();
 
-        $this->appendFilter('roles')
-            ->setOptions(['admin' => 'Admin', 'staff' => 'Staff', 'member' => 'Member']);
+        $this->appendFilter('role')
+            ->setOptions(\App\Enum\Roles::toValueNameArray());
     }
 
     #[Computed]
     protected function rows(): array|Builder
     {
-        return User::with('roles')
+        return User::query()
             ->when($this->search, function (Builder $builder) {
                 $str = preg_replace("/[^a-zA-Z0-9' -]/", " ", $this->search);
                 $email = preg_replace("/[^a-zA-Z0-9@._-]/", "", $this->search);
@@ -70,7 +64,7 @@ class extends Component {
                     ->orWhere('email', 'like', "%{$email}%")
                     ->tap($this->resetPage() ?? fn() => null);
             })
-            ->when($this->filterVals['roles'] ?? null, fn(Builder $query) => $query->role($this->filterVals['roles']));
+            ->when($this->filterVals['role'] ?? null, fn(Builder $query) => $query->where('role', $this->filterVals['role']));
     }
 
     public function export(): StreamedResponse

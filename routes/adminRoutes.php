@@ -1,29 +1,18 @@
 <?php
 
-// TODO: admin permissions
-use App\Http\Controllers\User\UserController;
-
-Route::middleware(['auth', 'role:admin'])->name('admin.')->group(function () {
+Route::middleware(['auth', 'can:accessAdmin'])->prefix('admin')->name('admin.')->group(function () {
 
     // Manage Users
     Route::name('users.')->group(function () {
         Route::livewire('/users', 'pages::users')->name('index');
-        Route::livewire('/user1/{user}', 'pages::users.edit')->name('show1');
-        Route::livewire('/user1/{user}/edit', 'pages::users.edit')->name('edit1');
-        Route::livewire('/user1/create', 'pages::users.edit')->name('create1');
-
-        Route::get('/user/create', [UserController::class, 'create'])->name('create');
-        Route::get('/user/{user}', [UserController::class, 'show'])->name('show');
-        Route::get('/user/{user}/edit', [UserController::class, 'edit'])->name('edit');
-        Route::patch('/user/{user}', [UserController::class, 'update'])->name('update');
-        Route::post('/user', [UserController::class, 'store'])->name('store');
+        Route::livewire('/user/create', 'pages::users.edit')->name('create');
+        Route::livewire('/user/{user}/edit', 'pages::users.edit')->name('edit');
     });
 
     // development-specific
-    if (app()->environment('local')) {
-        Route::get('/phpinfo', fn () => phpinfo())->name('phpinfo');
-        Route::get('/user',
-            fn () => '<pre>'.print_r(Auth::user()->attributesToArray(), true).'</pre>')->name('dump-user');
-        Route::get('/session', fn () => '<pre>'.print_r(session()->all(), true).'</pre>')->name('dump-session');
-    }
+    Route::get('/phpinfo', fn () => phpinfo())->name('phpinfo');
+    Route::get('/user',
+        fn () => '<pre>'.print_r(Auth::user()->attributesToArray(), true).'</pre>')->name('dump-user');
+    Route::get('/session', fn () => '<pre>'.print_r(session()->all(), true).'</pre>')->name('dump-session');
+
 });

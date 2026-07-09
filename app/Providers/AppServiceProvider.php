@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Menus\NavBar;
 use App\Menus\UserNav;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Tk\Support\Facades\MenuBuilder;
 
@@ -31,5 +33,6 @@ class AppServiceProvider extends ServiceProvider
         MenuBuilder::registerBuilder(NavBar::class, 'NavBar');
         MenuBuilder::registerBuilder(UserNav::class, 'UserNav');
 
+        Gate::define('accessAdmin', fn (User $user) => $user->isStaff());
     }
 }

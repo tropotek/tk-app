@@ -43,7 +43,7 @@
             </form>
 
             <p class="text-muted text-center">
-{{--                <a href="/recover">Recover</a> | --}}
+                <a href="{{ route('password.request') }}">Forgot Password?</a> |
                 <a href="/login">Login</a>
             </p>
         </div>

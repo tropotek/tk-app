@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Enum\Roles;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 
 class CreateAdminUserSeeder extends Seeder
 {
@@ -13,18 +13,17 @@ class CreateAdminUserSeeder extends Seeder
      */
     public function run(): void
     {
-
         // Create admin user
         $user = User::firstOrCreate(
             ['email' => 'admin@example.com'],
             [
                 'name' => 'Admin User',
                 'password' => bcrypt('password'),
+                'role' => Roles::Admin,
             ]
         );
 
-        // Assign admin role to user
-        $role = Role::firstOrCreate(['name' => 'admin']);
-        $user->assignRole([$role->id]);
+        // Ensure the role is correct even if the row already existed
+        $user->update(['role' => Roles::Admin]);
     }
 }

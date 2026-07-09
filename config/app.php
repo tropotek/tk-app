@@ -8,6 +8,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | User Registration
+    |--------------------------------------------------------------------------
+    |
+    | When disabled, public self-registration is blocked and staff/admin
+    | users must create accounts manually via the admin user management UI.
+    |
+    */
+
+    'registration_enabled' => (bool) env('APP_REGISTRATION_ENABLED', true),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Name
     |--------------------------------------------------------------------------
     |

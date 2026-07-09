@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRegisterRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -22,11 +24,28 @@ class AuthController extends Controller
                 'password' => 'required|min:8|max:255',
             ]);
 
-            if (auth()->attempt($fieldValues, $request->has('remember'))) {
-                $request->session()->regenerate();
+            $throttleKey = Str::lower($fieldValues['email']).'|'.$request->ip();
+
+            if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+                $seconds = RateLimiter::availableIn($throttleKey);
+
+                return back()->withErrors([
+                    'email' => "Too many login attempts. Please try again in {$seconds} seconds.",
+                ])->onlyInput('email');
             }
 
-            return redirect(route('dashboard'));
+            if (auth()->attempt($fieldValues, $request->has('remember'))) {
+                RateLimiter::clear($throttleKey);
+                $request->session()->regenerate();
+
+                return redirect(route('dashboard'));
+            }
+
+            RateLimiter::hit($throttleKey, 60);
+
+            return back()->withErrors([
+                'email' => 'These credentials do not match our records.',
+            ])->onlyInput('email');
         }
 
         return view('pages.login');
@@ -48,8 +67,7 @@ class AuthController extends Controller
 
         if ($request->isMethod('post')) {
 
-            $user = User::create($request->validated());
-            $user->assignRole(Roles::Member->value);
+            $user = User::create([...$request->validated(), 'role' => Roles::Member]);
 
             auth()->login($user);
 

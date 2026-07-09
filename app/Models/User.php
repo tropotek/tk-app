@@ -2,22 +2,15 @@
 
 namespace App\Models;
 
+use App\Enum\Roles;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Traits\HasPermissions;
-use Spatie\Permission\Traits\HasRoles;
 
-/**
- * For roles and permissions tutorial:
- *
- * @see https://devsolutionsdaily.com/blog/laravel-12-livewire-4-spatie-role-and-permission-setup-tutorial
- */
 class User extends Authenticatable
 {
-    use HasFactory, HasPermissions, HasRoles, Notifiable;
+    use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass-assignable.
@@ -28,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -38,8 +32,6 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
-        'staff_data',
-        'member_data',
     ];
 
     /**
@@ -52,11 +44,27 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'role' => Roles::class,
         ];
     }
 
     public function ideas(): HasMany
     {
         return $this->hasMany(Idea::class);
+    }
+
+    public function hasRole(Roles $role): bool
+    {
+        return $this->role === $role;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === Roles::Admin;
+    }
+
+    public function isStaff(): bool
+    {
+        return $this->role === Roles::Staff || $this->isAdmin();
     }
 }
