@@ -9,6 +9,9 @@ Route::middleware(['auth', 'can:accessAdmin'])->prefix('admin')->name('admin.')-
         Route::livewire('/user/{user}/edit', 'pages::users.edit')->name('edit');
     });
 
+    // Site Settings
+    Route::livewire('/settings', 'pages::settings')->name('settings');
+
     // development-specific
     Route::get('/phpinfo', fn () => phpinfo())->name('phpinfo');
     Route::get('/user',

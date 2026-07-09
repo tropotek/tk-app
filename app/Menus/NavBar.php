@@ -33,7 +33,8 @@ final class NavBar implements MenuBuilderInterface
             ]),
 
             MenuItem::make('Admin')->addChildren([
-                MenuItem::make('Settings', route('dashboard'))->setDisabled(),
+                MenuItem::make('Settings', route('admin.settings'))
+                    ->setVisible(auth()->check() && auth()->user()->isAdmin()),
                 MenuItem::make('Users', route('admin.users.index')),
                 MenuItem::makeSeparator(),
                 MenuItem::make('Phpinfo', route('admin.phpinfo')),

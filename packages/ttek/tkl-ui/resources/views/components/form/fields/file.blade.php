@@ -12,6 +12,7 @@
 @php
     $cleanName = str_replace(['[', ']'], '', $name);
     $value = $value ?? '';
+    $errorKey = $attributes->get('wire:model') ?: $cleanName;
 
     // Help message
     $preText = '';
@@ -20,7 +21,7 @@
         $preText = sprintf('<small>Max File Size: <b>%s</b></small><br/>', \Tk\Utils\File::bytes2String($maxBytes));
     }
 @endphp
-<x-tkl-ui::form.ui.field :$preText :$errorText>
+<x-tkl-ui::form.ui.field :$preText :$errorText :$errorKey>
     @if($mode == 'view')
         <p {{ $attributes->merge([ 'class' => 'form-control-plaintex' ]) }}>{!! $value !!}</p>
     @else
@@ -28,7 +29,7 @@
                 'type'     => 'file',
                 'name'     => $cleanName,
                 'id'       => 'fid-'.$cleanName,
-                'class'    => 'form-control' . ( $errors->isNotEmpty() ? ' is-invalid' : ''),
+                'class'    => 'form-control' . ( $errors->has($errorKey) ? ' is-invalid' : ''),
             ]) }}
         />
     @endif

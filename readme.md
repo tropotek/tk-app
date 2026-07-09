@@ -14,13 +14,12 @@ This is an experimental Laravel application built with Docker, focusing on moder
 
 ### Stack
 - **Language:** PHP 8.4+
-- **Framework:** [Laravel 12](https://laravel.com/)
+- **Framework:** [Laravel 13](https://laravel.com/)
 - **Server:** [FrankenPHP](https://frankenphp.dev/) (Docker)
 - **Frontend:** 
   - [Vite](https://vitejs.dev/)
   - [Tailwind CSS 4](https://tailwindcss.com/)
   - [Bootstrap 5](https://getbootstrap.com/)
-  - [HTMX 2](https://htmx.org/)
   - [jQuery 3.7](https://jquery.com/)
 - **Database:** SQLite
 - **Package Managers:** Composer (PHP), NPM (JS)

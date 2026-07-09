@@ -1,7 +1,7 @@
 <header>
     <nav class="navbar navbar-expand-sm fixed-top mb-2 navbar-light bg-light shadow-sm">
         <div class="{{ config('app.resources.layout', 'container') }}">
-            <a class="navbar-brand" href="/">{{ config('app.name', 'Example') }}</a>
+            <a class="navbar-brand" href="/">{{ \App\Models\Setting::current()->site_short_title ?: config('app.name', 'Example') }}</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
                     aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>

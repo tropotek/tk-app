@@ -11,9 +11,10 @@
 ])
 @php
     $value = old($name, $value ?? '');
+    $errorKey = $attributes->get('wire:model') ?: $name;
 @endphp
 
-<x-tkl-ui::form.ui.field :$errorText>
+<x-tkl-ui::form.ui.field :$errorText :$errorKey>
     @if ($mode == 'view')
         <div class="form-control-plaintext">{{ $value }}</div>
     @else
@@ -22,7 +23,7 @@
                 'id'       => 'fid-'.$name,
                 'value'    => $value,
                 'rows'     => 5,
-                'class'    => 'form-control' . ( $errors->isNotEmpty() ? ' is-invalid' : ''),
+                'class'    => 'form-control' . ( $errors->has($errorKey) ? ' is-invalid' : ''),
             ]) }}
         >{{ $value }}</textarea>
     @endif

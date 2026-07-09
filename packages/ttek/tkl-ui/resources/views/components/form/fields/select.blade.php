@@ -14,12 +14,13 @@
 @php
     $cleanName = str_replace(['[', ']'], '', $name);
     $value = old($cleanName, $value ?? '');
+    $errorKey = $attributes->get('wire:model') ?: $cleanName;
     if (!$withField) {
         $mode = 'edit';
     }
 @endphp
 
-<x-tkl-ui::form.ui.field :$errorText :$withField>
+<x-tkl-ui::form.ui.field :$errorText :$withField :$errorKey>
     @if($mode == 'view')
         <input {{ $attributes->merge([
             'type'     => 'text',
@@ -34,7 +35,7 @@
         <select {{ $attributes->merge([
                 'name'  => $name,
                 'id'    => 'fid-'.$cleanName,
-                'class' => 'form-select' . ( $errors->isNotEmpty() ? ' is-invalid' : '')
+                'class' => 'form-select' . ( $errors->has($errorKey) ? ' is-invalid' : '')
             ]) }}
         >
             @foreach ($options as $val => $text)

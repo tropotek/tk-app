@@ -13,9 +13,10 @@
 ])
 @php
     $value = old($name, $value ?? '');
+    $errorKey = $attributes->get('wire:model') ?: $name;
 @endphp
 
-<x-tkl-ui::form.ui.field :$errorText>
+<x-tkl-ui::form.ui.field :$errorText :$errorKey>
     <input {{ $attributes->merge([
             'type'     => $type,
             'name'     => $name,
@@ -24,7 +25,7 @@
             'readonly' => ($mode == 'view') ? 'readonly' : null,
             'class'    => ($mode == 'view') ?
                 'form-control-plaintext' :
-                'form-control' . ( $errors->isNotEmpty() ? ' is-invalid' : ''),
+                'form-control' . ( $errors->has($errorKey) ? ' is-invalid' : ''),
         ]) }}
     />
 </x-tkl-ui::form.ui.field>

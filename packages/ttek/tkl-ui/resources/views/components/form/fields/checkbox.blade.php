@@ -14,11 +14,12 @@
 @php
     $cleanName = str_replace(['[', ']'], '', $name);
     $value = old($cleanName, $value ?? '');
+    $errorKey = $attributes->get('wire:model') ?: $cleanName;
 @endphp
 
-<x-tkl-ui::form.ui.field :$errorText>
+<x-tkl-ui::form.ui.field :$errorText :$errorKey>
     @foreach ($options as $optValue => $text)
-        <div class="{{$isSwitch ? 'form-switch' : 'form-check'}} {{$errors->isNotEmpty() ? ' is-invalid' : ''}}">
+        <div class="{{$isSwitch ? 'form-switch' : 'form-check'}} {{$errors->has($errorKey) ? ' is-invalid' : ''}}">
             @if($mode == 'view')
                 @php
                     $css = 'text-primary ' . (\Tk\Utils\Form::isSelected($optValue, $value) ? ' fa-regular fa-square-check' : 'fa-regular fa-square');
@@ -35,7 +36,7 @@
                         'id'       => sprintf('fid-%s-%s', $cleanName, $optValue),
                         'value'    => $optValue,
                         'checked'  => \Tk\Utils\Form::isSelected($optValue, $value) ? 'checked' : null,
-                        'class'    => 'form-check-input' . ( $errors->isNotEmpty() ? ' is-invalid' : ''),
+                        'class'    => 'form-check-input' . ( $errors->has($errorKey) ? ' is-invalid' : ''),
                     ]) }}
                 />
                 <label class="form-check-label" for="fid-{{ $cleanName }}-{{ $optValue }}">{{ $text }}</label>
