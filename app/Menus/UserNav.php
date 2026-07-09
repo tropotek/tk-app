@@ -13,7 +13,7 @@ final class UserNav implements MenuBuilderInterface
     {
         $menu->addChildren([
             MenuItem::make('Dashboard', route('dashboard'))->setIcon('fa-solid fa-gauge'),
-            MenuItem::make('My Profile', route('dashboard'))->setIcon('fa-solid fa-user'),
+            MenuItem::make('My Profile', route('myprofile'))->setIcon('fa-solid fa-user'),
             MenuItem::makeSeparator(),
             MenuItem::make('About')
                 ->addAttribute(['data-bs-toggle' => 'modal', 'data-bs-target' => '#aboutModal'])

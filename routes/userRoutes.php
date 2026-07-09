@@ -10,6 +10,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'doDefault'])
         ->name('dashboard');
 
+    Route::livewire('/myprofile', 'pages::myprofile')->name('myprofile');
+
     Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])
         ->name('logout');
 
