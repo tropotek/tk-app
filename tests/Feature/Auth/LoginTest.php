@@ -4,6 +4,7 @@ namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class LoginTest extends TestCase
@@ -14,26 +15,26 @@ class LoginTest extends TestCase
     {
         $user = User::factory()->create(['password' => bcrypt('password')]);
 
-        $response = $this->post('/login', [
-            'email' => $user->email,
-            'password' => 'password',
-        ]);
+        Livewire::test('pages::login')
+            ->set('email', $user->email)
+            ->set('password', 'password')
+            ->call('login')
+            ->assertRedirect(route('dashboard'));
 
         $this->assertAuthenticatedAs($user);
-        $response->assertRedirect(route('dashboard'));
     }
 
     public function test_login_fails_with_invalid_credentials(): void
     {
         $user = User::factory()->create(['password' => bcrypt('password')]);
 
-        $response = $this->post('/login', [
-            'email' => $user->email,
-            'password' => 'wrong-password',
-        ]);
+        Livewire::test('pages::login')
+            ->set('email', $user->email)
+            ->set('password', 'wrong-password')
+            ->call('login')
+            ->assertHasErrors('email');
 
         $this->assertGuest();
-        $response->assertSessionHasErrors('email');
     }
 
     public function test_login_is_throttled_after_repeated_failures(): void
@@ -41,18 +42,18 @@ class LoginTest extends TestCase
         $user = User::factory()->create(['password' => bcrypt('password')]);
 
         for ($i = 0; $i < 5; $i++) {
-            $this->post('/login', [
-                'email' => $user->email,
-                'password' => 'wrong-password',
-            ]);
+            Livewire::test('pages::login')
+                ->set('email', $user->email)
+                ->set('password', 'wrong-password')
+                ->call('login');
         }
 
-        $response = $this->post('/login', [
-            'email' => $user->email,
-            'password' => 'password',
-        ]);
+        Livewire::test('pages::login')
+            ->set('email', $user->email)
+            ->set('password', 'password')
+            ->call('login')
+            ->assertHasErrors('email');
 
         $this->assertGuest();
-        $response->assertSessionHasErrors('email');
     }
 }

@@ -4,6 +4,7 @@ namespace Tests\Feature\Auth;
 
 use App\Enum\Roles;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class RegistrationTest extends TestCase
@@ -14,14 +15,14 @@ class RegistrationTest extends TestCase
     {
         config(['app.registration_enabled' => true]);
 
-        $response = $this->post('/register', [
-            'name' => 'Jane Doe',
-            'email' => 'jane@gmail.com',
-            'password' => 'password123',
-        ]);
+        Livewire::test('pages::register')
+            ->set('name', 'Jane Doe')
+            ->set('email', 'jane@gmail.com')
+            ->set('password', 'password123')
+            ->call('register')
+            ->assertRedirect(route('dashboard'));
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard'));
 
         $this->assertDatabaseHas('users', [
             'email' => 'jane@gmail.com',
@@ -33,15 +34,8 @@ class RegistrationTest extends TestCase
     {
         config(['app.registration_enabled' => false]);
 
-        $this->get('/register')->assertForbidden();
+        Livewire::test('pages::register')->assertForbidden();
 
-        $response = $this->post('/register', [
-            'name' => 'Jane Doe',
-            'email' => 'jane@gmail.com',
-            'password' => 'password123',
-        ]);
-
-        $response->assertForbidden();
         $this->assertGuest();
         $this->assertDatabaseMissing('users', ['email' => 'jane@gmail.com']);
     }
@@ -50,12 +44,11 @@ class RegistrationTest extends TestCase
     {
         config(['app.registration_enabled' => true]);
 
-        $this->post('/register', [
-            'name' => 'Spoofed Admin',
-            'email' => 'spoofed@gmail.com',
-            'password' => 'password123',
-            'role' => 'admin',
-        ]);
+        Livewire::test('pages::register')
+            ->set('name', 'Spoofed Admin')
+            ->set('email', 'spoofed@gmail.com')
+            ->set('password', 'password123')
+            ->call('register');
 
         $this->assertDatabaseHas('users', [
             'email' => 'spoofed@gmail.com',

@@ -1,0 +1,47 @@
+<?php
+
+use Livewire\Attributes\Layout;
+use Livewire\Component;
+use Tk\Support\Facades\Breadcrumbs;
+
+new #[Layout('pages.main')]
+class extends Component {
+
+    public function mount()
+    {
+        Breadcrumbs::push('Dashboard');
+
+        if (request()->has('alert')) {
+            $type = request()->input('alert');
+
+            return redirect(request()->fullUrlWithoutQuery(['alert']))->with($type, "This is a {$type} flash message.");
+        }
+    }
+
+};
+?>
+
+<div class="container">
+    <div class="col text-center">
+        @auth
+            <h1 class="text-primary">Welcome {{ auth()->user()->name }}</h1>
+        @else
+            <h1 class="text-primary">Hello, world.</h1>
+        @endauth
+    </div>
+
+    <p>Test flash message alerts:</p>
+    <ul class="list-unstyled">&nbsp;
+        <a class="btn btn-primary" href="{{ request()->fullUrlWithQuery(['alert' => 'primary']) }}">Primary</a>
+        <a class="btn btn-success" href="{{ request()->fullUrlWithQuery(['alert' => 'success']) }}">Success</a>
+        <a class="btn btn-info" href="{{ request()->fullUrlWithQuery(['alert' => 'info']) }}">Info</a>
+        <a class="btn btn-warning" href="{{ request()->fullUrlWithQuery(['alert' => 'warning']) }}">Warning</a>
+        <a class="btn btn-danger" href="{{ request()->fullUrlWithQuery(['alert' => 'danger']) }}">Danger</a>
+        <a class="btn btn-danger" href="{{ request()->fullUrlWithQuery(['alert' => 'error']) }}">Error</a>
+    </ul>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+
+    <div>
+    </div>
+</div>

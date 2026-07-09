@@ -1,19 +1,20 @@
 <?php
 
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\User\AuthController;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 use Tk\Models\File;
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'doDefault'])
-        ->name('dashboard');
+    Route::livewire('/dashboard', 'pages::dashboard')->name('dashboard');
 
     Route::livewire('/myprofile', 'pages::myprofile')->name('myprofile');
 
-    Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])
-        ->name('logout');
+    Route::match(['get', 'post'], '/logout', function () {
+        auth()->logout();
+        session()->flush();
+
+        return redirect()->route('home');
+    })->name('logout');
 
     Route::get('/files/{file}', function (File $file) {
         abort_unless(

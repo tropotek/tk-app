@@ -7,6 +7,7 @@ use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class PasswordResetTest extends TestCase
@@ -19,7 +20,9 @@ class PasswordResetTest extends TestCase
 
         $user = User::factory()->create();
 
-        $this->post('/forgot-password', ['email' => $user->email]);
+        Livewire::test('pages::forgot-password')
+            ->set('email', $user->email)
+            ->call('sendResetLink');
 
         Notification::assertSentTo($user, ResetPassword::class);
     }
@@ -29,19 +32,17 @@ class PasswordResetTest extends TestCase
         $user = User::factory()->create();
         $token = Password::createToken($user);
 
-        $response = $this->post('/reset-password', [
-            'token' => $token,
-            'email' => $user->email,
-            'password' => 'new-password123',
-            'password_confirmation' => 'new-password123',
-        ]);
+        Livewire::test('pages::reset-password', ['token' => $token])
+            ->set('email', $user->email)
+            ->set('password', 'new-password123')
+            ->set('password_confirmation', 'new-password123')
+            ->call('resetPassword')
+            ->assertRedirect(route('login'));
 
-        $response->assertRedirect(route('login'));
-
-        $this->post('/login', [
-            'email' => $user->email,
-            'password' => 'new-password123',
-        ]);
+        Livewire::test('pages::login')
+            ->set('email', $user->email)
+            ->set('password', 'new-password123')
+            ->call('login');
 
         $this->assertAuthenticatedAs($user);
     }
@@ -50,19 +51,18 @@ class PasswordResetTest extends TestCase
     {
         $user = User::factory()->create(['password' => bcrypt('password')]);
 
-        $response = $this->post('/reset-password', [
-            'token' => 'invalid-token',
-            'email' => $user->email,
-            'password' => 'new-password123',
-            'password_confirmation' => 'new-password123',
-        ]);
+        Livewire::test('pages::reset-password', ['token' => 'invalid-token'])
+            ->set('email', $user->email)
+            ->set('password', 'new-password123')
+            ->set('password_confirmation', 'new-password123')
+            ->call('resetPassword')
+            ->assertHasErrors('email');
 
-        $response->assertSessionHasErrors('email');
+        Livewire::test('pages::login')
+            ->set('email', $user->email)
+            ->set('password', 'password')
+            ->call('login');
 
-        $this->post('/login', [
-            'email' => $user->email,
-            'password' => 'password',
-        ]);
         $this->assertAuthenticatedAs($user);
     }
 }
