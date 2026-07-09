@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Enum\Roles;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -46,11 +45,6 @@ class User extends Authenticatable
             'password' => 'hashed',
             'role' => Roles::class,
         ];
-    }
-
-    public function ideas(): HasMany
-    {
-        return $this->hasMany(Idea::class);
     }
 
     public function hasRole(Roles $role): bool

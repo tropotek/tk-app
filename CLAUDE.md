@@ -41,15 +41,16 @@ php artisan tinker
 
 ### Routes
 
-Routes are split across four files included from `routes/web.php`:
+Routes are split across three files included from `routes/web.php`:
 - `guestRoutes.php` — public (home, login, register)
 - `userRoutes.php` — `auth` middleware (dashboard, logout)
 - `adminRoutes.php` — `auth + role:admin` middleware, prefixed `/admin`
-- `exampleRoutes.php` — `auth` middleware, prefixed `/examples`
+
+The `/examples` demo routes (`examples.*`) are registered separately by the `modules/Demo` module — see "Demo Module" below.
 
 Livewire full-page components are registered with `Route::livewire()` using the `pages::` namespace prefix, e.g.:
 ```php
-Route::livewire('/ideas', 'pages::examples.ideas')->name('index');
+Route::livewire('/settings', 'pages::settings')->name('settings');
 ```
 
 ### Livewire Conventions
@@ -86,6 +87,15 @@ Cell `html()` and `text()` accept callables for custom rendering. For array-back
 - `Breadcrumbs` facade — `Breadcrumbs::push('Label')`
 - `MenuBuilder` facade — registered in `AppServiceProvider` via `NavBar` and `UserNav` classes
 - `DefaultPageName` view composer — injects `$pageName` into all views
+
+### Demo Module (`modules/Demo`)
+
+App-internal code (not a Composer package like `tkl-ui`) bundling every example/demo page (`/examples/*` routes, the "Examples" nav menu, form/table pattern demos, and the Laracasts-tutorial "Ideas" CRUD entity). It exists to be trivially removed when this repo bootstraps a real site. It's autoloaded via a plain PSR-4 entry in the root `composer.json` (`"Demo\\": "modules/Demo/src/"`) and registered explicitly in `bootstrap/providers.php` (`Demo\DemoServiceProvider::class`) — unlike `tkl-ui`, it has no `composer.json` of its own and isn't discovered via Composer's package mechanism, since it's part of this app rather than a reusable library.
+
+- **Disable**: comment out or remove the `DemoServiceProvider::class` line in `bootstrap/providers.php` — nothing else needs to change; `database/seeders/DatabaseSeeder.php` guards its `IdeaSeeder` call with `class_exists()` so seeding still works fine either way.
+- **Delete for good**: `rm -rf modules/Demo`, remove the `Demo\` PSR-4 entry from root `composer.json` and the `DemoServiceProvider::class` line from `bootstrap/providers.php`, then `composer dump-autoload`. No other file in the host app references it — `Demo\DemoServiceProvider` registers everything (routes, views under the `demo::` namespace, migrations, nav menu contribution, and a dynamic `User::ideas()` relation via `resolveRelationUsing`) in its own `boot()`.
+- Namespace root is `Demo\`, mirroring `Tk\` for `tkl-ui`. Views live at `modules/Demo/resources/views/pages/examples/`, referenced via `demo::examples.*`.
+- Provider boot order in `bootstrap/providers.php` controls nav menu ordering (both `AppServiceProvider` and `DemoServiceProvider` register a `MenuBuilderInterface` for the same `'NavBar'` namespace, and `Tk\Menu\MenuBuilder` composes them in registration order).
 
 ### Frontend
 

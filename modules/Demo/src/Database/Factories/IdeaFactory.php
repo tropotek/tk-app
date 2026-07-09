@@ -1,9 +1,9 @@
 <?php
 
-namespace Database\Factories;
+namespace Demo\Database\Factories;
 
-use App\Models\Idea;
 use App\Models\User;
+use Demo\Models\Idea;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class IdeaFactory extends Factory
 {
+    protected $model = Idea::class;
+
     /**
      * Define the model's default state.
      *

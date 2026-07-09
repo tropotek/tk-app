@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Examples;
+namespace Demo\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -18,6 +18,6 @@ class ExamplesController extends Controller
             return redirect($request->fullUrlWithoutQuery(['alert']))->with($type, "This is a {$type} flash message.");
         }
 
-        return view('pages.examples.index');
+        return view('demo::examples.index');
     }
 }
